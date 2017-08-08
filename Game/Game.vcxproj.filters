@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="SubSystems">
+      <UniqueIdentifier>{565f721b-06d0-4e00-9bd5-ca079a0506fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Camera Control">
+      <UniqueIdentifier>{75dab7a1-a31b-4f41-abc2-ba795a246927}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Subsystem.h">
+      <Filter>SubSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraController.h">
+      <Filter>Camera Control</Filter>
+    </ClInclude>
+    <ClInclude Include="Util.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Run.cpp" />
+    <ClCompile Include="CameraController.cpp">
+      <Filter>Camera Control</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

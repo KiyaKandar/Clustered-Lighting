@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="FrameRate">
+      <UniqueIdentifier>{17b64f10-3a01-4054-8c53-3914461fd9af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Timer">
+      <UniqueIdentifier>{862d724d-ed37-4f0d-9cd4-b271022c0fc3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="FramerateCounter.h">
+      <Filter>FrameRate</Filter>
+    </ClInclude>
+    <ClInclude Include="Profiler.h" />
+    <ClInclude Include="SubsystemTimer.h">
+      <Filter>Timer</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="FramerateCounter.cpp">
+      <Filter>FrameRate</Filter>
+    </ClCompile>
+    <ClCompile Include="Profiler.cpp" />
+    <ClCompile Include="SubsystemTimer.cpp">
+      <Filter>Timer</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

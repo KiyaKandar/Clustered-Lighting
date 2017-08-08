@@ -1,0 +1,233 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="TextMesh.cpp">
+      <Filter>Text</Filter>
+    </ClCompile>
+    <ClCompile Include="Frustum.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="GameTimer.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Plane.cpp">
+      <Filter>Maths Stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="Matrix4.cpp">
+      <Filter>Maths Stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="Quaternion.cpp">
+      <Filter>Maths Stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="OBJMesh.cpp">
+      <Filter>Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneNode.cpp">
+      <Filter>Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="OGLRenderer.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Keyboard.cpp">
+      <Filter>Some Input Things</Filter>
+    </ClCompile>
+    <ClCompile Include="Mouse.cpp">
+      <Filter>Some Input Things</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Assimp</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelMesh.cpp">
+      <Filter>Assimp</Filter>
+    </ClCompile>
+    <ClCompile Include="SSAO.cpp">
+      <Filter>GSettings</Filter>
+    </ClCompile>
+    <ClCompile Include="Shadows.cpp">
+      <Filter>GSettings</Filter>
+    </ClCompile>
+    <ClCompile Include="BPLighting.cpp">
+      <Filter>GSettings</Filter>
+    </ClCompile>
+    <ClCompile Include="GBuffer.cpp">
+      <Filter>GSettings</Filter>
+    </ClCompile>
+    <ClCompile Include="GConfiguration.cpp">
+      <Filter>GSettingsType</Filter>
+    </ClCompile>
+    <ClCompile Include="Bloom.cpp">
+      <Filter>GSettings</Filter>
+    </ClCompile>
+    <ClCompile Include="TileRenderer.cpp">
+      <Filter>Tile Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Cube.cpp">
+      <Filter>Tile Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxCollider.cpp">
+      <Filter>Tile Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="ComputeShader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Text.h">
+      <Filter>Text</Filter>
+    </ClInclude>
+    <ClInclude Include="TextMesh.h">
+      <Filter>Text</Filter>
+    </ClInclude>
+    <ClInclude Include="common.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Frustum.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="GameTimer.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Plane.h">
+      <Filter>Maths Stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix4.h">
+      <Filter>Maths Stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="Quaternion.h">
+      <Filter>Maths Stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Maths Stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector4.h">
+      <Filter>Maths Stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2.h">
+      <Filter>Maths Stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="ChildMeshInterface.h">
+      <Filter>Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="OBJMesh.h">
+      <Filter>Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneNode.h">
+      <Filter>Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="OGLRenderer.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyboard.h">
+      <Filter>Some Input Things</Filter>
+    </ClInclude>
+    <ClInclude Include="InputDevice.h">
+      <Filter>Some Input Things</Filter>
+    </ClInclude>
+    <ClInclude Include="Mouse.h">
+      <Filter>Some Input Things</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelMesh.h">
+      <Filter>Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="SSAO.h">
+      <Filter>GSettings</Filter>
+    </ClInclude>
+    <ClInclude Include="Shadows.h">
+      <Filter>GSettings</Filter>
+    </ClInclude>
+    <ClInclude Include="BPLighting.h">
+      <Filter>GSettings</Filter>
+    </ClInclude>
+    <ClInclude Include="GBuffer.h">
+      <Filter>GSettings</Filter>
+    </ClInclude>
+    <ClInclude Include="GConfiguration.h">
+      <Filter>GSettingsType</Filter>
+    </ClInclude>
+    <ClInclude Include="GSetting.h">
+      <Filter>GSettingsType</Filter>
+    </ClInclude>
+    <ClInclude Include="Bloom.h">
+      <Filter>GSettings</Filter>
+    </ClInclude>
+    <ClInclude Include="TileRenderer.h">
+      <Filter>Tile Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Cube.h">
+      <Filter>Tile Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxCollider.h">
+      <Filter>Tile Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="ComputeShader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Text">
+      <UniqueIdentifier>{f6ec2b98-c6a4-499e-8388-00ba7ccbc941}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities">
+      <UniqueIdentifier>{5313829c-469f-4a69-9e4d-da21debf3800}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Maths Stuff">
+      <UniqueIdentifier>{7bed036b-ec0b-48c0-8455-913c29a9ff6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mesh">
+      <UniqueIdentifier>{b122dd3b-96ab-4128-a3d7-959e401ea67c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering">
+      <UniqueIdentifier>{a4cfba15-fec0-4240-b841-82c0e7b36038}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Some Input Things">
+      <UniqueIdentifier>{1c8ac598-b66a-443f-92b7-447f8183ff3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assimp">
+      <UniqueIdentifier>{aef4cbc7-ffcd-4e90-8c76-324809e097bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GSettings">
+      <UniqueIdentifier>{31809e59-3a7f-46a9-86b5-b3ff967a8295}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GSettingsType">
+      <UniqueIdentifier>{2fc92847-a144-49ea-b1c6-a3e06c4be4d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tile Rendering">
+      <UniqueIdentifier>{89a3f9b7-c037-4f9f-8f0b-0bb3ff185766}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
