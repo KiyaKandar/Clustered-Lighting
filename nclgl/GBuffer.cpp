@@ -38,7 +38,6 @@ void GBuffer::Initialise()
 	//External checks
 	CheckBuffer("Frame");
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 }
 
 void GBuffer::Apply()

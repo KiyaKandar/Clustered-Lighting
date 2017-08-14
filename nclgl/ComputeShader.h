@@ -20,7 +20,7 @@ protected:
 	bool	LoadShaderFile(string from, string & into);
 	GLuint	GenerateShader(string from);
 
-	GLuint	object;
+	GLuint	object[1];
 	GLuint	program;
 
 	bool	loadFailed;

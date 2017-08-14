@@ -3,8 +3,8 @@
 Bloom::Bloom(Vector2 resolution) : GSetting(resolution)
 {
 	//bloomShader		= new Shader(SHADERDIR"/Bloom/bloomvert.glsl",		SHADERDIR"/Bloom/bloomfrag.glsl",	"", true);
-	blurShader		= new Shader(SHADERDIR"/Bloom/blurvert.glsl",		SHADERDIR"/Bloom/blurfrag.glsl",	"", true);
-	combineShader	= new Shader(SHADERDIR"/Bloom/combinevert.glsl",	SHADERDIR"/Bloom/combinefrag.glsl",	"", true);
+	blurShader		= new Shader(SHADERDIR"/Bloom/blurvert.glsl",		SHADERDIR"/Bloom/blurfrag.glsl");
+	combineShader	= new Shader(SHADERDIR"/Bloom/combinevert.glsl",	SHADERDIR"/Bloom/combinefrag.glsl");
 }
 
 Bloom::~Bloom()

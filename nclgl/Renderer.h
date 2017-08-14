@@ -17,6 +17,7 @@
 #include <vector>
 #include <unordered_map>
 #include <random>
+#include <functional>
 
 const int NUM_LIGHTS = 10;
 #define SHADOWSIZE 4096
@@ -89,7 +90,6 @@ public:
 
 	//What is actually in the view frustum
 	std::vector<ModelMesh*> modelsInFrame;
-	//int* tileLights;
 	TileData* tileData;
 protected:
 	Tile* screenTiles;

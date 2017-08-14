@@ -1,6 +1,7 @@
 #include "ComputeShader.h"
+#include "../Game/Util.h"
 
-ComputeShader::ComputeShader(string compute, bool isVerbose = false)
+ComputeShader::ComputeShader(string compute, bool isVerbose)
 {
 	verbose = isVerbose;
 
@@ -8,16 +9,16 @@ ComputeShader::ComputeShader(string compute, bool isVerbose = false)
 	this->compute = compute;
 
 	program = glCreateProgram();
-	object = GenerateShader(compute);
+	object[0] = GenerateShader(compute);
 
-	glAttachShader(program, object);
+	glAttachShader(program, object[0]);
 }
 
 
 ComputeShader::~ComputeShader()
 {
-	glDetachShader(program, object);
-	glDeleteShader(object);
+	glDetachShader(program, object[0]);
+	glDeleteShader(object[0]);
 	glDeleteProgram(program);
 }
 
@@ -29,6 +30,10 @@ void ComputeShader::UseProgram()
 void ComputeShader::Compute(Vector3 workGroups)
 {
 	glDispatchCompute(workGroups.x, workGroups.y, workGroups.z);
+	Util::CheckGLError("dispatch compute");
+
+	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+	Util::CheckGLError("memory barrier");
 }
 
 GLuint ComputeShader::GenerateShader(string from)

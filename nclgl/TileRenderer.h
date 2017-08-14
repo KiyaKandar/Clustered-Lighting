@@ -1,9 +1,18 @@
 #pragma once
 
+#pragma comment(lib, "opengl32.lib")
+#pragma comment(lib, "glew32.lib")
+
+#include "GL/glew.h"
+#include "GL/wglew.h"
+#include "SOIL.h"
+
 #include "Vector2.h"
 #include "Matrix4.h"
 #include "Plane.h"
 #include "Cube.h"
+
+#include "ComputeShader.h"
 
 #include <vector>
 
@@ -24,10 +33,21 @@ struct Tile
 	float padding[6];
 };
 
+struct CubePlanes
+{
+	Vector4 faces[6];
+	Vector4 position;
+};
+
 struct TileData 
 {
 	int lightIndexes[1000];
 	int tileLights[1000][10];
+};
+
+struct ScreenSpaceData
+{
+	Vector4 data[10];
 };
 
 class TileRenderer
@@ -37,11 +57,14 @@ public:
 		Vector2 minScreenCoord, Vector2 maxScreenCoord);
 	TileRenderer();
 
-	~TileRenderer() {}
+	~TileRenderer() 
+	{
+		delete compute;
+	}
 
 	TileData* GetTileData()
 	{
-		return &tileData;
+		return tileData;
 	}
 
 	Tile* GetScreenTiles()
@@ -55,6 +78,7 @@ public:
 	}
 
 	void GenerateGrid();
+	void InitGridSSBO();
 
 	void PrepareData(const Matrix4& projectionMatrix, const Matrix4& viewMatrix);
 	void CullLights();
@@ -75,13 +99,24 @@ private:
 
 	//Data
 	Tile screenTiles[1000];
+
 	Cube grid[1000];
+	CubePlanes* gridPlanes;// [1000];
+	
 	Cube screenCube;
-	TileData tileData;
+	TileData* tileData;
 
 	std::vector<int> lightsInFrustrum;
 
 	Vector4 screenLightData[10];
+	ScreenSpaceData ssdata;
 	Matrix4 lightModelMatrices[10];
+
+	ComputeShader* compute;
+
+	//SSBO Stuff
+	GLuint tileDataSSBO;
+	GLuint gridPlanesSSBO;
+	GLuint screenSpaceDataSSBO;
 };
 

@@ -33,6 +33,29 @@ TileRenderer::TileRenderer(Light** lights, int numLights, int numXTiles, int num
 
 		lightModelMatrices[i] = modelMat;
 	}
+
+	gridPlanes = new CubePlanes[numTiles];
+
+	compute = new ComputeShader(SHADERDIR"/Compute/compute.glsl", true);
+	compute->LinkProgram();
+
+	tileData = new TileData();
+
+	//for (int t = 0; t < numTiles; ++t) 
+	//{
+	//	int intersections = 0;
+
+	//	for (int l = 0; l < numLights; ++l)
+	//	{
+
+	//		tileData->tileLights[t][intersections] = l;
+	//		++intersections;
+	//	}
+
+	//	tileData->lightIndexes[t] = numLights;
+	//}
+
+	InitGridSSBO();
 }
 
 TileRenderer::TileRenderer()
@@ -44,6 +67,10 @@ TileRenderer::TileRenderer()
 	gridDimensions	= Vector3();
 
 	numTiles = 0;
+
+	compute = new ComputeShader(SHADERDIR"/Compute/compute.glsl", true);
+	compute->LinkProgram();
+	InitGridSSBO();
 }
 
 void TileRenderer::GenerateGrid() 
@@ -72,6 +99,18 @@ void TileRenderer::GenerateGrid()
 		Tile frontTile	= GenerateTile(basePosition, baseDimensions);
 
 		grid[i] = Cube(basePosition, baseDimensions);
+
+		CubePlanes baseGP;
+		baseGP.faces[0] = Vector4(LEFT_NORMAL.x, LEFT_NORMAL.y, LEFT_NORMAL.z, basePosition.Length());
+		baseGP.faces[1] = Vector4(RIGHT_NORMAL.x, RIGHT_NORMAL.y, RIGHT_NORMAL.z, (basePosition + Vector3(baseDimensions.x, 0, 0)).Length());
+		baseGP.faces[2] = Vector4(FRONT_NORMAL.x, FRONT_NORMAL.y, FRONT_NORMAL.z, (basePosition + Vector3(0, 0, baseDimensions.z)).Length());
+		baseGP.faces[3] = Vector4(BACK_NORMAL.x, BACK_NORMAL.y, BACK_NORMAL.z, basePosition.Length());
+		baseGP.faces[4] = Vector4(TOP_NORMAL.x, TOP_NORMAL.y, TOP_NORMAL.z, basePosition.Length());
+		baseGP.faces[5] = Vector4(BOTTOM_NORMAL.x, BOTTOM_NORMAL.y, BOTTOM_NORMAL.z, (basePosition + Vector3(0, baseDimensions.y, 0)).Length());
+		baseGP.position = Vector4(basePosition.x, basePosition.y, basePosition.z, 0);
+
+		gridPlanes[i] = baseGP;
+
 		screenTiles[i] = frontTile;
 
 		//Fill along the z axis from the tile above.
@@ -79,14 +118,51 @@ void TileRenderer::GenerateGrid()
 		{
 			float newZ = gridDimensions.z * k;
 
-			Tile newT = GenerateTile(Vector3(basePosition.x, basePosition.y, newZ), baseDimensions);
+			Vector3 newPosition(basePosition.x, basePosition.y, newZ);
 
-			grid[i + k] = Cube(Vector3(basePosition.x, basePosition.y, newZ), baseDimensions);
+			Tile newT = GenerateTile(newPosition, baseDimensions);
+
+			grid[i + k] = Cube(newPosition, baseDimensions);
+
+			CubePlanes newGP;
+			newGP.faces[0] = Vector4(LEFT_NORMAL.x,		LEFT_NORMAL.y,	 LEFT_NORMAL.z,		newPosition.Length());
+			newGP.faces[1] = Vector4(RIGHT_NORMAL.x,	RIGHT_NORMAL.y,  RIGHT_NORMAL.z,	(newPosition + Vector3(baseDimensions.x, 0, 0)).Length());
+			newGP.faces[2] = Vector4(FRONT_NORMAL.x,	FRONT_NORMAL.y,  FRONT_NORMAL.z,	(newPosition + Vector3(0, 0, baseDimensions.z)).Length());
+			newGP.faces[3] = Vector4(BACK_NORMAL.x,		BACK_NORMAL.y,	 BACK_NORMAL.z,		newPosition.Length());
+			newGP.faces[4] = Vector4(TOP_NORMAL.x,		TOP_NORMAL.y,	 TOP_NORMAL.z,		newPosition.Length());
+			newGP.faces[5] = Vector4(BOTTOM_NORMAL.x,	BOTTOM_NORMAL.y, BOTTOM_NORMAL.z,	(newPosition + Vector3(0, baseDimensions.y, 0)).Length());
+			newGP.position = Vector4(newPosition.x,		newPosition.y,	 newPosition.z,		0);
+
 			screenTiles[i + k] = newT;
 		}
 
 		++xOffset;
 	}
+}
+
+void TileRenderer::InitGridSSBO()
+{
+	Util::CheckGLError("nothing");
+	glGenBuffers(1, &tileDataSSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, tileDataSSBO);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(TileData), tileData, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, tileDataSSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	Util::CheckGLError("tile data");
+
+	glGenBuffers(1, &gridPlanesSSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, gridPlanesSSBO);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(CubePlanes) * numTiles, gridPlanes, GL_STATIC_COPY);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, gridPlanesSSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	Util::CheckGLError("grid planes");
+
+	glGenBuffers(1, &screenSpaceDataSSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, screenSpaceDataSSBO);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(ScreenSpaceData), &ssdata, GL_STATIC_COPY);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, screenSpaceDataSSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	Util::CheckGLError("screen data");
 }
 
 Tile TileRenderer::GenerateTile(Vector3 position, Vector3 dimensions) const
@@ -125,21 +201,33 @@ void TileRenderer::FillTiles()
 	    - Which lights are intersecting (light indexes are global).
 		- The number of intersections (this provides the length of the array in 2nd dimension).
 	*/
-	for (int t = 0; t < numTiles; ++t) 
-	{
-		int intersections = 0;
+	//for (int t = 0; t < numTiles; ++t) 
+	//{
+	//	int intersections = 0;
 
-		for (int l = 0; l < numLights; ++l)
-		{
-			if (grid[t].SphereColliding(screenLightData[l]))
-			{
-				tileData.tileLights[t][intersections] = l;
-				++intersections;
-			}
-		}
+	//	for (int l = 0; l < numLights; ++l)
+	//	{
+	//		if (grid[t].SphereColliding(screenLightData[l]))
+	//		{
+	//			tileData->tileLights[t][intersections] = l;
+	//			++intersections;
+	//		}
+	//	}
 
-		tileData.lightIndexes[t] = intersections;
-	}
+	//	tileData->lightIndexes[t] = intersections;
+	//}
+
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, tileDataSSBO);
+
+	compute->UseProgram();
+	compute->Compute(Vector3(32, 1, 1));
+
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, tileDataSSBO);
+
+	glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(TileData), tileData);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, 0);
+	Util::CheckGLError("read tiledata");
 }
 
 void TileRenderer::PrepareData(const Matrix4& projectionMatrix, const Matrix4& viewMatrix)
@@ -163,5 +251,6 @@ void TileRenderer::PrepareData(const Matrix4& projectionMatrix, const Matrix4& v
 		float ndcz = clipz * w * 100;
 
 		screenLightData[i] = Vector4(viewPos.x * w, viewPos.y * w, ndcz, lights[i]->GetRadius() * w);
+		ssdata.data[i] = Vector4(viewPos.x * w, viewPos.y * w, ndcz, lights[i]->GetRadius() * w);
 	}
 }

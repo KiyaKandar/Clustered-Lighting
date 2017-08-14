@@ -11,6 +11,7 @@
 #include "../NCLGL/Model.h"
 #include "../NCLGL/Light.h"
 #include "../NCLGL/GConfiguration.h"
+#include "Util.h"
 
 void ApplyLightInput(Light* light, const Window& window);
 
