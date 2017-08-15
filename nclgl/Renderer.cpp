@@ -87,31 +87,28 @@ void Renderer::InitDebugLights() {
 
 void Renderer::InitLightSSBO()
 {
-	Util::CheckGLError("renderer nothing");
 	glGenBuffers(1, &ssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(LightData) * NUM_LIGHTS, &lightData, GL_STATIC_COPY);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-	Util::CheckGLError("renderer light data");
 
 	glGenBuffers(1, &tilesssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, tilesssbo);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Tile) * tiles->GetNumTiles(), screenTiles, GL_STATIC_COPY);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, tilesssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-	Util::CheckGLError("renderer tiles");
 
 	glGenBuffers(1, &tilelightssssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, tilelightssssbo);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(TileData), tileData, GL_STATIC_COPY);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, tilelightssssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-	Util::CheckGLError("renderer tile lights");
 }
 
 void Renderer::Update(float deltatime)
 {
+	//Util::ClearGLErrorStack();
 	updateTimer.StartTimer();
 
 	if (wparent->GetKeyboard()->KeyTriggered(KEYBOARD_P)) 
@@ -126,18 +123,8 @@ void Renderer::Update(float deltatime)
 
 	UpdateScene(deltatime);
 
-	Util::ClearGLErrorStack();
 	tiles->PrepareData(projMatrix, viewMatrix);
-	tiles->FillTiles();
-
-	tileData = tiles->GetTileData();
-
-	//Rebuffer the data
-	Util::CheckGLError("renderer tilelights nothing");
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, tilelightssssbo);
-	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(TileData), tileData);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-	Util::CheckGLError("renderer tilelights");
+	tiles->FillTilesGPU();
 
 	RenderScene();
 

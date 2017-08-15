@@ -82,7 +82,9 @@ public:
 
 	void PrepareData(const Matrix4& projectionMatrix, const Matrix4& viewMatrix);
 	void CullLights();
-	void FillTiles();
+
+	void FillTilesGPU();
+	void FillTilesCPU(GLuint buffer);
 
 private:
 	Tile GenerateTile(Vector3 position, Vector3 dimensions) const;

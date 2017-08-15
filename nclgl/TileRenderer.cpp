@@ -41,20 +41,6 @@ TileRenderer::TileRenderer(Light** lights, int numLights, int numXTiles, int num
 
 	tileData = new TileData();
 
-	//for (int t = 0; t < numTiles; ++t) 
-	//{
-	//	int intersections = 0;
-
-	//	for (int l = 0; l < numLights; ++l)
-	//	{
-
-	//		tileData->tileLights[t][intersections] = l;
-	//		++intersections;
-	//	}
-
-	//	tileData->lightIndexes[t] = numLights;
-	//}
-
 	InitGridSSBO();
 }
 
@@ -107,6 +93,7 @@ void TileRenderer::GenerateGrid()
 		baseGP.faces[3] = Vector4(BACK_NORMAL.x, BACK_NORMAL.y, BACK_NORMAL.z, basePosition.Length());
 		baseGP.faces[4] = Vector4(TOP_NORMAL.x, TOP_NORMAL.y, TOP_NORMAL.z, basePosition.Length());
 		baseGP.faces[5] = Vector4(BOTTOM_NORMAL.x, BOTTOM_NORMAL.y, BOTTOM_NORMAL.z, (basePosition + Vector3(0, baseDimensions.y, 0)).Length());
+
 		baseGP.position = Vector4(basePosition.x, basePosition.y, basePosition.z, 0);
 
 		gridPlanes[i] = baseGP;
@@ -142,27 +129,17 @@ void TileRenderer::GenerateGrid()
 
 void TileRenderer::InitGridSSBO()
 {
-	Util::CheckGLError("nothing");
-	glGenBuffers(1, &tileDataSSBO);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, tileDataSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(TileData), tileData, GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, tileDataSSBO);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-	Util::CheckGLError("tile data");
-
 	glGenBuffers(1, &gridPlanesSSBO);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, gridPlanesSSBO);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(CubePlanes) * numTiles, gridPlanes, GL_STATIC_COPY);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, gridPlanesSSBO);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, gridPlanesSSBO);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-	Util::CheckGLError("grid planes");
 
 	glGenBuffers(1, &screenSpaceDataSSBO);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, screenSpaceDataSSBO);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(ScreenSpaceData), &ssdata, GL_STATIC_COPY);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, screenSpaceDataSSBO);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, screenSpaceDataSSBO);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-	Util::CheckGLError("screen data");
 }
 
 Tile TileRenderer::GenerateTile(Vector3 position, Vector3 dimensions) const
@@ -193,41 +170,45 @@ void TileRenderer::CullLights()
 	}
 }
 
-void TileRenderer::FillTiles()
+void TileRenderer::FillTilesGPU()
+{
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, screenSpaceDataSSBO);
+	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(ScreenSpaceData), &ssdata);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	//Writes to the shared buffer used in lighting pass
+	compute->UseProgram();
+	compute->Compute(Vector3(1, 1, 1));
+}
+
+void TileRenderer::FillTilesCPU(GLuint buffer)
 {
 	/*
-	  For each tile, check which light is within range.
-	  Record:
-	    - Which lights are intersecting (light indexes are global).
-		- The number of intersections (this provides the length of the array in 2nd dimension).
+	For each tile, check which light is within range.
+	Record:
+	- Which lights are intersecting (light indexes are global).
+	- The number of intersections (this provides the length of the array in 2nd dimension).
 	*/
-	//for (int t = 0; t < numTiles; ++t) 
-	//{
-	//	int intersections = 0;
+	for (int t = 0; t < numTiles; ++t) 
+	{
+		int intersections = 0;
 
-	//	for (int l = 0; l < numLights; ++l)
-	//	{
-	//		if (grid[t].SphereColliding(screenLightData[l]))
-	//		{
-	//			tileData->tileLights[t][intersections] = l;
-	//			++intersections;
-	//		}
-	//	}
+		for (int l = 0; l < numLights; ++l)
+		{
+			if (grid[t].SphereColliding(screenLightData[l]))
+			{
+				tileData->tileLights[t][intersections] = l;
+				++intersections;
+			}
+		}
 
-	//	tileData->lightIndexes[t] = intersections;
-	//}
+		tileData->lightIndexes[t] = intersections;
+	}
 
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, tileDataSSBO);
-
-	compute->UseProgram();
-	compute->Compute(Vector3(32, 1, 1));
-
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, tileDataSSBO);
-
-	glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(TileData), tileData);
+	//Rebuffer the data
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer);
+	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(TileData), tileData);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, 0);
-	Util::CheckGLError("read tiledata");
 }
 
 void TileRenderer::PrepareData(const Matrix4& projectionMatrix, const Matrix4& viewMatrix)
@@ -250,7 +231,7 @@ void TileRenderer::PrepareData(const Matrix4& projectionMatrix, const Matrix4& v
 		//Retrieve distance from camera to light + normalize.
 		float ndcz = clipz * w * 100;
 
-		screenLightData[i] = Vector4(viewPos.x * w, viewPos.y * w, ndcz, lights[i]->GetRadius() * w);
+		//screenLightData[i] = Vector4(viewPos.x * w, viewPos.y * w, ndcz, lights[i]->GetRadius() * w);
 		ssdata.data[i] = Vector4(viewPos.x * w, viewPos.y * w, ndcz, lights[i]->GetRadius() * w);
 	}
 }
