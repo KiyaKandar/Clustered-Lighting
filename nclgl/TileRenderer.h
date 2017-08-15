@@ -36,7 +36,7 @@ struct Tile
 struct CubePlanes
 {
 	Vector4 faces[6];
-	Vector4 position;
+	Vector4 positions[6];
 };
 
 struct TileData 

@@ -94,7 +94,12 @@ void TileRenderer::GenerateGrid()
 		baseGP.faces[4] = Vector4(TOP_NORMAL.x, TOP_NORMAL.y, TOP_NORMAL.z, basePosition.Length());
 		baseGP.faces[5] = Vector4(BOTTOM_NORMAL.x, BOTTOM_NORMAL.y, BOTTOM_NORMAL.z, (basePosition + Vector3(0, baseDimensions.y, 0)).Length());
 
-		baseGP.position = Vector4(basePosition.x, basePosition.y, basePosition.z, 0);
+		baseGP.positions[0] = Vector4(basePosition.x, basePosition.y, basePosition.z, 0);
+		baseGP.positions[1] = Vector4(basePosition.x + baseDimensions.x, basePosition.y, basePosition.z, 0);
+		baseGP.positions[2] = Vector4(basePosition.x, basePosition.y, basePosition.z + baseDimensions.z, 0);
+		baseGP.positions[3] = Vector4(basePosition.x, basePosition.y, basePosition.z, 0);
+		baseGP.positions[4] = Vector4(basePosition.x, basePosition.y, basePosition.z, 0);
+		baseGP.positions[5] = Vector4(basePosition.x, basePosition.y + baseDimensions.y, basePosition.z, 0);
 
 		gridPlanes[i] = baseGP;
 
@@ -118,7 +123,15 @@ void TileRenderer::GenerateGrid()
 			newGP.faces[3] = Vector4(BACK_NORMAL.x,		BACK_NORMAL.y,	 BACK_NORMAL.z,		newPosition.Length());
 			newGP.faces[4] = Vector4(TOP_NORMAL.x,		TOP_NORMAL.y,	 TOP_NORMAL.z,		newPosition.Length());
 			newGP.faces[5] = Vector4(BOTTOM_NORMAL.x,	BOTTOM_NORMAL.y, BOTTOM_NORMAL.z,	(newPosition + Vector3(0, baseDimensions.y, 0)).Length());
-			newGP.position = Vector4(newPosition.x,		newPosition.y,	 newPosition.z,		0);
+
+
+			//newGP.position = Vector4(newPosition.x,		newPosition.y,	 newPosition.z,		0);
+			newGP.positions[0] = Vector4(newPosition.x, newPosition.y, newPosition.z, 0);
+			newGP.positions[1] = Vector4(newPosition.x + baseDimensions.x, newPosition.y, newPosition.z, 0);
+			newGP.positions[2] = Vector4(newPosition.x, newPosition.y, newPosition.z + baseDimensions.z, 0);
+			newGP.positions[3] = Vector4(newPosition.x, newPosition.y, newPosition.z, 0);
+			newGP.positions[4] = Vector4(newPosition.x, newPosition.y, newPosition.z, 0);
+			newGP.positions[5] = Vector4(newPosition.x, newPosition.y + baseDimensions.y, newPosition.z, 0);
 
 			screenTiles[i + k] = newT;
 		}
