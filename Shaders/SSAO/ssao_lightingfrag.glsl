@@ -9,9 +9,11 @@ uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedo;
 uniform sampler2D ssao;
+
 uniform sampler2DShadow shadows[10];
 uniform mat4 texMatrices[10];
 uniform mat4 camMatrix;
+
 uniform sampler2D ambientTextures[1];
 
 uniform int numberOfLights;
@@ -28,7 +30,8 @@ struct LightData
 	vec4 lightColour;
 	float lightRadius;
 	float intensity;
-	float padding[2];
+
+	float fpadding[2];
 };
 
 struct Tile
@@ -105,20 +108,23 @@ void main(void){
 		float attenuation = 1.0 - clamp(dist / data[lightIndex].lightRadius, 0.0, 1.0);
 		attenuation *= data[lightIndex].intensity;
 
-		//Shadow
-		vec4 shadowProj = (texMatrices[lightIndex] * inverse(camMatrix) *
-			vec4(position + (normal * 1.5), 1));
-
-		float lambert = max(0.0, dot(lightDir, normal));
-		float shadow = 1.0;
-
-		if (shadowProj.w > 0.0)
+		if (lightIndex < 5)
 		{
-			shadow = textureProj(shadows[lightIndex], shadowProj);
-		}
+			//Shadow
+			vec4 shadowProj = (texMatrices[lightIndex] * inverse(camMatrix) *
+				vec4(position + (normal * 1.5), 1));
 
-		lambert *= shadow;
-		attenuation *= lambert;
+			float lambert = max(0.0, dot(lightDir, normal));
+			float shadow = 1.0;
+
+			if (shadowProj.w > 0.0)
+			{
+				shadow = textureProj(shadows[lightIndex], shadowProj);
+			}
+
+			lambert *= shadow;
+			attenuation *= lambert;
+		}
 
 		diffuse *= attenuation;
 		specular *= attenuation;

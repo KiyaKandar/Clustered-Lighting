@@ -11,7 +11,7 @@ BPLighting::BPLighting(Vector2 resolution, Camera* cam,
 	this->ambientTextures	= ambientTextures;
 	this->numAmbTex			= numAmbTex; 
 	
-	lightingPass = new Shader(SHADERDIR"/SSAO/ssao_lightingvert.glsl", SHADERDIR"/SSAO/ssao_lightingfrag.glsl");
+	lightingPass = new Shader(SHADERDIR"/SSAO/ssao_lightingvert.glsl", SHADERDIR"/SSAO/ssao_lightingfrag.glsl", "", true);
 }
 
 void BPLighting::LinkShaders()

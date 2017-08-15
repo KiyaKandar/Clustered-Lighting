@@ -85,7 +85,9 @@
     <ClCompile Include="BoxCollider.cpp">
       <Filter>Tile Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="ComputeShader.cpp" />
+    <ClCompile Include="ComputeShader.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Text.h">
@@ -196,7 +198,9 @@
     <ClInclude Include="BoxCollider.h">
       <Filter>Tile Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="ComputeShader.h" />
+    <ClInclude Include="ComputeShader.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Text">

@@ -36,7 +36,7 @@ TileRenderer::TileRenderer(Light** lights, int numLights, int numXTiles, int num
 
 	gridPlanes = new CubePlanes[numTiles];
 
-	compute = new ComputeShader(SHADERDIR"/Compute/compute.glsl", true);
+	compute = new ComputeShader(SHADERDIR"/Compute/compute.glsl");
 	compute->LinkProgram();
 
 	tileData = new TileData();

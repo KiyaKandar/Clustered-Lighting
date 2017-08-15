@@ -8,6 +8,7 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 
 	projMatrix = Matrix4::Perspective(1.0f, 15000.0f, (float)width / (float)height, 45.0f);
 
+	//Shadow casting lights must be declared first
 	lights[0] = new Light(Vector3(0, 1800, 200),	Vector4(0.9, 0.7, 0.4, 1),					30000.0f,	2.0f);
 	lights[1] = new Light(Vector3(-630, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1),	150.0f,		3.0f);
 	lights[2] = new Light(Vector3(500, 140, -200),	Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1),	150.0f,		3.0f);

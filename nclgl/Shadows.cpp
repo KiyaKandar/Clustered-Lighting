@@ -8,15 +8,9 @@ Shadows::Shadows(int numShadowCastingLights, Vector2 resolution, Light** lights,
 	shadowData = new ShadowData();
 	shadowData->NUM_LIGHTS = numShadowCastingLights;
 
-	shadowData->shadowIndexes = new int[/*shadowData->NUM_LIGHTS*/numShadowCastingLights];
+	shadowData->shadowIndexes = new int[numShadowCastingLights];
 	shadowData->shadows = new GLuint[shadowData->NUM_LIGHTS];
 	shadowData->textureMatrices = new Matrix4[shadowData->NUM_LIGHTS];
-
-	//shadowData->shadowIndexes[0] = 4;
-	//shadowData->shadowIndexes[1] = 5;
-	//shadowData->shadowIndexes[2] = 6;
-	//shadowData->shadowIndexes[3] = 7;
-	//shadowData->shadowIndexes[4] = 8;
 
 	for (int i = 0; i < numShadowCastingLights; i++)
 	{
@@ -24,7 +18,6 @@ Shadows::Shadows(int numShadowCastingLights, Vector2 resolution, Light** lights,
 	}
 
 	shadowShader = new Shader(SHADERDIR"shadowvert.glsl", SHADERDIR"shadowfrag.glsl");
-	//shadowShader->LinkProgram();
 
 	this->lights = lights;
 	this->models = models;

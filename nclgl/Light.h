@@ -13,6 +13,7 @@ struct LightData
 	Vector4 lightColour;
 	float lightRadius;
 	float intensity;
+
 	float padding[2];
 };
 
