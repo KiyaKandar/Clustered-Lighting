@@ -106,10 +106,8 @@ void Bloom::ApplyBlur()
 	for (GLuint i = 0; i < strength; i++)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
-		//blurShader->SetInt("horizontal", horizontal);
 		glUniform1i(loc_horizontal, horizontal);
 
-		//currentShader->SetInt("image", 0);
 		glUniform1i(loc_image, IMAGE);
 
 		//Bind texture of other framebuffer (or scene if first iteration)
@@ -133,10 +131,7 @@ void Bloom::Combine()
 
 	SetCurrentShader(combineShader);
 
-	//currentShader->SetInt("scene", 0);
 	glUniform1i(loc_scene, SCENE);
-
-	//currentShader->SetInt("bloomBlur", 1);
 	glUniform1i(loc_bloomBlur, BLOOM_BLUR);
 
 	glActiveTexture(GL_TEXTURE0 + SCENE);
@@ -145,7 +140,5 @@ void Bloom::Combine()
 	glActiveTexture(GL_TEXTURE0 + BLOOM_BLUR);
 	glBindTexture(GL_TEXTURE_2D, pingpongColourBuffers[!horizontal]);
 
-	//combineShader->SetInt("bloom", bloom); //Bloom
-	//combineShader->SetFloat("exposure", exposure); //Exposure
 	RenderScreenQuad();
 }

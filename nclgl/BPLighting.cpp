@@ -41,6 +41,9 @@ void BPLighting::LocateUniforms()
 	loc_numYTiles		= glGetUniformLocation(lightingPass->GetProgram(), "numYTiles");
 	loc_numberOfLights	= glGetUniformLocation(lightingPass->GetProgram(), "numberOfLights");
 	loc_camMatrix		= glGetUniformLocation(lightingPass->GetProgram(), "camMatrix");
+
+	loc_numShadowCastingLights = 
+		glGetUniformLocation(lightingPass->GetProgram(), "numShadowCastingLights");
 }
 
 void BPLighting::Apply() {
@@ -61,6 +64,7 @@ void BPLighting::LightingPass()
 	glUniform1i(loc_numXTiles, NUM_X_AXIS_TILES);
 	glUniform1i(loc_numYTiles, NUM_Y_AXIS_TILES);
 	glUniform1i(loc_numberOfLights, shadowData->NUM_LIGHTS);
+	glUniform1i(loc_numShadowCastingLights, 5);
 
 	glUniform1iv(loc_shadows, shadowData->NUM_LIGHTS, shadowData->shadowIndexes);
 	glUniform1iv(loc_ambientTextures, numAmbTex, ambientTextures->texUnits);

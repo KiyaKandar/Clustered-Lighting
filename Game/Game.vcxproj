@@ -158,6 +158,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CameraController.h" />
+    <ClInclude Include="GLUtil.h" />
     <ClInclude Include="Subsystem.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>

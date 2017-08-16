@@ -2,6 +2,7 @@
 
 #include "Light.h"
 #include "../Game/Util.h"
+#include "../Game/GLUtil.h"
 
 const int INTERSECTING	= 1;
 const int EMPTY			= 0;
@@ -36,8 +37,9 @@ TileRenderer::TileRenderer(Light** lights, int numLights, int numXTiles, int num
 
 	gridPlanes = new CubePlanes[numTiles];
 
-	compute = new ComputeShader(SHADERDIR"/Compute/compute.glsl");
+	compute = new ComputeShader(SHADERDIR"/Compute/compute.glsl", true);
 	compute->LinkProgram();
+	loc_numZTiles= glGetUniformLocation(compute->GetProgram(), "numZTiles");
 
 	tileData = new TileData();
 
@@ -142,17 +144,11 @@ void TileRenderer::GenerateGrid()
 
 void TileRenderer::InitGridSSBO()
 {
-	glGenBuffers(1, &gridPlanesSSBO);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, gridPlanesSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(CubePlanes) * numTiles, gridPlanes, GL_STATIC_COPY);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, gridPlanesSSBO);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	gridPlanesSSBO = GLUtil::InitSSBO(1, 4, gridPlanesSSBO,
+		sizeof(CubePlanes) * numTiles, gridPlanes, GL_STATIC_COPY);
 
-	glGenBuffers(1, &screenSpaceDataSSBO);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, screenSpaceDataSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(ScreenSpaceData), &ssdata, GL_STATIC_COPY);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, screenSpaceDataSSBO);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	screenSpaceDataSSBO = GLUtil::InitSSBO(1, 5, screenSpaceDataSSBO,
+		sizeof(ScreenSpaceData), &ssdata, GL_STATIC_COPY);
 }
 
 Tile TileRenderer::GenerateTile(Vector3 position, Vector3 dimensions) const
@@ -185,12 +181,13 @@ void TileRenderer::CullLights()
 
 void TileRenderer::FillTilesGPU()
 {
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, screenSpaceDataSSBO);
-	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(ScreenSpaceData), &ssdata);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	GLUtil::RebufferData(GL_SHADER_STORAGE_BUFFER, screenSpaceDataSSBO, 0, sizeof(ScreenSpaceData), &ssdata);
 
 	//Writes to the shared buffer used in lighting pass
 	compute->UseProgram();
+
+	glUniform1i(loc_numZTiles, gridSize.z);
+
 	compute->Compute(Vector3(1, 1, 1));
 }
 
@@ -218,10 +215,7 @@ void TileRenderer::FillTilesCPU(GLuint buffer)
 		tileData->lightIndexes[t] = intersections;
 	}
 
-	//Rebuffer the data
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer);
-	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(TileData), tileData);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	GLUtil::RebufferData(GL_SHADER_STORAGE_BUFFER, buffer, 0, sizeof(TileData), tileData);
 }
 
 void TileRenderer::PrepareData(const Matrix4& projectionMatrix, const Matrix4& viewMatrix)

@@ -40,16 +40,13 @@ int main()
 	config.LinkToRenderer();
 
 	Model sponza("../sponza/sponza.obj");
-	renderer->models.push_back(&sponza);
-
-	Light* light = renderer->GetLight();
+	renderer->AddModel(&sponza);
 
 	//Game loop...
 	while (window->UpdateWindow() && !window->GetKeyboard()->KeyTriggered(KEYBOARD_ESCAPE)) {
 		float deltatime = window->GetTimer()->GetTimedMS();
 
 		camControl->ApplyInputs(deltatime);
-		ApplyLightInput(light, *window);
 
 		renderer->Update(deltatime);
 		profiler->Update(deltatime);

@@ -15,6 +15,7 @@
 #include "ComputeShader.h"
 
 #include <vector>
+#include <type_traits>
 
 const bool THROW_ERROR = true;
 
@@ -120,5 +121,8 @@ private:
 	GLuint tileDataSSBO;
 	GLuint gridPlanesSSBO;
 	GLuint screenSpaceDataSSBO;
+
+	//Uniform location
+	GLint loc_numZTiles;
 };
 

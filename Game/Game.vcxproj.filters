@@ -16,6 +16,7 @@
       <Filter>Camera Control</Filter>
     </ClInclude>
     <ClInclude Include="Util.h" />
+    <ClInclude Include="GLUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Run.cpp" />

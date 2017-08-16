@@ -38,6 +38,7 @@ private:
 	GLint loc_numYTiles;
 	GLint loc_numberOfLights;
 	GLint loc_camMatrix;
+	GLint loc_numShadowCastingLights;
 
 	Shader*		lightingPass;
 	Camera*		camera;

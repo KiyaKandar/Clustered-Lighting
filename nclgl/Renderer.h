@@ -4,7 +4,6 @@
 #include "Camera.h"
 #include "SceneNode.h"
 #include "Frustum.h"
-#include "OBJMesh.h"
 #include "Mesh.h"
 #include "../Game/Subsystem.h"
 #include "Text.h"
@@ -15,15 +14,17 @@
 
 #include <algorithm> //For std::sort
 #include <vector>
-#include <unordered_map>
 #include <random>
 #include <functional>
 
-const int NUM_LIGHTS = 10;
-#define SHADOWSIZE 4096
 #define DEBUG_LIGHTS
-#define RESX 1280
-#define RESY 720
+
+const int NUM_LIGHTS = 10;
+const int SHADOW_SIZE = 4096;
+const int RESX = 1280;
+const int RESY = 720;
+
+const int GLOBAL_LIGHT = 0;
 
 class Renderer : public OGLRenderer, public Subsystem
 {
@@ -36,9 +37,29 @@ public:
 	void UpdateScene(float msec);
 	void RenderScene();
 
-	void AddGSetting(GSetting* component)
+	void AddModel(Model* model) noexcept
+	{
+		models.push_back(model);
+	}
+
+	std::vector<ModelMesh*>* GetModelsInFrustum() noexcept
+	{
+		return &modelsInFrame;
+	}
+
+	std::vector<Model*>* GetModels() noexcept
+	{
+		return &models;
+	}
+
+	void AddGSetting(GSetting* component) noexcept
 	{
 		GComponents.push_back(component);
+	}
+
+	Light* GetGlobalLight()
+	{
+		return lights[GLOBAL_LIGHT];
 	}
 
 	Light** GetAllLights() 
@@ -49,16 +70,6 @@ public:
 	void SetCamera(Camera* cam)
 	{
 		camera = cam;
-	}
-
-	Light* GetLight()
-	{
-		return lights[0];
-	}
-
-	float GetWidth() const
-	{
-		return width;
 	}
 
 	inline void SwitchToPerspective()
@@ -74,27 +85,19 @@ public:
 			-height / 2.0f);
 	}
 
-	float lerp(float a, float b, float f)
-	{
-		return a + f * (b - a);
-	}
-
-	//bool TileIntersection(float radius, Vector2 lightCoord, Tile& rectangle);
-	//void FillLightData();
-
 	vector<Text> textbuffer;
 	Font* basicFont;
 
-	std::vector<Model*> models;
-	std::vector<Model*> debugSpheres;
 
-	//What is actually in the view frustum
-	std::vector<ModelMesh*> modelsInFrame;
-	TileData* tileData;
 protected:
+	std::vector<GSetting*> GComponents;
+
+	std::vector<Model*> models;
+	std::vector<ModelMesh*> modelsInFrame;
+
+	TileData* tileData;
 	Tile* screenTiles;
 	TileRenderer* tiles;
-	std::vector<GSetting*> GComponents;
 
 	bool debugMode = false;
 	void UpdateBasicUniforms();
@@ -114,22 +117,19 @@ protected:
 	void SortMeshLists();
 	void ClearMeshLists();
 
-	//Handy debug functions
+	//Handy debug stuff
 	void DrawDebugLights();
 	void RelinkShaders();
+	std::vector<Model*> debugSpheres;
 
-	//Text Stuff
+	//Text Stuff - Mainly for profiler
 	Shader* textShader;
-
 	void DrawTextBuffer();
 	void DrawTextOBJ(const Text& textobj);
 
 	//Other Stuff
 	Camera*	camera;
 	Frustum frameFrustum;
-	//Light*	light;
 
 	Window* wparent;
-	float timer = 0;
-	float overlayFlags[3];
 };

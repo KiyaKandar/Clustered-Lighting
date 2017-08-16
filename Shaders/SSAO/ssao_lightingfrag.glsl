@@ -3,6 +3,11 @@
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out vec4 BrightnessCol;
 
+const int numTiles = 1000;
+const int numLights = 10;
+
+uniform int numShadowCastingLights;
+
 uniform vec3  cameraPos;
 
 uniform sampler2D gPosition;
@@ -10,8 +15,8 @@ uniform sampler2D gNormal;
 uniform sampler2D gAlbedo;
 uniform sampler2D ssao;
 
-uniform sampler2DShadow shadows[10];
-uniform mat4 texMatrices[10];
+uniform sampler2DShadow shadows[numLights];
+uniform mat4 texMatrices[numLights];
 uniform mat4 camMatrix;
 
 uniform sampler2D ambientTextures[1];
@@ -58,8 +63,8 @@ layout (std430, binding = 2) buffer TileDataBuffer
 
 layout (std430, binding = 3) buffer TileLightsBuffer
 {
-	int lightIndexes[1000];
-	int tileLights[1000][10];
+	int lightIndexes[numTiles];
+	int tileLights[numTiles][numLights];
 };
 
 void main(void){
@@ -75,9 +80,9 @@ void main(void){
 
 	int xIndex = int(xCoord * numXTiles);
 	int yIndex = int(yCoord * numYTiles);
-	int zIndex = int(zCoord * 10);
+	int zIndex = int(zCoord * numLights);
 
-	int tile = xIndex + numXTiles * (yIndex + 10 * zIndex);// (yIndex * (numYTiles + 10)) + (xIndex * 10) + zIndex;
+	int tile = xIndex + numXTiles * (yIndex + numLights * zIndex);// (yIndex * (numYTiles + 10)) + (xIndex * 10) + zIndex;
 
 	//Default value
 	vec3 lightResult = vec3(0.0, 0.0, 0.0);
@@ -108,7 +113,7 @@ void main(void){
 		float attenuation = 1.0 - clamp(dist / data[lightIndex].lightRadius, 0.0, 1.0);
 		attenuation *= data[lightIndex].intensity;
 
-		if (lightIndex < 5)
+		if (lightIndex < numShadowCastingLights)
 		{
 			//Shadow
 			vec4 shadowProj = (texMatrices[lightIndex] * inverse(camMatrix) *

@@ -32,11 +32,11 @@ void GConfiguration::InitialiseSettings()
 	ambTex->textures = new GLuint*[1];
 	ambTex->texUnits = new int[1];
 
-	shadows = new Shadows(5, resolution, renderer->GetAllLights(), &renderer->models);
+	shadows = new Shadows(5, resolution, renderer->GetAllLights(), renderer->GetModels());
 	shadows->LinkShaders();
 	shadows->Initialise();
 
-	SGBuffer = new GBuffer(resolution, camera, &renderer->modelsInFrame);
+	SGBuffer = new GBuffer(resolution, camera, renderer->GetModelsInFrustum());
 	SGBuffer->LinkShaders();
 	SGBuffer->Initialise();
 

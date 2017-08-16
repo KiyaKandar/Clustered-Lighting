@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "../Game/Util.h"
+#include "../Game/GLUtil.h"
 
 Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 {
@@ -51,6 +52,7 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
+	GLUtil::CheckGLError("Renderer Initialisation");
 	init = true;
 }
 
@@ -88,23 +90,34 @@ void Renderer::InitDebugLights() {
 
 void Renderer::InitLightSSBO()
 {
-	glGenBuffers(1, &ssbo);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(LightData) * NUM_LIGHTS, &lightData, GL_STATIC_COPY);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	//glGenBuffers(1, &ssbo);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(LightData) * NUM_LIGHTS, &lightData, GL_STATIC_COPY);
+	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-	glGenBuffers(1, &tilesssbo);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, tilesssbo);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Tile) * tiles->GetNumTiles(), screenTiles, GL_STATIC_COPY);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, tilesssbo);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	//glGenBuffers(1, &tilesssbo);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, tilesssbo);
+	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Tile) * tiles->GetNumTiles(), screenTiles, GL_STATIC_COPY);
+	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, tilesssbo);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-	glGenBuffers(1, &tilelightssssbo);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, tilelightssssbo);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(TileData), tileData, GL_STATIC_COPY);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, tilelightssssbo);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	//glGenBuffers(1, &tilelightssssbo);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, tilelightssssbo);
+	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(TileData), tileData, GL_STATIC_COPY);
+	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, tilelightssssbo);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	ssbo = GLUtil::InitSSBO(1, 1, ssbo, 
+		sizeof(LightData) * NUM_LIGHTS, &lightData, GL_STATIC_COPY);
+
+	tilesssbo = GLUtil::InitSSBO(1, 2, tilesssbo, 
+		sizeof(Tile) * tiles->GetNumTiles(), screenTiles, GL_STATIC_COPY);
+
+	tilelightssssbo = GLUtil::InitSSBO(1, 3, tilelightssssbo, 
+		sizeof(TileData), tileData, GL_STATIC_COPY);
+
+	GLUtil::CheckGLError("Renderer Light SSBO");
 }
 
 void Renderer::Update(float deltatime)

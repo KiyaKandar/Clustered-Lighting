@@ -1,5 +1,10 @@
 #version 430 core
 
+const int numTiles = 1000;
+const int numLights = 10;
+
+uniform int numZTiles;
+
 layout(local_size_x = 10, local_size_y = 10, local_size_z = 10) in;
 
 struct Tile
@@ -23,18 +28,18 @@ struct CubePlanes
 
 layout (std430, binding = 3) buffer TileLightsBuffer
 {
-	int lightIndexes[1000];
-	int tileLights[1000][10];
+	int lightIndexes[numTiles];
+	int tileLights[numTiles][numLights];
 };
 
 layout(std430, binding = 4) buffer CubePlanesBuffer
 {
-	CubePlanes cubePlanes[1000];
+	CubePlanes cubePlanes[];
 };
 
 layout(std430, binding = 5) buffer ScreenSpaceDataBuffer
 {
-	vec4 data[10];
+	vec4 data[];
 };
 
 bool SphereInPlane(vec4 plane, vec4 light)
@@ -101,12 +106,12 @@ bool SphereColliding(CubePlanes cube, vec4 light)
 
 void main()
 {
-	uint index = gl_GlobalInvocationID.x + 10 *
-		(gl_GlobalInvocationID.y + 10 * gl_GlobalInvocationID.z);
+	uint index = gl_GlobalInvocationID.x + numZTiles *
+		(gl_GlobalInvocationID.y + numZTiles * gl_GlobalInvocationID.z);
 
 	int intersections = 0;
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < numLights; i++)
 	{
 		bool colliding = SphereColliding(cubePlanes[index], data[i]);
 
