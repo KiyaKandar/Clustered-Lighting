@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../nclgl/GSetting.h"
+#include "GLConfig.h"
 
 class GLUtil
 {
@@ -28,6 +29,12 @@ public:
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 		return bufferID;
+	}
+
+	static void UpdateResolutionUniforms(const GLuint& program)
+	{
+		glUniform1f(glGetUniformLocation(program, "resolutionX"), GLConfig::RESOLUTION.x);
+		glUniform1f(glGetUniformLocation(program, "resolutionY"), GLConfig::RESOLUTION.y);
 	}
 
 	static void CheckGLError(std::string tag)

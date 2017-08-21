@@ -17,11 +17,13 @@
     </ClInclude>
     <ClInclude Include="Util.h" />
     <ClInclude Include="GLUtil.h" />
+    <ClInclude Include="GLConfig.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Run.cpp" />
     <ClCompile Include="CameraController.cpp">
       <Filter>Camera Control</Filter>
     </ClCompile>
+    <ClCompile Include="GLConfig.cpp" />
   </ItemGroup>
 </Project>

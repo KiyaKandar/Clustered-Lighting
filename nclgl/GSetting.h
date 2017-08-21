@@ -11,20 +11,24 @@
 #include "Matrix4.h"
 #include "Vector2.h"
 
+//#include "../Game/GLConfig.h"
+
 //Global vars
-const int GPOSITION = 0;
-const int GNORMAL	= 1;
-const int GALBEDO	= 2;
-
-const int NUM_X_AXIS_TILES = 10;
-const int NUM_Y_AXIS_TILES = 10;
-const int NUM_Z_AXIS_TILES = 10;
-
-const Vector2 MIN_NDC_COORDS = Vector2(-1, -1);
-const Vector2 MAX_NDC_COORDS = Vector2(1, 1);
+//const int GPOSITION = 0;
+//const int GNORMAL	= 1;
+//const int GALBEDO	= 2;
+//
+//const int NUM_X_AXIS_TILES = 10;
+//const int NUM_Y_AXIS_TILES = 10;
+//const int NUM_Z_AXIS_TILES = 10;
+//
+//const Vector2 MIN_NDC_COORDS = Vector2(-1, -1);
+//const Vector2 MAX_NDC_COORDS = Vector2(1, 1);
 
 //DataIndexes
-const int SSAO_INDEX	= 0;
+//const int SSAO_INDEX	= 0;
+
+
 
 struct ShadowData
 {

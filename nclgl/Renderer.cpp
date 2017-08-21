@@ -2,6 +2,8 @@
 #include "../Game/Util.h"
 #include "../Game/GLUtil.h"
 
+#include "../Game/GLConfig.h"
+
 Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 {
 	camera = cam;
@@ -37,8 +39,8 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	}
 
 	tiles = new TileRenderer(lights, NUM_LIGHTS, 
-		NUM_X_AXIS_TILES, NUM_Y_AXIS_TILES, NUM_Z_AXIS_TILES,
-		MIN_NDC_COORDS, MAX_NDC_COORDS);
+		GLConfig::NUM_X_AXIS_TILES, GLConfig::NUM_Y_AXIS_TILES, GLConfig::NUM_Z_AXIS_TILES,
+		GLConfig::MIN_NDC_COORDS,	GLConfig::MAX_NDC_COORDS);
 	tiles->GenerateGrid();
 
 	screenTiles = tiles->GetScreenTiles();
@@ -90,24 +92,6 @@ void Renderer::InitDebugLights() {
 
 void Renderer::InitLightSSBO()
 {
-	//glGenBuffers(1, &ssbo);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(LightData) * NUM_LIGHTS, &lightData, GL_STATIC_COPY);
-	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-	//glGenBuffers(1, &tilesssbo);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, tilesssbo);
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Tile) * tiles->GetNumTiles(), screenTiles, GL_STATIC_COPY);
-	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, tilesssbo);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-	//glGenBuffers(1, &tilelightssssbo);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, tilelightssssbo);
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(TileData), tileData, GL_STATIC_COPY);
-	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, tilelightssssbo);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
 	ssbo = GLUtil::InitSSBO(1, 1, ssbo, 
 		sizeof(LightData) * NUM_LIGHTS, &lightData, GL_STATIC_COPY);
 
@@ -143,12 +127,6 @@ void Renderer::Update(float deltatime)
 	RenderScene();
 
 	updateTimer.StopTimer();
-}
-
-void Renderer::UpdateBasicUniforms()
-{
-	glUniform1f(glGetUniformLocation(currentShader->GetProgram(), "resolutionY"), height);
-	glUniform1f(glGetUniformLocation(currentShader->GetProgram(), "resolutionX"), width);
 }
 
 void Renderer::RenderScene()

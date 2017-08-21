@@ -1,5 +1,7 @@
 #include "BPLighting.h"
 
+#include "../Game/GLConfig.h"
+
 BPLighting::BPLighting(Vector2 resolution, Camera* cam, 
 	GBufferData* gBuffer, ShadowData* shadowData,
 	AmbientTextures* ambientTextures, int numAmbTex) : GSetting(resolution)
@@ -57,14 +59,14 @@ void BPLighting::LightingPass()
 
 	SetCurrentShader(lightingPass);
 
-	glUniform1i(loc_gPosition,	GPOSITION);
-	glUniform1i(loc_gNormal,	GNORMAL);
-	glUniform1i(loc_gAlbedo,	GALBEDO);
+	glUniform1i(loc_gPosition,	GLConfig::GPOSITION);
+	glUniform1i(loc_gNormal,	GLConfig::GNORMAL);
+	glUniform1i(loc_gAlbedo,	GLConfig::GALBEDO);
 
-	glUniform1i(loc_numXTiles, NUM_X_AXIS_TILES);
-	glUniform1i(loc_numYTiles, NUM_Y_AXIS_TILES);
+	glUniform1i(loc_numXTiles, GLConfig::NUM_X_AXIS_TILES);
+	glUniform1i(loc_numYTiles, GLConfig::NUM_Y_AXIS_TILES);
 	glUniform1i(loc_numberOfLights, shadowData->NUM_LIGHTS);
-	glUniform1i(loc_numShadowCastingLights, 5);
+	glUniform1i(loc_numShadowCastingLights, GLConfig::SHADOW_LIGHTS);
 
 	glUniform1iv(loc_shadows, shadowData->NUM_LIGHTS, shadowData->shadowIndexes);
 	glUniform1iv(loc_ambientTextures, numAmbTex, ambientTextures->texUnits);
@@ -76,9 +78,9 @@ void BPLighting::LightingPass()
 
 	UpdateShaderMatrices();
 
-	currentShader->ApplyTexture(GPOSITION,	*gBuffer->gPosition);
-	currentShader->ApplyTexture(GNORMAL,	*gBuffer->gNormal);
-	currentShader->ApplyTexture(GALBEDO,	*gBuffer->gAlbedo);
+	currentShader->ApplyTexture(GLConfig::GPOSITION,	*gBuffer->gPosition);
+	currentShader->ApplyTexture(GLConfig::GNORMAL,		*gBuffer->gNormal);
+	currentShader->ApplyTexture(GLConfig::GALBEDO,		*gBuffer->gAlbedo);
 
 	for (int a = 0; a < numAmbTex; ++a)
 	{

@@ -1,5 +1,7 @@
 #include "SSAO.h"
 
+#include "../Game/GLConfig.h"
+
 SSAO::SSAO(Vector2 resolution, Camera* cam, 
 	AmbientTextures* ambientTextures, GBufferData* SGBuffer) : GSetting(resolution)
 {
@@ -13,8 +15,8 @@ SSAO::SSAO(Vector2 resolution, Camera* cam,
 	SSAOCol		 = new Shader(SHADERDIR"/SSAO/ssao_vert.glsl",			SHADERDIR"/SSAO/ssao_frag.glsl");
 	SSAOBlur	 = new Shader(SHADERDIR"/SSAO/ssao_vert.glsl",			SHADERDIR"/SSAO/ssao_blurfrag.glsl");
 
-	ambientTextures->textures[SSAO_INDEX] = &ssaoColorBufferBlur;
-	ambientTextures->texUnits[SSAO_INDEX] = 3;
+	ambientTextures->textures[GLConfig::SSAO_INDEX] = &ssaoColorBufferBlur;
+	ambientTextures->texUnits[GLConfig::SSAO_INDEX] = 3;
 }
 
 void SSAO::LinkShaders()
@@ -157,12 +159,12 @@ void SSAO::GenerateSSAOTex()
 	glUniform1i(loc_ssaoBias, ssaoBias);
 
 	//Texture units
-	glUniform1i(loc_gPosition,	GPOSITION);
-	glUniform1i(loc_gNormal,	GNORMAL);
+	glUniform1i(loc_gPosition,	GLConfig::GPOSITION);
+	glUniform1i(loc_gNormal,	GLConfig::GNORMAL);
 	glUniform1i(loc_texNoise,	NOISE_TEX);
 
-	currentShader->ApplyTexture(GPOSITION, *SGBuffer->gPosition);
-	currentShader->ApplyTexture(GNORMAL, *SGBuffer->gNormal);
+	currentShader->ApplyTexture(GLConfig::GPOSITION,	*SGBuffer->gPosition);
+	currentShader->ApplyTexture(GLConfig::GNORMAL,		*SGBuffer->gNormal);
 	currentShader->ApplyTexture(NOISE_TEX, noiseTexture);
 
 	RenderScreenQuad();

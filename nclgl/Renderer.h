@@ -100,7 +100,6 @@ protected:
 	TileRenderer* tiles;
 
 	bool debugMode = false;
-	void UpdateBasicUniforms();
 	void InitDebugLights();
 
 	//Light SSBO
