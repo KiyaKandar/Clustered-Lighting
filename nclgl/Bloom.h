@@ -2,14 +2,10 @@
 
 #include "GSetting.h"
 
-const int IMAGE = 0;
-const int SCENE = 0;
-const int BLOOM_BLUR = 1;
-
 class Bloom : public GSetting
 {
 public:
-	Bloom(Vector2 resolution);
+	Bloom(int strength);
 	~Bloom();
 
 	void LinkShaders();
@@ -20,6 +16,9 @@ public:
 
 	GLuint FBO;
 private:
+	void CreateTexture();
+	void InitialiseBlur();
+
 	void LocateUniforms();
 
 	void ApplyBlur();
@@ -46,5 +45,7 @@ private:
 
 	bool horizontal;
 	bool first_iteration;
+
+	int blurStrength;
 };
 

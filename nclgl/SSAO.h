@@ -15,8 +15,7 @@ const int SSAO_TEX = 0;
 class SSAO : public GSetting
 {
 public:
-	SSAO(Vector2 resolution, Camera* cam,
-		AmbientTextures* ambientTextures, GBufferData* SGBuffer);
+	SSAO(Camera* cam, AmbientTextures* ambientTextures, GBufferData* SGBuffer);
 
 	virtual ~SSAO() 
 	{

@@ -11,24 +11,7 @@
 #include "Matrix4.h"
 #include "Vector2.h"
 
-//#include "../Game/GLConfig.h"
-
-//Global vars
-//const int GPOSITION = 0;
-//const int GNORMAL	= 1;
-//const int GALBEDO	= 2;
-//
-//const int NUM_X_AXIS_TILES = 10;
-//const int NUM_Y_AXIS_TILES = 10;
-//const int NUM_Z_AXIS_TILES = 10;
-//
-//const Vector2 MIN_NDC_COORDS = Vector2(-1, -1);
-//const Vector2 MAX_NDC_COORDS = Vector2(1, 1);
-
-//DataIndexes
-//const int SSAO_INDEX	= 0;
-
-
+#include "../Game/GLConfig.h"
 
 struct ShadowData
 {
@@ -53,10 +36,9 @@ class GSetting
 {
 public:
 
-	GSetting(Vector2 resolution)
+	GSetting()
 	{
-		this->resolution = resolution;
-		projMatrix = Matrix4::Perspective(1.0f, 15000.0f, (float)resolution.x / (float)resolution.y, 45.0f);
+		projMatrix = GLConfig::SHARED_PROJ_MATRIX;//Matrix4::Perspective(nearPlane, farPlane, (float)resolution.x / (float)resolution.y, fov);
 	}
 
 	virtual ~GSetting() {}
@@ -83,16 +65,8 @@ public:
 			glUniformMatrix4fv(glGetUniformLocation(currentShader->GetProgram(), "projMatrix"), 1, false, (float*)&projMatrix);
 			glUniformMatrix4fv(glGetUniformLocation(currentShader->GetProgram(), "textureMatrix"), 1, false, (float*)&textureMatrix);
 			glUniformMatrix4fv(glGetUniformLocation(currentShader->GetProgram(), "camMatrix"), 1, false, (float*)&viewMatrix);
-			currentShader->SetInt("resolutionY", resolution.y);
-			currentShader->SetInt("resolutionX", resolution.x);
-		}
-	}
-
-	//Check framebuffer is complete
-	void CheckBuffer(std::string name) {
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		{
-			std::cout << name + "-buffer not complete!" << std::endl;
+			currentShader->SetInt("resolutionY", GLConfig::RESOLUTION.y);
+			currentShader->SetInt("resolutionX", GLConfig::RESOLUTION.x);
 		}
 	}
 
@@ -131,13 +105,11 @@ protected:
 	unsigned int quadVAO = 0;
 	unsigned int quadVBO;
 
-	Vector2 resolution;
-
 	Shader* currentShader;
 
-	Matrix4 projMatrix;		//Projection matrix
-	Matrix4 modelMatrix;	//Model matrix. NOT MODELVIEW
-	Matrix4 viewMatrix;		//View matrix
-	Matrix4 textureMatrix;	//Texture matrix
+	Matrix4 projMatrix;		
+	Matrix4 modelMatrix;	
+	Matrix4 viewMatrix;		
+	Matrix4 textureMatrix;	
 };
 

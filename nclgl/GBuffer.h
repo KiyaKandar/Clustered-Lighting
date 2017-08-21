@@ -11,7 +11,7 @@ class GBuffer :
 	public GSetting
 {
 public:
-	GBuffer(Vector2 resolution, Camera* camera, std::vector<ModelMesh*>* modelsInFrame);
+	GBuffer(Camera* camera, std::vector<ModelMesh*>* modelsInFrame);
 	virtual ~GBuffer();
 
 	void LinkShaders();

@@ -32,24 +32,24 @@ void GConfiguration::InitialiseSettings()
 	ambTex->textures = new GLuint*[1];
 	ambTex->texUnits = new int[1];
 
-	shadows = new Shadows(5, resolution, renderer->GetAllLights(), renderer->GetModels());
+	shadows = new Shadows(5, renderer->GetAllLights(), renderer->GetModels());
 	shadows->LinkShaders();
 	shadows->Initialise();
 
-	SGBuffer = new GBuffer(resolution, camera, renderer->GetModelsInFrustum());
+	SGBuffer = new GBuffer(camera, renderer->GetModelsInFrustum());
 	SGBuffer->LinkShaders();
 	SGBuffer->Initialise();
 
-	ssao = new SSAO(resolution, camera, ambTex, SGBuffer->GetGBuffer());
+	ssao = new SSAO(camera, ambTex, SGBuffer->GetGBuffer());
 	ssao->LinkShaders();
 	ssao->Initialise();
 
-	lighting = new BPLighting(resolution, camera, SGBuffer->GetGBuffer(),
+	lighting = new BPLighting(camera, SGBuffer->GetGBuffer(),
 		shadows->GetShadowData(), ambTex, 1);
 	lighting->LinkShaders();
 	lighting->Initialise();
 
-	bloom = new Bloom(resolution);
+	bloom = new Bloom(100);
 	bloom->LinkShaders();
 	bloom->Initialise();
 

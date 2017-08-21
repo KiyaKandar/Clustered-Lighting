@@ -12,7 +12,7 @@
 class Shadows : public GSetting
 {
 public:
-	Shadows(int numShadowCastingLights, Vector2 resolution, Light** lights, std::vector<Model*>* models);
+	Shadows(int numShadowCastingLights, Light** lights, std::vector<Model*>* models);
 
 	~Shadows()
 	{
@@ -35,9 +35,6 @@ public:
 private:
 	void LocateUniforms() {}
 
-	Light** lights;
-	std::vector<Model*>* models;
-
 	//Shadow prep
 	void InitShadowTex();
 	void InitShadowBuffer();
@@ -45,14 +42,11 @@ private:
 	//Application
 	void DrawShadowScene();
 
-	//Shadow vars
-	//GLuint shadows[NUM_LIGHTS];
-	GLuint* shadowFBOs;// [5];
-	//Matrix4 textureMatrices[NUM_LIGHTS];
-	//int* shadowIndexes;
-
+	GLuint* shadowFBOs;
 	ShadowData* shadowData;
-
 	Shader* shadowShader;
+
+	Light** lights;
+	std::vector<Model*>* models;
 };
 

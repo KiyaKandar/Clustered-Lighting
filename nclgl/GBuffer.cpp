@@ -1,7 +1,9 @@
 #include "GBuffer.h"
 
-GBuffer::GBuffer(Vector2 resolution, Camera* camera, 
-	std::vector<ModelMesh*>* modelsInFrame) : GSetting(resolution)
+#include "../Game/GLConfig.h"
+#include "../Game/GLUtil.h"
+
+GBuffer::GBuffer(Camera* camera, std::vector<ModelMesh*>* modelsInFrame)
 {
 	this->modelsInFrame = modelsInFrame;
 	this->camera		= camera;
@@ -35,8 +37,6 @@ void GBuffer::Initialise()
 	InitGBuffer();
 	InitAttachments();
 
-	//External checks
-	CheckBuffer("Frame");
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -48,39 +48,27 @@ void GBuffer::Apply()
 
 void GBuffer::InitGBuffer()
 {
+	GLUtil::ClearGLErrorStack();
+
 	glGenFramebuffers(1, &gBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
 
 	//Position colour buffer
 	glGenTextures(1, &gPosition);
-	glBindTexture(GL_TEXTURE_2D, gPosition);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, resolution.x, resolution.y, 0, GL_RGB, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
+	GLUtil::CreateScreenTexture(gPosition, GL_RGB16F, GL_RGB, GL_FLOAT, GL_NEAREST, 0, true);
+	GLUtil::CheckGLError("GPosition");
 
 	//Normal coluor buffer
 	glGenTextures(1, &gNormal);
-	glBindTexture(GL_TEXTURE_2D, gNormal);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, resolution.x, resolution.y, 0, GL_RGB, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
+	GLUtil::CreateScreenTexture(gNormal, GL_RGB16F, GL_RGB, GL_FLOAT, GL_NEAREST, 1, false);
+	GLUtil::CheckGLError("GNormal");
 
 	//Colour + specular colour buffer
 	glGenTextures(1, &gAlbedo);
-	glBindTexture(GL_TEXTURE_2D, gAlbedo);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, resolution.x, resolution.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedo, 0);
+	GLUtil::CreateScreenTexture(gAlbedo, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_NEAREST, 2, false);
+	GLUtil::CheckGLError("GAlbedo");
 
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		std::cout << " g-buffer not complete!" << std::endl;
-	}
+	GLUtil::VerifyBuffer("GBuffer", false);
 }
 
 void GBuffer::InitAttachments()
@@ -91,10 +79,10 @@ void GBuffer::InitAttachments()
 	//Create and attach depth buffer (renderbuffer)
 	glGenRenderbuffers(1, &rboDepth);
 	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, resolution.x, resolution.y);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, GLConfig::RESOLUTION.x, GLConfig::RESOLUTION.y);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
 
-
+	GLUtil::VerifyBuffer("RBO Depth GBuffer", false);
 }
 
 void GBuffer::FillGBuffer()

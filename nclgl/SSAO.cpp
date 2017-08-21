@@ -1,15 +1,16 @@
 #include "SSAO.h"
 
 #include "../Game/GLConfig.h"
+#include "../Game/GLUtil.h"
 
-SSAO::SSAO(Vector2 resolution, Camera* cam, 
-	AmbientTextures* ambientTextures, GBufferData* SGBuffer) : GSetting(resolution)
+const int KERNEL_SIZE = 64;
+const int NOISE_SIZE  = 16;
+
+SSAO::SSAO(Camera* cam, AmbientTextures* ambientTextures, GBufferData* SGBuffer)
 {
 	this->ambientTextures	= ambientTextures;
 	this->SGBuffer			= SGBuffer;
 	camera = cam;
-
-	projMatrix = Matrix4::Perspective(1.0f, 15000.0f, (float)resolution.x / (float)resolution.y, 45.0f);
 
 	//SSAO Shaders
 	SSAOCol		 = new Shader(SHADERDIR"/SSAO/ssao_vert.glsl",			SHADERDIR"/SSAO/ssao_frag.glsl");
@@ -71,23 +72,23 @@ void SSAO::InitSSAOBuffers()
 	//SSAO color buffer
 	glGenTextures(1, &ssaoColorBuffer);
 	glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, resolution.x, resolution.y, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, GLConfig::RESOLUTION.x, GLConfig::RESOLUTION.y, 0, GL_RGB, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBuffer, 0);
 
-	CheckBuffer("SSAO Frame");
+	GLUtil::VerifyBuffer("SSAO Frame", false);
 
 	//Blur stage
 	glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
 	glGenTextures(1, &ssaoColorBufferBlur);
 	glBindTexture(GL_TEXTURE_2D, ssaoColorBufferBlur);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, resolution.x, resolution.y, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, GLConfig::RESOLUTION.x, GLConfig::RESOLUTION.y, 0, GL_RGB, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBufferBlur, 0);
 
-	CheckBuffer("Blur");
+	GLUtil::VerifyBuffer("Blur", false);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -96,14 +97,14 @@ void SSAO::GenerateSampleKernel()
 	std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0);
 	std::default_random_engine generator;
 
-	for (unsigned int i = 0; i < 64; ++i)
+	for (unsigned int i = 0; i < KERNEL_SIZE; ++i)
 	{
 		Vector3 sample(randomFloats(generator) * 2.0 - 1.0,
 			randomFloats(generator) * 2.0 - 1.0, randomFloats(generator));
 
 		sample.Normalise();
 		sample = sample * randomFloats(generator);
-		float scale = float(i) / 64;
+		float scale = float(i) / KERNEL_SIZE;
 
 		//Scale samples so they're more aligned to center of kernel
 		scale = lerp(0.1f, 1.0f, scale * scale);//0.1f + (scale * scale) * (1.0f - 0.1f); //Lerp
@@ -118,7 +119,7 @@ void SSAO::GenerateNoiseTexture()
 	std::default_random_engine generator;
 
 	//Generate the texture
-	for (unsigned int i = 0; i < 16; i++)
+	for (unsigned int i = 0; i < NOISE_SIZE; i++)
 	{
 		Vector3 noise(
 			randomFloats(generator) * 2.0 - 1.0,
@@ -130,7 +131,7 @@ void SSAO::GenerateNoiseTexture()
 
 	glGenTextures(1, &noiseTexture);
 	glBindTexture(GL_TEXTURE_2D, noiseTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, 4, 4, 0, GL_RGB, GL_FLOAT, &ssaoNoise[0]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, std::sqrt(NOISE_SIZE), std::sqrt(NOISE_SIZE), 0, GL_RGB, GL_FLOAT, &ssaoNoise[0]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -144,12 +145,14 @@ void SSAO::GenerateSSAOTex()
 
 	SetCurrentShader(SSAOCol);
 
+	////////////////////////////////////////////
+	//STOP USING SHADER SETVEC3 - SAVE LOCATIONS PRIOR
 	//Send kernel + rotation 
-	for (unsigned int i = 0; i < 64; ++i)
+	for (unsigned int i = 0; i < KERNEL_SIZE; ++i)
 	{
 		currentShader->SetVec3("samples[" + std::to_string(i) + "]", ssaoKernel[i]);
 	}
-
+	/////////////////////////////////////////////
 	viewMatrix = camera->BuildViewMatrix();
 
 	//Basic uniforms

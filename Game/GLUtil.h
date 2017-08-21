@@ -6,7 +6,6 @@
 class GLUtil
 {
 public:
-
 	template <class T>
 	static GLuint InitSSBO(int numBuffers, int binding, GLuint bufferID, size_t size, T* data, GLenum usage)
 	{
@@ -31,12 +30,36 @@ public:
 		return bufferID;
 	}
 
+	static void CreateScreenTexture(GLuint textureID, GLuint internalFormat, GLenum format, 
+		GLenum type, GLint minMagParam, int attachment, bool clamp)
+	{
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, GLConfig::RESOLUTION.x, GLConfig::RESOLUTION.y, 0, format, type, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minMagParam);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, minMagParam);
+
+		if (clamp) 
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		}
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachment, GL_TEXTURE_2D, textureID, 0);
+	}
+
+	//If updating all basic uniforms is overkill.
 	static void UpdateResolutionUniforms(const GLuint& program)
 	{
 		glUniform1f(glGetUniformLocation(program, "resolutionX"), GLConfig::RESOLUTION.x);
 		glUniform1f(glGetUniformLocation(program, "resolutionY"), GLConfig::RESOLUTION.y);
 	}
 
+	/*
+	  WARNING
+	  Will print entire error stack.
+	   - Ensure regular calls to assist debugging.
+	   - Or clear the stack using the ClearGLErrorStack function.
+	*/
 	static void CheckGLError(std::string tag)
 	{
 		GLenum err;
@@ -53,7 +76,7 @@ public:
 			case GL_INVALID_FRAMEBUFFER_OPERATION:  error = "INVALID_FRAMEBUFFER_OPERATION";  break;
 			}
 
-			cerr << tag << "  -  GL_" << error.c_str() << endl;
+			cerr << tag << "  -  GL_" << error.c_str() << "\n";
 			err = glGetError();
 		}
 	}
@@ -64,6 +87,17 @@ public:
 		while ((err = glGetError()) != GL_NO_ERROR)
 		{
 			err = glGetError();
+		}
+	}
+
+	static void VerifyBuffer(std::string name, bool successMsg) {
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		{
+			std::cout << name + " - buffer not complete!" << "\n";
+		}
+		else
+		{
+			std::cout << name + " - buffer intialised succesfully." << "\n";
 		}
 	}
 

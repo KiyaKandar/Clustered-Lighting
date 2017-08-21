@@ -1,7 +1,10 @@
 #include "Shadows.h"
 
-Shadows::Shadows(int numShadowCastingLights, Vector2 resolution, Light** lights, 
-	std::vector<Model*>* models) : GSetting(resolution)
+#include "../Game/GLConfig.h"
+#include "../Game/GLUtil.h"
+
+Shadows::Shadows(int numShadowCastingLights, Light** lights, 
+	std::vector<Model*>* models)
 {
 	shadowFBOs = new GLuint[numShadowCastingLights];
 
@@ -9,8 +12,8 @@ Shadows::Shadows(int numShadowCastingLights, Vector2 resolution, Light** lights,
 	shadowData->NUM_LIGHTS = numShadowCastingLights;
 
 	shadowData->shadowIndexes = new int[numShadowCastingLights];
-	shadowData->shadows = new GLuint[shadowData->NUM_LIGHTS];
-	shadowData->textureMatrices = new Matrix4[shadowData->NUM_LIGHTS];
+	shadowData->shadows = new GLuint[numShadowCastingLights];
+	shadowData->textureMatrices = new Matrix4[numShadowCastingLights];
 
 	for (int i = 0; i < numShadowCastingLights; i++)
 	{
@@ -63,6 +66,8 @@ void Shadows::InitShadowTex()
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
+
+	GLUtil::CheckGLError("Shadow textures");
 }
 
 void Shadows::InitShadowBuffer()
@@ -77,6 +82,8 @@ void Shadows::InitShadowBuffer()
 
 		glDrawBuffer(GL_NONE);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		GLUtil::VerifyBuffer("Shadow Buffer " + i, false);
 	}
 }
 
@@ -107,7 +114,7 @@ void Shadows::DrawShadowScene()
 	}
 
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-	glViewport(0, 0, resolution.x, resolution.y);
+	glViewport(0, 0, GLConfig::RESOLUTION.x, GLConfig::RESOLUTION.y);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

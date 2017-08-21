@@ -2,9 +2,8 @@
 
 #include "../Game/GLConfig.h"
 
-BPLighting::BPLighting(Vector2 resolution, Camera* cam, 
-	GBufferData* gBuffer, ShadowData* shadowData,
-	AmbientTextures* ambientTextures, int numAmbTex) : GSetting(resolution)
+BPLighting::BPLighting(Camera* cam, GBufferData* gBuffer, ShadowData* shadowData,
+	AmbientTextures* ambientTextures, int numAmbTex)
 {
 	camera = cam;
 

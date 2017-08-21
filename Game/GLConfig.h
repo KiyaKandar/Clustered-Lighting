@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../nclgl/Vector2.h"
+#include "../nclgl/Matrix4.h"
 
 class GLConfig
 {
@@ -28,5 +29,7 @@ public:
 	static const Vector2 MIN_NDC_COORDS;
 	static const Vector2 MAX_NDC_COORDS;
 	static const Vector2 RESOLUTION;
+
+	static const Matrix4 SHARED_PROJ_MATRIX;
 };
 

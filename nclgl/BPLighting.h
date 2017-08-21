@@ -8,8 +8,7 @@
 class BPLighting : public GSetting
 {
 public:
-	BPLighting(Vector2 resolution, Camera* cam, 
-		GBufferData* gBuffer, ShadowData* shadowData,
+	BPLighting(Camera* cam, GBufferData* gBuffer, ShadowData* shadowData,
 		AmbientTextures* ambientTextures, int numAmbTex);
 
 	virtual ~BPLighting() {
