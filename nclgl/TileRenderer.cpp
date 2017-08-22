@@ -172,10 +172,10 @@ void TileRenderer::CullLights()
 
 	for (int l = 0; l < numLights; ++l)
 	{
-		//if (screenCube.SphereColliding(screenLightCoords[l], normalisedLightRadii[l]))
-		//{
-		//	lightsInFrustrum.push_back(l);
-		//}
+		if (screenCube.SphereColliding(screenLightData[l]))
+		{
+			lightsInFrustrum.push_back(l);
+		}
 	}
 }
 

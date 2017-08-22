@@ -44,7 +44,6 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	tiles->GenerateGrid();
 
 	screenTiles = tiles->GetScreenTiles();
-	//tileLights = tiles->GetTileLights();
 	tileData = tiles->GetTileData();
 
 	InitLightSSBO();
@@ -136,9 +135,10 @@ void Renderer::RenderScene()
 
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-	for (std::vector<GSetting*>::const_iterator iter = GComponents.begin(); iter != GComponents.end(); ++iter)
+	const int numComponents = GComponents.size();
+	for (int i = 0; i < numComponents; ++i )
 	{
-		(*iter)->Apply();
+		GComponents[i]->Apply();
 	}
 
 	if (debugMode) 
@@ -272,17 +272,21 @@ void Renderer::DrawTextOBJ(const Text& textobj)
 
 void Renderer::BuildMeshLists()
 {
-	for (std::vector<Model*>::const_iterator outerIter = models.begin(); outerIter != models.end(); ++outerIter)
-	{
-		for (std::vector<ModelMesh*>::const_iterator innerIter = (*outerIter)->meshes.begin(); innerIter != (*outerIter)->meshes.end(); ++innerIter)
-		{
-			if (frameFrustum.InsideFrustum((*innerIter)->box))
-			{
-				Vector3 dir = (*innerIter)->GetTransform()->GetPositionVector() -
-					camera->GetPosition();
-				(*innerIter)->SetCameraDistance(Vector3::Dot(dir, dir));
+	const int numModels = models.size();
 
-				modelsInFrame.push_back((*innerIter));
+	for (int mod = 0; mod < numModels; ++mod)
+	{
+		const int numMeshes = models[mod]->meshes.size();
+
+		for (int mes = 0; mes < numMeshes; ++mes)
+		{
+			if (frameFrustum.InsideFrustum(models[mod]->meshes[mes]->box))
+			{
+				const Vector3 dir = models[mod]->meshes[mes]->GetTransform()->GetPositionVector() -
+					camera->GetPosition();
+				models[mod]->meshes[mes]->SetCameraDistance(Vector3::Dot(dir, dir));
+
+				modelsInFrame.push_back(models[mod]->meshes[mes]);
 			}
 		}
 	}

@@ -7,6 +7,9 @@
     <Filter Include="Camera Control">
       <UniqueIdentifier>{75dab7a1-a31b-4f41-abc2-ba795a246927}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utilities">
+      <UniqueIdentifier>{f8d9509d-2349-49ec-8815-4b4f715a2173}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Subsystem.h">
@@ -15,15 +18,23 @@
     <ClInclude Include="CameraController.h">
       <Filter>Camera Control</Filter>
     </ClInclude>
-    <ClInclude Include="Util.h" />
-    <ClInclude Include="GLUtil.h" />
-    <ClInclude Include="GLConfig.h" />
+    <ClInclude Include="GLConfig.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="GLUtil.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Util.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Run.cpp" />
     <ClCompile Include="CameraController.cpp">
       <Filter>Camera Control</Filter>
     </ClCompile>
-    <ClCompile Include="GLConfig.cpp" />
+    <ClCompile Include="GLConfig.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

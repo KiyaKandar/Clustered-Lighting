@@ -4,7 +4,8 @@
 #include "../Game/GLUtil.h"
 
 const int KERNEL_SIZE = 64;
-const int NOISE_SIZE  = 16;
+const int RESOLUTION_SCALE_X = 640;
+const int RESOLUTION_SCALE_Y = 360;
 
 SSAO::SSAO(Camera* cam, AmbientTextures* ambientTextures, GBufferData* SGBuffer)
 {
@@ -18,6 +19,9 @@ SSAO::SSAO(Camera* cam, AmbientTextures* ambientTextures, GBufferData* SGBuffer)
 
 	ambientTextures->textures[GLConfig::SSAO_INDEX] = &ssaoColorBufferBlur;
 	ambientTextures->texUnits[GLConfig::SSAO_INDEX] = 3;
+
+	xSize = GLConfig::RESOLUTION.x / RESOLUTION_SCALE_X;
+	ySize = GLConfig::RESOLUTION.y / RESOLUTION_SCALE_Y;
 }
 
 void SSAO::LinkShaders()
@@ -44,7 +48,16 @@ void SSAO::LocateUniforms()
 	loc_gPosition	= glGetUniformLocation(SSAOCol->GetProgram(), "gPosition");
 	loc_gNormal		= glGetUniformLocation(SSAOCol->GetProgram(), "gNormal");
 	loc_texNoise	= glGetUniformLocation(SSAOCol->GetProgram(), "texNoise");
+
+	for (unsigned int i = 0; i < KERNEL_SIZE; ++i)
+	{
+		std::string uniform = "samples[" + std::to_string(i) + "]";
+		loc_kernel[i] = glGetUniformLocation(SSAOCol->GetProgram(), uniform.c_str());
+	}
+
 	loc_ssaoInput	= glGetUniformLocation(SSAOBlur->GetProgram(), "ssaoInput");
+	loc_xSize		= glGetUniformLocation(SSAOBlur->GetProgram(), "xSize");
+	loc_ySize		= glGetUniformLocation(SSAOBlur->GetProgram(), "ySize");
 }	
 
 void SSAO::Apply()
@@ -58,8 +71,8 @@ void SSAO::Apply()
 
 void SSAO::RegenerateShaders()
 {
-	SSAOCol		->Regenerate();
-	SSAOBlur	->Regenerate();
+	SSAOCol	->Regenerate();
+	SSAOBlur->Regenerate();
 }
 
 void SSAO::InitSSAOBuffers()
@@ -71,22 +84,14 @@ void SSAO::InitSSAOBuffers()
 
 	//SSAO color buffer
 	glGenTextures(1, &ssaoColorBuffer);
-	glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, GLConfig::RESOLUTION.x, GLConfig::RESOLUTION.y, 0, GL_RGB, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBuffer, 0);
+	GLUtil::CreateScreenTexture(ssaoColorBuffer, GL_RED, GL_RGB, GL_FLOAT, GL_NEAREST, 0, false);
 
 	GLUtil::VerifyBuffer("SSAO Frame", false);
 
 	//Blur stage
 	glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
 	glGenTextures(1, &ssaoColorBufferBlur);
-	glBindTexture(GL_TEXTURE_2D, ssaoColorBufferBlur);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, GLConfig::RESOLUTION.x, GLConfig::RESOLUTION.y, 0, GL_RGB, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBufferBlur, 0);
+	GLUtil::CreateScreenTexture(ssaoColorBufferBlur, GL_RED, GL_RGB, GL_FLOAT, GL_NEAREST, 0, false);
 
 	GLUtil::VerifyBuffer("Blur", false);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -118,8 +123,13 @@ void SSAO::GenerateNoiseTexture()
 	std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0);
 	std::default_random_engine generator;
 
+	int xSize = GLConfig::RESOLUTION.x / 640;
+	int ySize = GLConfig::RESOLUTION.y / 360;
+
+	int noiseSize = (xSize * 2) * (ySize * 2);
+
 	//Generate the texture
-	for (unsigned int i = 0; i < NOISE_SIZE; i++)
+	for (unsigned int i = 0; i < noiseSize; i++)
 	{
 		Vector3 noise(
 			randomFloats(generator) * 2.0 - 1.0,
@@ -131,7 +141,7 @@ void SSAO::GenerateNoiseTexture()
 
 	glGenTextures(1, &noiseTexture);
 	glBindTexture(GL_TEXTURE_2D, noiseTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, std::sqrt(NOISE_SIZE), std::sqrt(NOISE_SIZE), 0, GL_RGB, GL_FLOAT, &ssaoNoise[0]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, xSize * 2, ySize * 2, 0, GL_RGB, GL_FLOAT, &ssaoNoise[0]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -145,14 +155,11 @@ void SSAO::GenerateSSAOTex()
 
 	SetCurrentShader(SSAOCol);
 
-	////////////////////////////////////////////
-	//STOP USING SHADER SETVEC3 - SAVE LOCATIONS PRIOR
-	//Send kernel + rotation 
 	for (unsigned int i = 0; i < KERNEL_SIZE; ++i)
 	{
-		currentShader->SetVec3("samples[" + std::to_string(i) + "]", ssaoKernel[i]);
+		glUniform3fv(loc_kernel[i], 1, (float*)&ssaoKernel[i]);
 	}
-	/////////////////////////////////////////////
+
 	viewMatrix = camera->BuildViewMatrix();
 
 	//Basic uniforms
@@ -181,6 +188,9 @@ void SSAO::SSAOBlurTex()
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	SetCurrentShader(SSAOBlur);
+
+	glUniform1i(loc_xSize, xSize);
+	glUniform1i(loc_ySize, ySize);
 
 	glUniform1i(loc_ssaoInput, SSAO_TEX);
 	currentShader->ApplyTexture(SSAO_TEX, ssaoColorBuffer);

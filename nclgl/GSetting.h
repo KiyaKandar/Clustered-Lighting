@@ -13,6 +13,8 @@
 
 #include "../Game/GLConfig.h"
 
+#include <unordered_map>
+
 struct ShadowData
 {
 	int NUM_LIGHTS;

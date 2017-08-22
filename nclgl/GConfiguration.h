@@ -15,14 +15,9 @@ class Camera;
 class GConfiguration
 {
 public:
-	GConfiguration(Renderer* renderer, Camera* camera, Vector2 resolution = Vector2(800, 600));
+	GConfiguration(Renderer* renderer, Camera* camera, Vector2 resolution);
 
 	~GConfiguration();
-
-	std::vector<GSetting*>* GetAllSettings()
-	{
-		return &settings;
-	}
 
 	void InitialiseSettings();
 	void LinkToRenderer();
@@ -31,8 +26,6 @@ private:
 	Vector2		resolution;
 	Renderer*	renderer;
 	Camera*		camera;
-
-	std::vector<GSetting*> settings;
 
 	//Settings
 	Shadows* shadows;

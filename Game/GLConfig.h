@@ -18,6 +18,8 @@ public:
 	{
 		SSAO_INDEX
 	};
+	
+	static const int BLOOM_STRENGTH = 100;
 
 	static const int NUM_X_AXIS_TILES = 10;
 	static const int NUM_Y_AXIS_TILES = 10;

@@ -1,18 +1,13 @@
 #include "GConfiguration.h"
 
 #include "Renderer.h"
+#include "../Game/GLConfig.h"
 
 GConfiguration::GConfiguration(Renderer* renderer, Camera* camera, Vector2 resolution)
 {
 	this->resolution = resolution;
 	this->renderer	 = renderer;
 	this->camera	 = camera;
-
-	settings.push_back(shadows);
-	settings.push_back(SGBuffer);
-	settings.push_back(ssao);
-	settings.push_back(lighting);
-	settings.push_back(bloom);
 }
 
 GConfiguration::~GConfiguration()
@@ -32,7 +27,7 @@ void GConfiguration::InitialiseSettings()
 	ambTex->textures = new GLuint*[1];
 	ambTex->texUnits = new int[1];
 
-	shadows = new Shadows(5, renderer->GetAllLights(), renderer->GetModels());
+	shadows = new Shadows(GLConfig::SHADOW_LIGHTS, renderer->GetAllLights(), renderer->GetModels());
 	shadows->LinkShaders();
 	shadows->Initialise();
 
@@ -49,7 +44,7 @@ void GConfiguration::InitialiseSettings()
 	lighting->LinkShaders();
 	lighting->Initialise();
 
-	bloom = new Bloom(100);
+	bloom = new Bloom(GLConfig::BLOOM_STRENGTH);
 	bloom->LinkShaders();
 	bloom->Initialise();
 

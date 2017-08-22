@@ -22,6 +22,8 @@ public:
 		delete SSAOCol;
 		delete SSAOBlur;
 		delete SGBuffer;
+
+		//delete[] loc_kernel;
 	}
 
 	void LinkShaders();
@@ -72,6 +74,10 @@ private:
 	GLint loc_gNormal;
 	GLint loc_texNoise;
 	GLint loc_ssaoInput;
+	GLint loc_xSize;
+	GLint loc_ySize;
+
+	GLuint loc_kernel[64];
 
 	std::vector<Vector3> ssaoKernel;
 	std::vector<Vector3> ssaoNoise;
@@ -83,5 +89,8 @@ private:
 	//SSAO Shaders
 	Shader* SSAOCol;
 	Shader* SSAOBlur;
+
+	int xSize;
+	int ySize;
 };
 

@@ -50,8 +50,8 @@ public:
 	//If updating all basic uniforms is overkill.
 	static void UpdateResolutionUniforms(const GLuint& program)
 	{
-		glUniform1f(glGetUniformLocation(program, "resolutionX"), GLConfig::RESOLUTION.x);
-		glUniform1f(glGetUniformLocation(program, "resolutionY"), GLConfig::RESOLUTION.y);
+		glUniform1i(glGetUniformLocation(program, "resolutionX"), GLConfig::RESOLUTION.x);
+		glUniform1i(glGetUniformLocation(program, "resolutionY"), GLConfig::RESOLUTION.y);
 	}
 
 	/*
@@ -95,7 +95,7 @@ public:
 		{
 			std::cout << name + " - buffer not complete!" << "\n";
 		}
-		else
+		else if (successMsg)
 		{
 			std::cout << name + " - buffer intialised succesfully." << "\n";
 		}

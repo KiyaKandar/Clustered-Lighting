@@ -94,7 +94,8 @@ void GBuffer::FillGBuffer()
 	viewMatrix = camera->BuildViewMatrix();
 	UpdateShaderMatrices();
 
-	for (int i = 0; i < modelsInFrame->size(); ++i)
+	const int numModels = modelsInFrame->size();
+	for (int i = 0; i < numModels; ++i)
 	{
 		modelsInFrame->at(i)->Draw(*currentShader);
 	}

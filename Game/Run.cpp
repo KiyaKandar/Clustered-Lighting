@@ -12,15 +12,14 @@
 #include "../NCLGL/Light.h"
 #include "../NCLGL/GConfiguration.h"
 #include "Util.h"
+#include "GLConfig.h"
 
 void ApplyLightInput(Light* light, const Window& window);
 
 int main()
 {
-	Vector2 resolution(1280, 720);
-
 	//Initialise graphics objects
-	Window* window = new Window("CFL", resolution.x, resolution.y, false);
+	Window* window = new Window("CFL", GLConfig::RESOLUTION.x, GLConfig::RESOLUTION.y, false);
 	window->LockMouseToWindow(true);
 	window->ShowOSPointer(false);
 
@@ -35,7 +34,7 @@ int main()
 
 	CameraController* camControl = new CameraController(camera, window);
 
-	GConfiguration config(renderer, camera, resolution);
+	GConfiguration config(renderer, camera, GLConfig::RESOLUTION);
 	config.InitialiseSettings();
 	config.LinkToRenderer();
 
