@@ -121,6 +121,7 @@ void Renderer::Update(float deltatime)
 	UpdateScene(deltatime);
 
 	tiles->PrepareData(projMatrix, viewMatrix);
+	tiles->CullLights();
 	tiles->FillTilesGPU();
 
 	RenderScene();

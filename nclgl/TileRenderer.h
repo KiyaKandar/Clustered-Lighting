@@ -48,6 +48,9 @@ struct TileData
 
 struct ScreenSpaceData
 {
+	float indexes[10];
+	float padding[2];
+
 	Vector4 data[10];
 };
 
@@ -96,6 +99,7 @@ private:
 
 	int numLights;
 	int numTiles;
+	int numLightsInFrustum = 0;
 
 	Vector3 gridSize;
 	Vector3 gridDimensions;

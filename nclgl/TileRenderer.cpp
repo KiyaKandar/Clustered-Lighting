@@ -168,13 +168,24 @@ Tile TileRenderer::GenerateTile(Vector3 position, Vector3 dimensions) const
 
 void TileRenderer::CullLights()
 {
-	lightsInFrustrum.clear();
-
-	for (int l = 0; l < numLights; ++l)
+	//lightsInFrustrum.clear();
+	numLightsInFrustum = 0;
+	
+	for (int i = 0; i < numLights; ++i)
 	{
-		if (screenCube.SphereColliding(screenLightData[l]))
+		ssdata.data[i] = Vector4(0, 0, 0, 0);
+		ssdata.indexes[i] = -1;
+	}
+
+	for (int i = 0; i < numLights; ++i)
+	{
+		if (screenCube.SphereColliding(screenLightData[i]))
 		{
-			lightsInFrustrum.push_back(l);
+			//lightsInFrustrum.push_back(i);
+			ssdata.data[numLightsInFrustum] = screenLightData[i];
+			ssdata.indexes[numLightsInFrustum] = i;
+
+			++numLightsInFrustum;
 		}
 	}
 }
@@ -187,6 +198,7 @@ void TileRenderer::FillTilesGPU()
 	compute->UseProgram();
 
 	glUniform1i(loc_numZTiles, gridSize.z);
+	glUniform1i(glGetUniformLocation(compute->GetProgram(), "numLightsInFrustum"), numLightsInFrustum);
 
 	compute->Compute(Vector3(1, 1, 1));
 }
@@ -238,7 +250,8 @@ void TileRenderer::PrepareData(const Matrix4& projectionMatrix, const Matrix4& v
 		//Retrieve distance from camera to light + normalize.
 		float ndcz = clipz * w * 100;
 
-		//screenLightData[i] = Vector4(viewPos.x * w, viewPos.y * w, ndcz, lights[i]->GetRadius() * w);
-		ssdata.data[i] = Vector4(viewPos.x * w, viewPos.y * w, ndcz, lights[i]->GetRadius() * w);
+		Vector4 data(viewPos.x * w, viewPos.y * w, ndcz, lights[i]->GetRadius() * w);
+		screenLightData[i] = data;// Vector4(viewPos.x * w, viewPos.y * w, ndcz, lights[i]->GetRadius() * w);
+		//ssdata.data[i] = data;// Vector4(viewPos.x * w, viewPos.y * w, ndcz, lights[i]->GetRadius() * w);
 	}
 }

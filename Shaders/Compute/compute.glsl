@@ -4,6 +4,7 @@ const int numTiles = 1000;
 const int numLights = 10;
 
 uniform int numZTiles;
+uniform int numLightsInFrustum;
 
 layout(local_size_x = 10, local_size_y = 10, local_size_z = 10) in;
 
@@ -39,6 +40,9 @@ layout(std430, binding = 4) buffer CubePlanesBuffer
 
 layout(std430, binding = 5) buffer ScreenSpaceDataBuffer
 {
+	float indexes[10];
+	float padding[2];
+
 	vec4 data[];
 };
 
@@ -111,14 +115,14 @@ void main()
 
 	int intersections = 0;
 
-	for (int i = 0; i < numLights; i++)
+	for (int i = 0; i < numLightsInFrustum; i++)
 	{
 		bool colliding = SphereColliding(cubePlanes[index], data[i]);
 
 		if (colliding)
 		{
-		tileLights[index][intersections] = i;
-		intersections++;
+			tileLights[index][intersections] = int(indexes[i]);
+			intersections++;
 		}
 	}
 
