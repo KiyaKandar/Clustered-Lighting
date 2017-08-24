@@ -3,10 +3,11 @@
 const int numTiles = 1000;
 const int numLights = 100;
 
-uniform int numZTiles;
-uniform int numLightsInFrustum;
+uniform mat4 projectionMatrix;
+uniform mat4 projView;
+uniform vec4 cameraPos;
 
-layout(local_size_x = 10, local_size_y = 10, local_size_z = 10) in;
+layout(local_size_x = 20, local_size_y = 1, local_size_z = 1) in;
 
 struct Tile
 {
@@ -27,6 +28,23 @@ struct CubePlanes
 	vec4 positions[6];
 };
 
+struct LightData
+{
+	vec4 pos4;
+	vec4 lightColour;
+	float lightRadius;
+	float intensity;
+
+	float fpadding[2];
+};
+
+//Shared with lighting shader
+layout(std430, binding = 1) buffer LightDataBuffer
+{
+	LightData ldata[];
+};
+
+//Shared with compute shader
 layout (std430, binding = 3) buffer TileLightsBuffer
 {
 	int lightIndexes[numTiles];
@@ -42,9 +60,19 @@ layout(std430, binding = 5) buffer ScreenSpaceDataBuffer
 {
 	float indexes[100];
 	//float padding[9];
-	vec4 numLightsIn;
 
+	vec4 numLightsIn;
 	vec4 data[];
+};
+//
+//layout(std430, binding = 6) buffer LightModelMatricesBuffer
+//{
+//	mat4 modelMatrices[];
+//};
+
+layout(std430, binding = 7) buffer ScreenCubeBuffer
+{
+	CubePlanes screenCube;
 };
 
 layout(binding = 0) uniform atomic_uint count;
@@ -111,36 +139,47 @@ bool SphereColliding(CubePlanes cube, vec4 light)
 	return (SphereInside(cube, light) || SphereIntersecting(cube, light));
 }
 
+shared CubePlanes cube;// = screenCube;
+
 void main()
 {
-	uint index = gl_GlobalInvocationID.x + numZTiles *
-		(gl_GlobalInvocationID.y + numZTiles * gl_GlobalInvocationID.z);
+	//cube = screenCube;
+	//Shared variables.
+	//mat4 projView = projMatrix * viewMatrix;
+	vec4 defaultPos = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
-	int intersections = 0;
+	//Vector3 camPos = Vector3(viewMatrix.values[12], viewMatrix.values[13], viewMatrix.values[14]);
+	
+	//vec4 values = vec4(viewMatrix[0][3], viewMatrix[1][3], viewMatrix[2][3], 0);
+	
+	mat4 model;
+	model[0][3] = ldata[gl_GlobalInvocationID.x].pos4.x;
+	model[1][3] = ldata[gl_GlobalInvocationID.x].pos4.y;
+	model[2][3] = ldata[gl_GlobalInvocationID.x].pos4.z;
 
-	uint c = atomicCounter(count);
-	for (int i = 0; i < c; i++)
+	vec4 clip = projectionMatrix * cameraPos;
+	float clipz = clip.z;
+
+	//Fill data.
+	vec4 viewPos = projView * model * defaultPos;
+
+	//Store reciprocal to avoid use of division below.
+	float w = 1 / viewPos.w;
+
+	//Retrieve distance from camera to light + normalize.
+	float ndcz = clipz * w * 100;
+
+	vec4 result = vec4(viewPos.x * w, viewPos.y * w, ndcz, ldata[gl_GlobalInvocationID.x].lightRadius * w);
+
+	memoryBarrier();
+	bool colliding = SphereColliding(screenCube, result);
+
+	if (colliding)
 	{
-		bool colliding = SphereColliding(cubePlanes[index], data[i]);
+		uint currentLightCount = atomicCounterIncrement(count);
 
-		if (colliding)
-		{
-			tileLights[index][intersections] = int(indexes[i]);
-			intersections++;
-		}
+		data[currentLightCount] = result;
+		indexes[currentLightCount] = gl_GlobalInvocationID.x;
 	}
-
-	//for (int i = 0; i < numLights; i++)
-	//{
-	//	bool colliding = SphereColliding(cubePlanes[index], data[i]);
-
-	//	if (colliding)
-	//	{
-	//		tileLights[index][intersections] = i;
-	//		intersections++;
-	//	}
-	//}
-
-	lightIndexes[index] = intersections;
 }
 

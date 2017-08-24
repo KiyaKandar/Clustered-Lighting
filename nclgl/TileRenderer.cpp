@@ -41,6 +41,9 @@ TileRenderer::TileRenderer(Light** lights, int numLights, int numXTiles, int num
 	compute->LinkProgram();
 	loc_numZTiles= glGetUniformLocation(compute->GetProgram(), "numZTiles");
 
+	dataPrep = new ComputeShader(SHADERDIR"/Compute/dataPrep.glsl", true);
+	dataPrep->LinkProgram();
+
 	tileData = new TileData();
 
 	InitGridSSBO();
@@ -58,12 +61,33 @@ TileRenderer::TileRenderer()
 
 	compute = new ComputeShader(SHADERDIR"/Compute/compute.glsl", true);
 	compute->LinkProgram();
+
+	dataPrep = new ComputeShader(SHADERDIR"/Compute/dataPrep.glsl", true);
+	dataPrep->LinkProgram();
+
 	InitGridSSBO();
 }
 
 void TileRenderer::GenerateGrid() 
 {
-	screenCube = Cube(Vector3(-1, -1, 0), Vector3(2, 2, 1));
+	Vector3 screenPos(-1, -1, 0);
+	Vector3 screenDimension(2, 2, 1);
+
+	screenCube = Cube(screenPos, screenDimension);
+
+	screenPlanes.faces[0] = Vector4(LEFT_NORMAL.x, LEFT_NORMAL.y, LEFT_NORMAL.z, screenPos.Length());
+	screenPlanes.faces[1] = Vector4(RIGHT_NORMAL.x, RIGHT_NORMAL.y, RIGHT_NORMAL.z, (screenPos + Vector3(screenDimension.x, 0, 0)).Length());
+	screenPlanes.faces[2] = Vector4(FRONT_NORMAL.x, FRONT_NORMAL.y, FRONT_NORMAL.z, (screenPos + Vector3(0, 0, screenDimension.z)).Length());
+	screenPlanes.faces[3] = Vector4(BACK_NORMAL.x, BACK_NORMAL.y, BACK_NORMAL.z, screenPos.Length());
+	screenPlanes.faces[4] = Vector4(TOP_NORMAL.x, TOP_NORMAL.y, TOP_NORMAL.z, screenPos.Length());
+	screenPlanes.faces[5] = Vector4(BOTTOM_NORMAL.x, BOTTOM_NORMAL.y, BOTTOM_NORMAL.z, (screenPos + Vector3(0, screenDimension.y, 0)).Length());
+
+	screenPlanes.positions[0] = Vector4(screenPos.x, screenPos.y, screenPos.z, 0);
+	screenPlanes.positions[1] = Vector4(screenPos.x + screenDimension.x, screenPos.y, screenPos.z, 0);
+	screenPlanes.positions[2] = Vector4(screenPos.x, screenPos.y, screenPos.z + screenDimension.z, 0);
+	screenPlanes.positions[3] = Vector4(screenPos.x, screenPos.y, screenPos.z, 0);
+	screenPlanes.positions[4] = Vector4(screenPos.x, screenPos.y, screenPos.z, 0);
+	screenPlanes.positions[5] = Vector4(screenPos.x, screenPos.y + screenDimension.y, screenPos.z, 0);
 
 	float xOffset = 0;
 	float yOffset = 0;
@@ -149,6 +173,20 @@ void TileRenderer::InitGridSSBO()
 
 	screenSpaceDataSSBO = GLUtil::InitSSBO(1, 5, screenSpaceDataSSBO,
 		sizeof(ScreenSpaceData), &ssdata, GL_STATIC_COPY);
+/*
+	modelMatricesSSBO = GLUtil::InitSSBO(1, 6, modelMatricesSSBO,
+		sizeof(lightModelMatrices), &lightModelMatrices, GL_STATIC_COPY);*/
+
+	screenCubeSSBO = GLUtil::InitSSBO(1, 7, screenCubeSSBO,
+		sizeof(CubePlanes), &screenPlanes , GL_STATIC_COPY);
+
+	glGenBuffers(1, &countBuffer);
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, countBuffer);
+	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint), NULL, GL_DYNAMIC_DRAW);
+	//glBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint), &count);
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+
+	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, countBuffer);
 }
 
 Tile TileRenderer::GenerateTile(Vector3 position, Vector3 dimensions) const
@@ -188,11 +226,14 @@ void TileRenderer::CullLights()
 			++numLightsInFrustum;
 		}
 	}
+
+	ssdata.numLightsIn.x = numLightsInFrustum;
 }
 
 void TileRenderer::FillTilesGPU()
 {
-	GLUtil::RebufferData(GL_SHADER_STORAGE_BUFFER, screenSpaceDataSSBO, 0, sizeof(ScreenSpaceData), &ssdata);
+	//glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+	//GLUtil::RebufferData(GL_SHADER_STORAGE_BUFFER, screenSpaceDataSSBO, 0, sizeof(ScreenSpaceData), &ssdata);
 
 	//Writes to the shared buffer used in lighting pass
 	compute->UseProgram();
@@ -201,6 +242,9 @@ void TileRenderer::FillTilesGPU()
 	glUniform1i(glGetUniformLocation(compute->GetProgram(), "numLightsInFrustum"), numLightsInFrustum);
 
 	compute->Compute(Vector3(1, 1, 1));
+
+	GLuint reset[1] = { 0 };
+	GLUtil::RebufferData(GL_ATOMIC_COUNTER_BUFFER, countBuffer, 0, sizeof(GLuint), reset);
 }
 
 void TileRenderer::FillTilesCPU(GLuint buffer)
@@ -232,26 +276,48 @@ void TileRenderer::FillTilesCPU(GLuint buffer)
 
 void TileRenderer::PrepareData(const Matrix4& projectionMatrix, const Matrix4& viewMatrix)
 {
-	//Shared variables.
+	////Shared variables.
 	Matrix4 projView = projectionMatrix * viewMatrix;
-	Vector4 defaultPos(0.0f, 0.0f, 0.0f, 1.0f);
+	//Vector4 defaultPos(0.0f, 0.0f, 0.0f, 1.0f);
 
-	Vector3 camPos = Vector3(viewMatrix.values[12], viewMatrix.values[13], viewMatrix.values[14]);
-	float clipz = (projectionMatrix * camPos).z;
+	Vector4 camPos = Vector4(viewMatrix.values[12], viewMatrix.values[13], viewMatrix.values[14], 0);
+	//float clipz = (projectionMatrix * camPos).z;
 
-	//Fill data.
-	for (int i = 0; i < numLights; ++i)
-	{
-		Vector4 viewPos = projView * lightModelMatrices[i] * defaultPos;
+	////Fill data.
+	//for (int i = 0; i < numLights; ++i)
+	//{
+	//	Vector4 viewPos = projView * lightModelMatrices[i] * defaultPos;
 
-		//Store reciprocal to avoid use of division below.
-		float w = 1 / viewPos.w;
+	//	//Store reciprocal to avoid use of division below.
+	//	float w = 1 / viewPos.w;
 
-		//Retrieve distance from camera to light + normalize.
-		float ndcz = clipz * w * 100;
+	//	//Retrieve distance from camera to light + normalize.
+	//	float ndcz = clipz * w * 100;
 
-		Vector4 data(viewPos.x * w, viewPos.y * w, ndcz, lights[i]->GetRadius() * w);
-		screenLightData[i] = data;// Vector4(viewPos.x * w, viewPos.y * w, ndcz, lights[i]->GetRadius() * w);
-		//ssdata.data[i] = data;// Vector4(viewPos.x * w, viewPos.y * w, ndcz, lights[i]->GetRadius() * w);
-	}
+	//	Vector4 data(viewPos.x * w, viewPos.y * w, ndcz, lights[i]->GetRadius() * w);
+	//	screenLightData[i] = data;// Vector4(viewPos.x * w, viewPos.y * w, ndcz, lights[i]->GetRadius() * w);
+	//	//ssdata.data[i] = data;// Vector4(viewPos.x * w, viewPos.y * w, ndcz, lights[i]->GetRadius() * w);
+	//}
+
+	//GLUtil::RebufferData(GL_ATOMIC_COUNTER_BUFFER, countBuffer, 0, sizeof(GLuint), 0);
+
+	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+	glMemoryBarrier(GL_ATOMIC_COUNTER_BARRIER_BIT);
+	dataPrep->UseProgram();
+
+	//Uniforms
+	glUniformMatrix4fv(glGetUniformLocation(dataPrep->GetProgram(), "projectionMatrix"),
+		1, false, (float*)&projectionMatrix);
+
+	glUniformMatrix4fv(glGetUniformLocation(dataPrep->GetProgram(), "projView"), 
+		1, false, (float*)&projView);
+
+	float vec4[4] = { camPos.x, camPos.y, camPos.z, 0 };
+	glUniform4fv(glGetUniformLocation(dataPrep->GetProgram(), "cameraPos"),
+		1, vec4);
+
+	glMemoryBarrier(GL_UNIFORM_BARRIER_BIT);
+
+	dataPrep->Compute(Vector3(5, 1, 1));
+	glMemoryBarrier(GL_ATOMIC_COUNTER_BARRIER_BIT);
 }

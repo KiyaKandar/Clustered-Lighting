@@ -4,7 +4,7 @@ layout(location = 0) out vec4 FragColor;
 layout(location = 1) out vec4 BrightnessCol;
 
 const int numTiles = 1000;
-const int numLights = 10;
+const int numLights = 100;
 
 uniform int numShadowCastingLights;
 
@@ -80,9 +80,9 @@ void main(void){
 
 	int xIndex = int(xCoord * numXTiles);
 	int yIndex = int(yCoord * numYTiles);
-	int zIndex = int(zCoord * numLights);
+	int zIndex = int(zCoord * numXTiles);
 
-	int tile = xIndex + numXTiles * (yIndex + numLights * zIndex);// (yIndex * (numYTiles + 10)) + (xIndex * 10) + zIndex;
+	int tile = xIndex + numXTiles * (yIndex + numXTiles * zIndex);// (yIndex * (numYTiles + 10)) + (xIndex * 10) + zIndex;
 
 	//Default value
 	vec3 lightResult = vec3(0.0, 0.0, 0.0);

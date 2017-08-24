@@ -13,6 +13,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Profiler", "Profiler\Profil
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nclgl", "nclgl\nclgl.vcxproj", "{98D6B51B-CB0A-4389-ADC6-24082B967C3F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7AE7E686-9571-4A09-9C9D-6A3F6F4ADBE9}"
+	ProjectSection(SolutionItems) = preProject
+		Shaders\Compute\compute.glsl = Shaders\Compute\compute.glsl
+		Shaders\Compute\dataPrep.glsl = Shaders\Compute\dataPrep.glsl
+		Shaders\SSAO\ssao_lightingfrag.glsl = Shaders\SSAO\ssao_lightingfrag.glsl
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM

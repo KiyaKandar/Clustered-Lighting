@@ -23,9 +23,9 @@ public:
 	template <class T>
 	static GLuint RebufferData(GLenum target, GLuint bufferID, size_t offset, size_t size, T* data)
 	{
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufferID);
-		glBufferSubData(GL_SHADER_STORAGE_BUFFER, offset, size, data);
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+		glBindBuffer(target, bufferID);
+		glBufferSubData(target, offset, size, data);
+		glBindBuffer(target, 0);
 
 		return bufferID;
 	}

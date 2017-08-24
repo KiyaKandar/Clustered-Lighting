@@ -19,7 +19,7 @@
 
 #define DEBUG_LIGHTS
 
-const int NUM_LIGHTS = 10;
+const int NUM_LIGHTS = 100;
 const int SHADOW_SIZE = 4096;
 const int RESX = 1280;
 const int RESY = 720;

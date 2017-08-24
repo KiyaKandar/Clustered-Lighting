@@ -20,7 +20,37 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 
 	for (int i = 5; i < 10; i++)
 	{
-		lights[i] = new Light(Vector3(-3000 + (500 * i), 500, 450), Vector4(1, 0, 0, 1), 400.0f, 3.0f);
+		lights[i] = new Light(Vector3(-3500 + (500 * i), 500, 450), Vector4(1, 0, 0, 1), 270.0f, 3.0f);
+	}
+
+	for (int i = 10; i < 15; i++)
+	{
+		lights[i] = new Light(Vector3(-3500 + (500 * (i - 5)), 500, -450), Vector4(0, 1, 0, 1), 270.0f, 3.0f);
+	}
+
+	for (int i = 15; i < 20; i++)
+	{
+		lights[i] = new Light(Vector3(-3500 + (500 * (i - 10)), 100, 450), Vector4(0, 0, 1, 1), 270.0f, 3.0f);
+	}
+
+	for (int i = 20; i < 25; i++)
+	{
+		lights[i] = new Light(Vector3(-3500 + (500 * (i - 15)), 100, -450), Vector4(1, 1, 0, 1), 270.0f, 3.0f);
+	}
+
+	for (int i = 25; i < 50; i++)
+	{
+		lights[i] = new Light(Vector3(-1300 + (75 * (i - 20)), 1000, 150), Vector4(1, 0, 1, 1), 75.0f, 3.0f);
+	}
+
+	for (int i = 50; i < 75; i++)
+	{
+		lights[i] = new Light(Vector3(-1300 + (75 * (i - 45)), 1000, -200), Vector4(0, 1, 1, 1), 75.0f, 3.0f);
+	}
+
+	for (int i = 75; i < 100; i++)
+	{
+		lights[i] = new Light(Vector3(-1300 + (75 * (i - 70)), 50, 150), Vector4(1, 0.5, 0, 1), 100.0f, 2.0f);
 	}
 
 	//Initialise text for the profiler
@@ -121,7 +151,7 @@ void Renderer::Update(float deltatime)
 	UpdateScene(deltatime);
 
 	tiles->PrepareData(projMatrix, viewMatrix);
-	tiles->CullLights();
+	//tiles->CullLights();
 	tiles->FillTilesGPU();
 
 	RenderScene();
@@ -131,6 +161,7 @@ void Renderer::Update(float deltatime)
 
 void Renderer::RenderScene()
 {
+	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 	BuildMeshLists();
 	SortMeshLists();
 

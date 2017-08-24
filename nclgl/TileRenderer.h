@@ -43,15 +43,16 @@ struct CubePlanes
 struct TileData 
 {
 	int lightIndexes[1000];
-	int tileLights[1000][10];
+	int tileLights[1000][100];
 };
 
 struct ScreenSpaceData
 {
-	float indexes[10];
-	float padding[2];
+	float indexes[100];
+	//float padding[9];
+	Vector4 numLightsIn;
 
-	Vector4 data[10];
+	Vector4 data[100];
 };
 
 class TileRenderer
@@ -115,16 +116,23 @@ private:
 
 	std::vector<int> lightsInFrustrum;
 
-	Vector4 screenLightData[10];
+	Vector4 screenLightData[100];
 	ScreenSpaceData ssdata;
-	Matrix4 lightModelMatrices[10];
+	Matrix4 lightModelMatrices[100];
 
 	ComputeShader* compute;
+	ComputeShader* dataPrep;
 
 	//SSBO Stuff
 	GLuint tileDataSSBO;
 	GLuint gridPlanesSSBO;
 	GLuint screenSpaceDataSSBO;
+	GLuint modelMatricesSSBO;
+	GLuint screenCubeSSBO;
+
+	GLuint countBuffer;
+	GLuint count;
+	CubePlanes screenPlanes;
 
 	//Uniform location
 	GLint loc_numZTiles;
