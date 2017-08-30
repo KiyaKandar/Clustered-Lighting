@@ -85,13 +85,18 @@ public:
 	void GenerateGrid();
 	void InitGridSSBO();
 
-	void PrepareData(const Matrix4& projectionMatrix, const Matrix4& viewMatrix);
-	void CullLights();
+	void AllocateLightsCPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, GLuint buffer);
+	void AllocateLightsGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix);
+	
+	ComputeShader* dataPrep;
+private:
+	void PrepareDataCPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix);
+	void PrepareDataGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix);
 
 	void FillTilesGPU();
 	void FillTilesCPU(GLuint buffer);
 
-private:
+	void CullLights();
 	Tile GenerateTile(Vector3 position, Vector3 dimensions) const;
 
 	Light** lights;
@@ -121,7 +126,6 @@ private:
 	Matrix4 lightModelMatrices[100];
 
 	ComputeShader* compute;
-	ComputeShader* dataPrep;
 
 	//SSBO Stuff
 	GLuint tileDataSSBO;
@@ -135,6 +139,9 @@ private:
 	CubePlanes screenPlanes;
 
 	//Uniform location
-	GLint loc_numZTiles;
+	GLuint loc_numZTiles;
+	GLuint loc_projMatrix;
+	GLuint loc_projView;
+	GLuint loc_cameraPos;
 };
 

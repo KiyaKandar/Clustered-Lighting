@@ -130,17 +130,6 @@ void main()
 		}
 	}
 
-	//for (int i = 0; i < numLights; i++)
-	//{
-	//	bool colliding = SphereColliding(cubePlanes[index], data[i]);
-
-	//	if (colliding)
-	//	{
-	//		tileLights[index][intersections] = i;
-	//		intersections++;
-	//	}
-	//}
-
 	lightIndexes[index] = intersections;
 }
 

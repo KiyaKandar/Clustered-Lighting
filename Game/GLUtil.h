@@ -21,7 +21,7 @@ public:
 	}
 
 	template <class T>
-	static GLuint RebufferData(GLenum target, GLuint bufferID, size_t offset, size_t size, T* data)
+	static GLuint RebufferData(const GLenum& target, const GLuint& bufferID, const size_t& offset, const size_t& size, const T* data)
 	{
 		glBindBuffer(target, bufferID);
 		glBufferSubData(target, offset, size, data);

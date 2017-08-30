@@ -150,9 +150,13 @@ void Renderer::Update(float deltatime)
 
 	UpdateScene(deltatime);
 
-	tiles->PrepareData(projMatrix, viewMatrix);
-	//tiles->CullLights();
-	tiles->FillTilesGPU();
+	//tiles->AllocateLightsGPU(projMatrix, viewMatrix);
+
+	tiles->AllocateLightsCPU(projMatrix, viewMatrix, tilelightssssbo);
+	//tileData = tiles->GetTileData();
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, tilelightssssbo);
+	//glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(TileData), tileData);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 	RenderScene();
 
@@ -231,6 +235,9 @@ void Renderer::RelinkShaders()
 		component->RegenerateShaders();
 		component->LinkShaders();
 	}
+
+	tiles->dataPrep->Regenerate();
+	tiles->dataPrep->LinkProgram();
 }
 
 void Renderer::DrawTextBuffer()

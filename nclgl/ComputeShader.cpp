@@ -22,6 +22,19 @@ ComputeShader::~ComputeShader()
 	glDeleteProgram(program);
 }
 
+void ComputeShader::Regenerate() {
+	program = glCreateProgram();
+
+	object[0] = GenerateShader(compute);
+
+	if (!compute.empty()) {
+		object[0] = GenerateShader(compute);
+		glAttachShader(program, object[0]);
+	}
+
+	glAttachShader(program, object[0]);
+}
+
 void ComputeShader::UseProgram()
 {
 	glUseProgram(program);

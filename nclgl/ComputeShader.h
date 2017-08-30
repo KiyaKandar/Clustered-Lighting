@@ -16,6 +16,7 @@ public:
 
 	void Compute(Vector3 workGroups);
 
+	void Regenerate();
 protected:
 	bool	LoadShaderFile(string from, string & into);
 	GLuint	GenerateShader(string from);

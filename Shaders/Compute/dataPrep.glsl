@@ -7,7 +7,7 @@ uniform mat4 projectionMatrix;
 uniform mat4 projView;
 uniform vec4 cameraPos;
 
-layout(local_size_x = 20, local_size_y = 1, local_size_z = 1) in;
+layout(local_size_x = 50, local_size_y = 1, local_size_z = 1) in;
 
 struct Tile
 {
@@ -64,15 +64,10 @@ layout(std430, binding = 5) buffer ScreenSpaceDataBuffer
 	vec4 numLightsIn;
 	vec4 data[];
 };
-//
-//layout(std430, binding = 6) buffer LightModelMatricesBuffer
-//{
-//	mat4 modelMatrices[];
-//};
 
-layout(std430, binding = 7) buffer ScreenCubeBuffer
+layout(std430, binding = 6) buffer ScreenCubeBuffer
 {
-	CubePlanes screenCube;
+	CubePlanes screenCube1;
 };
 
 layout(binding = 0) uniform atomic_uint count;
@@ -139,47 +134,85 @@ bool SphereColliding(CubePlanes cube, vec4 light)
 	return (SphereInside(cube, light) || SphereIntersecting(cube, light));
 }
 
-shared CubePlanes cube;// = screenCube;
+float Length(vec3 v) 
+{
+	return sqrt((v.x*v.x) + (v.y*v.y) + (v.z*v.z));
+}
+
+const vec4 defaultPos = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+vec3 LEFT_NORMAL = vec3(-1, 0, 0);
+vec3 FRONT_NORMAL = vec3(0, 0, -1);
+vec3 RIGHT_NORMAL = vec3(1, 0, 0);
+vec3 BACK_NORMAL = vec3(0, 0, 1);
+vec3 TOP_NORMAL = vec3(0, 1, 0);
+vec3 BOTTOM_NORMAL = vec3(0, -1, 0);
+
+vec3 screenPos = vec3(-1, -1, 0);
+vec3 screenDimension = vec3(2, 2, 1);
+
+vec4 splanesf[6] = vec4[6](
+	vec4(LEFT_NORMAL.x, LEFT_NORMAL.y, LEFT_NORMAL.z, Length(screenPos)),
+	vec4(RIGHT_NORMAL.x, RIGHT_NORMAL.y, RIGHT_NORMAL.z, Length(screenPos + vec3(screenDimension.x, 0, 0))),
+	vec4(FRONT_NORMAL.x, FRONT_NORMAL.y, FRONT_NORMAL.z, Length(screenPos + vec3(0, 0, screenDimension.z))),
+	vec4(BACK_NORMAL.x, BACK_NORMAL.y, BACK_NORMAL.z, Length(screenPos)),
+	vec4(TOP_NORMAL.x, TOP_NORMAL.y, TOP_NORMAL.z, Length(screenPos)),
+	vec4(BOTTOM_NORMAL.x, BOTTOM_NORMAL.y, BOTTOM_NORMAL.z, Length(screenPos + vec3(0, screenDimension.y, 0)))
+	);
+
+vec4 splanesp[6] = vec4[6](
+	vec4(screenPos.x, screenPos.y, screenPos.z, 0),
+	vec4(screenPos.x + screenDimension.x, screenPos.y, screenPos.z, 0),
+	vec4(screenPos.x, screenPos.y, screenPos.z + screenDimension.z, 0),
+	vec4(screenPos.x, screenPos.y, screenPos.z, 0),
+	vec4(screenPos.x, screenPos.y, screenPos.z, 0),
+	vec4(screenPos.x, screenPos.y + screenDimension.y, screenPos.z, 0)
+	);
+
+CubePlanes screenCube = CubePlanes(splanesf, splanesp);
 
 void main()
 {
-	//cube = screenCube;
-	//Shared variables.
-	//mat4 projView = projMatrix * viewMatrix;
-	vec4 defaultPos = vec4(0.0f, 0.0f, 0.0f, 1.0f);
-
-	//Vector3 camPos = Vector3(viewMatrix.values[12], viewMatrix.values[13], viewMatrix.values[14]);
-	
-	//vec4 values = vec4(viewMatrix[0][3], viewMatrix[1][3], viewMatrix[2][3], 0);
-	
+	//Create a model matrix for the light.
+	//Translate to light position.
 	mat4 model;
 	model[0][3] = ldata[gl_GlobalInvocationID.x].pos4.x;
 	model[1][3] = ldata[gl_GlobalInvocationID.x].pos4.y;
 	model[2][3] = ldata[gl_GlobalInvocationID.x].pos4.z;
 
+	//move to screenspace.
 	vec4 clip = projectionMatrix * cameraPos;
 	float clipz = clip.z;
 
-	//Fill data.
 	vec4 viewPos = projView * model * defaultPos;
 
 	//Store reciprocal to avoid use of division below.
 	float w = 1 / viewPos.w;
 
 	//Retrieve distance from camera to light + normalize.
-	float ndcz = clipz * w * 100;
+	float ndcz = clipz * w;// *100;
 
+	//Final screenspace data.
 	vec4 result = vec4(viewPos.x * w, viewPos.y * w, ndcz, ldata[gl_GlobalInvocationID.x].lightRadius * w);
+	
+	//Synchronise tor read screencube SSBO
+	//memoryBarrier();
+	//bool colliding = SphereColliding(screenCube, result);
 
-	memoryBarrier();
-	bool colliding = SphereColliding(screenCube, result);
 
-	if (colliding)
+	//If light affects any clusters on screen, send to next shader for allocation, 
+	//else cull.
+	if (SphereColliding(screenCube, result))
 	{
+		//memoryBarrier();
 		uint currentLightCount = atomicCounterIncrement(count);
 
+		//Write to shared SSBO
 		data[currentLightCount] = result;
+
 		indexes[currentLightCount] = gl_GlobalInvocationID.x;
 	}
+
+	//barrier();
 }
 
