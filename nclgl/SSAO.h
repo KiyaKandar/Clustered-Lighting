@@ -22,8 +22,6 @@ public:
 		delete SSAOCol;
 		delete SSAOBlur;
 		delete SGBuffer;
-
-		//delete[] loc_kernel;
 	}
 
 	void LinkShaders();

@@ -40,7 +40,7 @@ public:
 
 	GSetting()
 	{
-		projMatrix = GLConfig::SHARED_PROJ_MATRIX;//Matrix4::Perspective(nearPlane, farPlane, (float)resolution.x / (float)resolution.y, fov);
+		projMatrix = GLConfig::SHARED_PROJ_MATRIX;
 	}
 
 	virtual ~GSetting() {}

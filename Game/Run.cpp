@@ -18,7 +18,6 @@ void ApplyLightInput(Light* light, const Window& window);
 
 int main()
 {
-	//Initialise graphics objects
 	Window* window = new Window("CFL", GLConfig::RESOLUTION.x, GLConfig::RESOLUTION.y, false);
 	window->LockMouseToWindow(true);
 	window->ShowOSPointer(false);
@@ -26,9 +25,11 @@ int main()
 	Camera* camera = new Camera(0, 0, Vector3(900, 600, 100));
 	Renderer* renderer = new Renderer(*window, camera);
 
-	if (!renderer->HasInitialised() || !window->HasInitialised()) return -1;
+	if (!renderer->HasInitialised() || !window->HasInitialised())
+	{
+		return -1;
+	}
 
-	//Set up any timers we want displayed on screen...
 	Profiler* profiler = new Profiler(renderer, window, 1);
 	profiler->AddSubSystemTimer("Renderer", &renderer->updateTimer);
 
@@ -56,7 +57,6 @@ int main()
 	delete profiler;
 	delete camControl;
 
-	//Done. GG.
     return 0;
 }
 

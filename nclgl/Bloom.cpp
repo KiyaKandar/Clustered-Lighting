@@ -11,8 +11,8 @@ Bloom::Bloom(int strength)
 {
 	blurStrength = strength;
 
-	blurShader		= new Shader(SHADERDIR"/Bloom/blurvert.glsl",		SHADERDIR"/Bloom/blurfrag.glsl");
-	combineShader	= new Shader(SHADERDIR"/Bloom/combinevert.glsl",	SHADERDIR"/Bloom/combinefrag.glsl");
+	blurShader = new Shader(SHADERDIR"/Bloom/blurvert.glsl", SHADERDIR"/Bloom/blurfrag.glsl");
+	combineShader = new Shader(SHADERDIR"/Bloom/combinevert.glsl", SHADERDIR"/Bloom/combinefrag.glsl");
 }
 
 Bloom::~Bloom()
@@ -59,7 +59,7 @@ void Bloom::CreateTexture()
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, GLConfig::RESOLUTION.x, GLConfig::RESOLUTION.y);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
 
-	// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
+	//Tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
 	glDrawBuffers(2, attachments);
 
 	GLUtil::VerifyBuffer("RBO DEPTH", false);
@@ -85,19 +85,18 @@ void Bloom::InitialiseBlur()
 
 void Bloom::LocateUniforms() 
 {
-	loc_horizontal	= glGetUniformLocation(blurShader->GetProgram(),	"horizontal");
-	loc_image		= glGetUniformLocation(blurShader->GetProgram(),	"image");
+	loc_horizontal = glGetUniformLocation(blurShader->GetProgram(),	"horizontal");
+	loc_image = glGetUniformLocation(blurShader->GetProgram(),	"image");
 
-
-	loc_scene		= glGetUniformLocation(combineShader->GetProgram(), "scene");
-	loc_bloomBlur	= glGetUniformLocation(combineShader->GetProgram(), "bloomBlur");
+	loc_scene = glGetUniformLocation(combineShader->GetProgram(), "scene");
+	loc_bloomBlur = glGetUniformLocation(combineShader->GetProgram(), "bloomBlur");
 }
 
 void Bloom::Apply()
 {
 	glEnable(GL_DEPTH_TEST);
 
-	horizontal		= true;
+	horizontal = true;
 	first_iteration = true;
 
 	ApplyBlur();

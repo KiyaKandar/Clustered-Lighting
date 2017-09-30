@@ -97,10 +97,6 @@ Renderer::~Renderer(void)
 	}
 
 	delete tiles;
-	//delete basicFont;/*
-	//delete textShader;
-	//delete sceneShader;
-	//delete shadowShader;*/
 }
 
 void Renderer::InitDebugLights() {
@@ -139,7 +135,6 @@ void Renderer::InitLightSSBO()
 
 void Renderer::Update(float deltatime)
 {
-	//Util::ClearGLErrorStack();
 	updateTimer.StartTimer();
 
 	if (wparent->GetKeyboard()->KeyTriggered(KEYBOARD_P)) 
@@ -154,18 +149,15 @@ void Renderer::Update(float deltatime)
 
 	UpdateScene(deltatime);
 
-	//tiles->AllocateLightsGPU(projMatrix, viewMatrix, camera->GetPosition());
+	tiles->AllocateLightsGPU(projMatrix, viewMatrix, camera->GetPosition());
 
 	//projMatrix = Matrix4::Perspective(1.0f, 15000.0f, (float)width / (float)height, 45.0f);
-	tiles->AllocateLightsCPU(projMatrix, viewMatrix, tilelightssssbo, camera->GetPosition());
+	//tiles->AllocateLightsCPU(projMatrix, viewMatrix, tilelightssssbo, camera->GetPosition());
 
-	tileData = tiles->GetTileData();
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, tilelightssssbo);
-	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(TileData), tileData);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-
-	//glMemoryBarrier(GL_ALL_BARRIER_BITS);
+	//tileData = tiles->GetTileData();
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, tilelightssssbo);
+	//glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(TileData), tileData);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 	RenderScene();
 

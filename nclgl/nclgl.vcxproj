@@ -29,6 +29,7 @@
     <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="GConfiguration.cpp" />
+    <ClCompile Include="GridUtility.cpp" />
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Matrix4.cpp" />
@@ -62,6 +63,7 @@
     <ClInclude Include="GameTimer.h" />
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="GConfiguration.h" />
+    <ClInclude Include="GridUtility.h" />
     <ClInclude Include="GSetting.h" />
     <ClInclude Include="InputDevice.h" />
     <ClInclude Include="Keyboard.h" />

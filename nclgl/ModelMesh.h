@@ -35,7 +35,8 @@ class ModelMesh
 public:
 	ModelMesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices,
 		std::vector<Texture> textures, std::vector<Texture> heights, BoundingBox AABB);
-	~ModelMesh() {}
+	~ModelMesh()
+	{}
 
 	void Draw(Shader& shader);
 	void DrawShadow(Shader& shader); //Dont bother binding textures.
@@ -77,10 +78,10 @@ public:
 	}
 
 	//Mesh Data
-	std::vector<Vertex>			vertices;
-	std::vector<unsigned int>	indices;
-	std::vector<Texture>		textures;
-	std::vector<Texture>		heights;
+	std::vector<Vertex> vertices;
+	std::vector<unsigned int> indices;
+	std::vector<Texture> textures;
+	std::vector<Texture> heights;
 
 	BoundingBox box;
 private:
