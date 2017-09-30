@@ -47,6 +47,7 @@
     <ClCompile Include="Shadows.cpp" />
     <ClCompile Include="SSAO.cpp" />
     <ClCompile Include="TextMesh.cpp" />
+    <ClCompile Include="TextRenderer.cpp" />
     <ClCompile Include="TileRenderer.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
@@ -84,6 +85,7 @@
     <ClInclude Include="SSAO.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="TextMesh.h" />
+    <ClInclude Include="TextRenderer.h" />
     <ClInclude Include="TileRenderer.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="Vector3.h" />

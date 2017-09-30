@@ -89,6 +89,7 @@
       <Filter>Rendering</Filter>
     </ClCompile>
     <ClCompile Include="GridUtility.cpp" />
+    <ClCompile Include="TextRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Text.h">
@@ -203,6 +204,7 @@
       <Filter>Rendering</Filter>
     </ClInclude>
     <ClInclude Include="GridUtility.h" />
+    <ClInclude Include="TextRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Text">

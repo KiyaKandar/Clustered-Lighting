@@ -82,6 +82,8 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
+	textRenderer = new TextRenderer(this);
+
 	GLUtil::CheckGLError("Renderer Initialisation");
 	init = true;
 }
@@ -96,6 +98,7 @@ Renderer::~Renderer(void)
 	}
 
 	delete tiles;
+	delete textRenderer;
 }
 
 void Renderer::InitDebugLights() {
@@ -179,11 +182,11 @@ void Renderer::RenderScene()
 
 	if (debugMode) 
 	{
-		if (!textbuffer.empty())
+		if (!textRenderer->textbuffer.empty())
 		{
 			glDisable(GL_DEPTH_TEST);
-			DrawTextBuffer();
-			textbuffer.clear();
+			DrawAllText();
+			textRenderer->textbuffer.clear();
 		}
 
 		DrawDebugLights();
@@ -195,6 +198,14 @@ void Renderer::RenderScene()
 	else SwapBuffers();
 
 	ClearMeshLists();
+}
+
+void Renderer::UpdateScene(float msec)
+{
+	camera->UpdateCamera(msec);
+	viewMatrix = camera->BuildViewMatrix();
+
+	frameFrustum.FromMatrix(projMatrix * viewMatrix);
 }
 
 void Renderer::DrawDebugLights()
@@ -220,14 +231,6 @@ void Renderer::DrawDebugLights()
 	}
 }
 
-void Renderer::UpdateScene(float msec)
-{
-	camera->UpdateCamera(msec);
-	viewMatrix = camera->BuildViewMatrix();
-
-	frameFrustum.FromMatrix(projMatrix * viewMatrix);
-}
-
 void Renderer::RelinkShaders() const
 {
 	for each (GSetting* component in GComponents)
@@ -243,74 +246,16 @@ void Renderer::RelinkShaders() const
 	tiles->compute->LinkProgram();
 }
 
-void Renderer::DrawTextBuffer()
+void Renderer::DrawAllText() const
 {
-	//Store the old values (so we can switch back).
-	Matrix4 oldViewmatrix = viewMatrix;
-	Matrix4 oldProjmatrix = projMatrix;
+	textRenderer->DrawTextBuffer();
 
-	//Use text shader
-	Shader* oldshader = currentShader;
-	currentShader = textShader;
-	currentShader->LinkProgram();
-
-	glUseProgram(currentShader->GetProgram());
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-	glEnable(GL_BLEND);
-	textureMatrix.ToIdentity();
-
-	for each (Text textobj in textbuffer)
-	{
-		DrawTextOBJ(textobj);
-	}
-
-	//Revert to the old matrices
-	viewMatrix = oldViewmatrix;
-	projMatrix = oldProjmatrix;
-
-	//Switch shader back
-	currentShader = oldshader;
 	currentShader->LinkProgram();
 
 	glUseProgram(currentShader->GetProgram());
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_BLEND);
-
 }
-
-/*<Author: Richard Davison--->*/
-void Renderer::DrawTextOBJ(const Text& textobj)
-{
-	TextMesh mesh(textobj.text, *basicFont);
-
-	//This just does simple matrix setup to render in either perspective or
-	//orthographic mode, there's nothing here that's particularly tricky.
-	if (textobj.perspective)
-	{
-		modelMatrix = Matrix4::Translation(textobj.position) *
-			Matrix4::Scale(Vector3(textobj.size, textobj.size, 1));
-
-		viewMatrix = camera->BuildViewMatrix();
-		projMatrix = Matrix4::Perspective(1.0f, 10000.0f, (float)width / (float)height, 45.0f);
-	}
-	else
-	{
-		//In ortho mode, we subtract the y from the height, so that a height of 0
-		//is at the top left of the screen, which is more intuitive
-		modelMatrix = Matrix4::Translation(Vector3(textobj.position.x,
-			height - textobj.position.y,
-			textobj.position.z))
-			* Matrix4::Scale(Vector3(textobj.size, textobj.size, 1));
-
-		viewMatrix.ToIdentity();
-		projMatrix = Matrix4::Orthographic(-1.0f, 1.0f, (float)width, 0.0f, (float)height, 0.0f);
-	}
-
-	//Either way, we update the matrices, and draw the mesh
-	UpdateShaderMatrices();
-	mesh.Draw();
-}
-/*<Author: by Richard Davison>*/
 
 void Renderer::BuildMeshLists()
 {

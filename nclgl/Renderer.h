@@ -16,6 +16,7 @@
 #include <vector>
 #include <random>
 #include <functional>
+#include "TextRenderer.h"
 
 #define DEBUG_LIGHTS
 
@@ -85,7 +86,27 @@ public:
 			-height / 2.0f);
 	}
 
-	vector<Text> textbuffer;
+	const float GetWidth() const
+	{
+		return static_cast<float>(width);
+	}
+
+	const float GetHeight() const
+	{
+		return static_cast<float>(height);
+	}
+
+	Camera* GetCamera() const
+	{
+		return camera;
+	}
+
+	void AddText(const Text& text) const
+	{
+		textRenderer->textbuffer.push_back(text);
+	}
+
+	//vector<Text> textbuffer;
 	Font* basicFont;
 
 protected:
@@ -122,8 +143,8 @@ protected:
 
 	//Text Stuff - Mainly for profiler
 	Shader* textShader;
-	void DrawTextBuffer();
-	void DrawTextOBJ(const Text& textobj);
+	void DrawAllText() const;
+	TextRenderer* textRenderer;
 
 	//Other Stuff
 	Camera*	camera;
