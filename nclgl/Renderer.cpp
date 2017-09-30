@@ -135,7 +135,7 @@ void Renderer::InitLightSSBO()
 	GLUtil::CheckGLError("Tile Data SSBO");
 }
 
-void Renderer::Update(float deltatime)
+void Renderer::Update(const float& deltatime)
 {
 	updateTimer.StartTimer();
 

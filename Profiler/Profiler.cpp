@@ -16,15 +16,10 @@ Profiler::Profiler(Renderer* ren, Window* win, int numTimers)
 	this->numTimers = numTimers;
 }
 
-void Profiler::Update(float deltatime)
+void Profiler::Update(const float& deltatime)
 {
 	updateTimer.StartTimer();
 
-	/*
-	  Hard-coded to the "p" button...I don't know what the button in the 
-	  top left of the keyboard, below ESC, is called...(The one that brings up 
-	  the console to activate godmode on Fallout 3...).
-	*/
 	if (window->GetKeyboard()->KeyTriggered(KEYBOARD_P))
 	{
 		renderingEnabled = !renderingEnabled;

@@ -19,7 +19,7 @@ public:
 	{
 	}
 
-	virtual void Update(float deltatime = 0) = 0;
+	virtual void Update(const float& deltatime = 0) = 0;
 
 	//For profiling
 	SubsystemTimer updateTimer;

@@ -22,7 +22,7 @@ public:
 	~Profiler()
 	{}
 
-	void Update(float deltatime = 0);
+	void Update(const float& deltatime) override;
 
 	//Name is used when displaying the information
 	void AddSubSystemTimer(string name, SubsystemTimer* t)

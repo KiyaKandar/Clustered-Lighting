@@ -33,7 +33,7 @@ public:
 	Renderer(Window &parent, Camera* cam);
 	~Renderer();
 
-	void Update(float deltatime) override;
+	void Update(const float& deltatime) override;
 
 	void UpdateScene(float msec) override;
 	void RenderScene() override;
