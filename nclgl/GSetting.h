@@ -11,7 +11,7 @@
 #include "Matrix4.h"
 #include "Vector2.h"
 
-#include "../Game/GLConfig.h"
+#include "../Game/GraphicsConfiguration/GLConfig.h"
 
 #include <unordered_map>
 

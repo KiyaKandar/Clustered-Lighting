@@ -1,6 +1,6 @@
 #include "BPLighting.h"
 
-#include "../Game/GLConfig.h"
+#include "../Game/GraphicsConfiguration/GLConfig.h"
 
 BPLighting::BPLighting(Camera* cam, GBufferData* gBuffer, ShadowData* shadowData,
 	AmbientTextures* ambientTextures, int numAmbTex)

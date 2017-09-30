@@ -1,7 +1,7 @@
 #include "Shadows.h"
 
-#include "../Game/GLConfig.h"
-#include "../Game/GLUtil.h"
+#include "../Game/GraphicsConfiguration/GLConfig.h"
+#include "../Game/GraphicsConfiguration/GLUtil.h"
 
 Shadows::Shadows(int numShadowCastingLights, Light** lights, 
 	std::vector<Model*>* models)

@@ -1,5 +1,5 @@
 #include "ComputeShader.h"
-#include "../Game/Util.h"
+#include "../Game/Utility/Util.h"
 
 ComputeShader::ComputeShader(string compute, bool isVerbose)
 {

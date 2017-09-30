@@ -3,7 +3,7 @@
 #pragma comment(lib, "Profiler.lib")
 #pragma comment(lib, "assimp-vc140-mt.lib")
 
-#include "CameraController.h"
+#include "CameraControl/CameraController.h"
 #include "../Profiler/Profiler.h"
 
 #include "../NCLGL/window.h"
@@ -11,8 +11,7 @@
 #include "../NCLGL/Model.h"
 #include "../NCLGL/Light.h"
 #include "../NCLGL/GConfiguration.h"
-#include "Util.h"
-#include "GLConfig.h"
+#include "GraphicsConfiguration/GLConfig.h"
 
 void ApplyLightInput(Light* light, const Window& window);
 

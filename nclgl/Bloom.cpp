@@ -1,7 +1,7 @@
 #include "Bloom.h"
 
-#include "../Game/GLConfig.h"
-#include "../Game/GLUtil.h"
+#include "../Game/GraphicsConfiguration/GLConfig.h"
+#include "../Game/GraphicsConfiguration/GLUtil.h"
 
 const int IMAGE = 0;
 const int SCENE = 0;

@@ -1,7 +1,7 @@
 #include "GBuffer.h"
 
-#include "../Game/GLConfig.h"
-#include "../Game/GLUtil.h"
+#include "../Game/GraphicsConfiguration/GLConfig.h"
+#include "../Game/GraphicsConfiguration/GLUtil.h"
 
 GBuffer::GBuffer(Camera* camera, std::vector<ModelMesh*>* modelsInFrame)
 {

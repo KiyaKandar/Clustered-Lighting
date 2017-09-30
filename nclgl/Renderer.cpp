@@ -1,8 +1,8 @@
 #include "Renderer.h"
-#include "../Game/Util.h"
-#include "../Game/GLUtil.h"
+#include "../Game/Utility/Util.h"
+#include "../Game/GraphicsConfiguration/GLUtil.h"
 
-#include "../Game/GLConfig.h"
+#include "../Game/GraphicsConfiguration/GLConfig.h"
 
 Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 {

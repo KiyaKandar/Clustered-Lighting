@@ -1,7 +1,7 @@
 #include "GConfiguration.h"
 
 #include "Renderer.h"
-#include "../Game/GLConfig.h"
+#include "../Game/GraphicsConfiguration/GLConfig.h"
 
 GConfiguration::GConfiguration(Renderer* renderer, Camera* camera, Vector2 resolution)
 {

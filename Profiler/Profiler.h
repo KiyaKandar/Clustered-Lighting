@@ -1,7 +1,7 @@
 #pragma once
 
 #include "FramerateCounter.h"
-#include "../Game/Subsystem.h"
+#include "../Game/Subsystems/Subsystem.h"
 #include "../nclgl/Text.h"
 #include <map>
 

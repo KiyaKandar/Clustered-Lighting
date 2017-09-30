@@ -157,15 +157,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="CameraController.h" />
-    <ClInclude Include="GLConfig.h" />
-    <ClInclude Include="GLUtil.h" />
-    <ClInclude Include="Subsystem.h" />
-    <ClInclude Include="Util.h" />
+    <ClInclude Include="CameraControl\CameraController.h" />
+    <ClInclude Include="GraphicsConfiguration\GLConfig.h" />
+    <ClInclude Include="GraphicsConfiguration\GLUtil.h" />
+    <ClInclude Include="Subsystems\Subsystem.h" />
+    <ClInclude Include="Utility\Util.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CameraController.cpp" />
-    <ClCompile Include="GLConfig.cpp" />
+    <ClCompile Include="CameraControl\CameraController.cpp" />
+    <ClCompile Include="GraphicsConfiguration\GLConfig.cpp" />
     <ClCompile Include="Run.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

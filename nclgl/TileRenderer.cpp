@@ -1,8 +1,8 @@
 #include "TileRenderer.h"
 
 #include "Light.h"
-#include "../Game/Util.h"
-#include "../Game/GLUtil.h"
+#include "../Game/Utility/Util.h"
+#include "../Game/GraphicsConfiguration/GLUtil.h"
 
 const int INTERSECTING = 1;
 const int EMPTY = 0;

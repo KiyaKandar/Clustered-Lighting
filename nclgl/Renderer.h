@@ -5,7 +5,7 @@
 #include "SceneNode.h"
 #include "Frustum.h"
 #include "Mesh.h"
-#include "../Game/Subsystem.h"
+#include "../Game/Subsystems/Subsystem.h"
 #include "Text.h"
 #include "TextMesh.h"
 #include "Model.h"

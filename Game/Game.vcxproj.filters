@@ -12,28 +12,28 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Subsystem.h">
-      <Filter>SubSystems</Filter>
-    </ClInclude>
-    <ClInclude Include="CameraController.h">
+    <ClInclude Include="CameraControl\CameraController.h">
       <Filter>Camera Control</Filter>
     </ClInclude>
-    <ClInclude Include="GLConfig.h">
+    <ClInclude Include="GraphicsConfiguration\GLConfig.h">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="GLUtil.h">
+    <ClInclude Include="Subsystems\Subsystem.h">
+      <Filter>SubSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsConfiguration\GLUtil.h">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="Util.h">
+    <ClInclude Include="Utility\Util.h">
       <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Run.cpp" />
-    <ClCompile Include="CameraController.cpp">
+    <ClCompile Include="CameraControl\CameraController.cpp">
       <Filter>Camera Control</Filter>
     </ClCompile>
-    <ClCompile Include="GLConfig.cpp">
+    <ClCompile Include="GraphicsConfiguration\GLConfig.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
   </ItemGroup>

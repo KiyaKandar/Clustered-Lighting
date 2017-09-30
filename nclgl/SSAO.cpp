@@ -1,7 +1,7 @@
 #include "SSAO.h"
 
-#include "../Game/GLConfig.h"
-#include "../Game/GLUtil.h"
+#include "../Game/GraphicsConfiguration/GLConfig.h"
+#include "../Game/GraphicsConfiguration/GLUtil.h"
 
 const int KERNEL_SIZE = 64;
 const int RESOLUTION_SCALE_X = 640;
