@@ -12,6 +12,45 @@ enum
 	BOTTOM
 };
 
+void GridUtility::Generate3DGrid(GridData gridData, Vector3 dimensions, Vector3 tilesOnAxes)
+{
+	float xOffset = 0;
+	float yOffset = 0;
+	const int numTiles = tilesOnAxes.x * tilesOnAxes.y * tilesOnAxes.z;
+
+	for (int i = 0; i < numTiles; i += tilesOnAxes.z)
+	{
+		//Once reached the end of x axis, reset x offset and move up y axis.
+		if (xOffset == tilesOnAxes.x)
+		{
+			yOffset += dimensions.y;
+			xOffset = 0;
+		}
+
+		//Create tile closest to screen.
+		const Vector3 startPosition((dimensions.x * xOffset) + gridData.minCoord.x, yOffset + gridData.minCoord.y, 0);
+
+		gridData.grid[i] = Cube(startPosition, dimensions);
+		gridData.gridPlanes[i] = GenerateCubePlanes(startPosition, dimensions);
+		gridData.screenTiles[i] = GenerateTile(startPosition, dimensions);
+
+		//Fill along the z axis from the tile above.
+		for (int k = 1; k <= tilesOnAxes.z - 1; ++k)
+		{
+			const float newZCoord = dimensions.z * k;
+			const int index = i + k;
+
+			const Vector3 positionExtendedInZAxis(startPosition.x, startPosition.y, newZCoord);
+
+			gridData.grid[index] = Cube(positionExtendedInZAxis, dimensions);
+			gridData.screenTiles[index] = GenerateTile(positionExtendedInZAxis, dimensions);
+			gridData.gridPlanes[index] = GenerateCubePlanes(positionExtendedInZAxis, dimensions);
+		}
+
+		++xOffset;
+	}
+}
+
 CubePlanes GridUtility::GenerateCubePlanes(const Vector3 position, const Vector3 dimensions)
 {
 	CubePlanes cube;

@@ -30,12 +30,12 @@ class Renderer : public OGLRenderer, public Subsystem
 {
 public:
 	Renderer(Window &parent, Camera* cam);
-	~Renderer(void);
+	~Renderer();
 
-	void Update(float deltatime);
+	void Update(float deltatime) override;
 
-	void UpdateScene(float msec);
-	void RenderScene();
+	void UpdateScene(float msec) override;
+	void RenderScene() override;
 
 	void AddModel(Model* model) noexcept
 	{
@@ -75,7 +75,7 @@ public:
 	inline void SwitchToPerspective()
 	{
 		projMatrix = Matrix4::Perspective(1.0f, 15000.0f,
-			(float)width / (float)height, 45.0f);
+			static_cast<float>(width) / static_cast<float>(height), 45.0f);
 	}
 
 	inline void SwitchToOrthographic()
@@ -87,7 +87,6 @@ public:
 
 	vector<Text> textbuffer;
 	Font* basicFont;
-
 
 protected:
 	std::vector<GSetting*> GComponents;
@@ -118,7 +117,7 @@ protected:
 
 	//Handy debug stuff
 	void DrawDebugLights();
-	void RelinkShaders();
+	void RelinkShaders() const;
 	std::vector<Model*> debugSpheres;
 
 	//Text Stuff - Mainly for profiler

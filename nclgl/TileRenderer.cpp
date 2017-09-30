@@ -21,9 +21,9 @@ TileRenderer::TileRenderer(Light** lights, int numLights, int numXTiles, int num
 
 	gridSize = Vector3(numXTiles, numYTiles, numZTiles);
 	gridDimensions = Vector3(
-		std::abs(minScreenCoord.x - maxScreenCoord.x) / (float)gridSize.x,
-		std::abs(minScreenCoord.y - maxScreenCoord.y) / (float)gridSize.y,
-		1 / (float)gridSize.z);
+		std::abs(minScreenCoord.x - maxScreenCoord.x) / static_cast<float>(gridSize.x),
+		std::abs(minScreenCoord.y - maxScreenCoord.y) / static_cast<float>(gridSize.y),
+		1 / static_cast<float>(gridSize.z));
 
 	numTiles = gridSize.x * gridSize.y * gridSize.z;
 
@@ -73,47 +73,14 @@ TileRenderer::TileRenderer()
 
 void TileRenderer::GenerateGrid()
 {
-	Vector3 screenPos(-1, -1, 0);
-	Vector3 screenDimension(2, 2, 1);
+	const Vector3 screenPos(-1, -1, 0);
+	const Vector3 screenDimension(2, 2, 1);
 
 	screenCube = Cube(screenPos, screenDimension);
 	screenPlanes = GridUtility::GenerateCubePlanes(screenPos, screenDimension);
 
-	float xOffset = 0;
-	float yOffset = 0;
-	Vector3 dimensions(gridDimensions.x, gridDimensions.y, gridDimensions.z);
-
-	for (int i = 0; i < numTiles; i += gridSize.z)
-	{
-		//Once reached the end of x axis, reset x offset and move up y axis.
-		if (xOffset == gridSize.x)
-		{
-			yOffset += gridDimensions.y;
-			xOffset = 0;
-		}
-
-		//Create tile closest to screen.
-		Vector3 startPosition((gridDimensions.x * xOffset) + minCoord.x, yOffset + minCoord.y, 0);
-
-		grid[i] = Cube(startPosition, dimensions);
-		gridPlanes[i] = GridUtility::GenerateCubePlanes(startPosition, dimensions);
-		screenTiles[i] = GridUtility::GenerateTile(startPosition, dimensions);
-
-		//Fill along the z axis from the tile above.
-		for (int k = 1; k <= gridSize.z - 1; ++k)
-		{
-			float newZ = gridDimensions.z * k;
-			int index = i + k;
-
-			Vector3 positionExtendedInZAxis(startPosition.x, startPosition.y, newZ);
-
-			grid[index] = Cube(positionExtendedInZAxis, dimensions);
-			screenTiles[index] = GridUtility::GenerateTile(positionExtendedInZAxis, dimensions);
-			gridPlanes[index] = GridUtility::GenerateCubePlanes(positionExtendedInZAxis, dimensions);
-		}
-
-		++xOffset;
-	}
+	const GridData gridData(grid, gridPlanes, screenTiles, minCoord);
+	GridUtility::Generate3DGrid(gridData, gridDimensions, gridSize);
 }
 
 void TileRenderer::InitGridSSBO()
@@ -143,7 +110,8 @@ void TileRenderer::AllocateLightsCPU(const Matrix4& projectionMatrix,
 	FillTilesCPU(buffer);
 }
 
-void TileRenderer::AllocateLightsGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, const Vector3& cameraPos)
+void TileRenderer::AllocateLightsGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, 
+	const Vector3& cameraPos) const
 {
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, countBuffer);
 	glInvalidateBufferData(countBuffer);
@@ -182,30 +150,25 @@ void TileRenderer::FillTilesCPU(GLuint buffer)
 
 void TileRenderer::PrepareDataCPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, const Vector3& cameraPos)
 {
-	Matrix4 projView = projectionMatrix * viewMatrix;
-	Vector4 defaultPos(0.0f, 0.0f, 0.0f, 1.0f);
-
-	Vector4 camPos = Vector4(cameraPos.x, cameraPos.y, cameraPos.z, 0);
+	const Matrix4 projView = projectionMatrix * viewMatrix;
 
 	for (int i = 0; i < numLights; ++i)
 	{
-		Vector4 worldLight = Vector4(lights[i]->GetPosition().x, lights[i]->GetPosition().y, lights[i]->GetPosition().z, 1.0f);
-
-		Vector4 viewPos = projView * worldLight;
-
-		Vector3 clipPos = Vector3(viewPos.x, viewPos.y, viewPos.z) / viewPos.w;
+		const Vector4 worldLight = Vector4(lights[i]->GetPosition().x, lights[i]->GetPosition().y, lights[i]->GetPosition().z, 1.0f);
+		const Vector4 viewPos = projView * worldLight;
+		const Vector3 clipPos = Vector3(viewPos.x, viewPos.y, viewPos.z) / viewPos.w;
 
 		//Store reciprocal to avoid use of division below.
-		float w = 1 / viewPos.w;
+		const float w = 1 / viewPos.w;
 
 		//Retrieve distance from camera to light + normalize.
-		float ndcz = clipPos.z;
+		const float ndcz = clipPos.z;
 
 		screenLightData[i] = Vector4(viewPos.x * w, viewPos.y * w, ndcz, lights[i]->GetRadius() * w);
 	}
 }
 
-void TileRenderer::FillTilesGPU()
+void TileRenderer::FillTilesGPU() const
 {
 	//Writes to the shared buffer used in lighting pass
 	compute->UseProgram();
@@ -217,10 +180,11 @@ void TileRenderer::FillTilesGPU()
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT);
 }
 
-void TileRenderer::PrepareDataGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, const Vector3& cameraPos)
+void TileRenderer::PrepareDataGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, 
+	const Vector3& cameraPos) const 
 {
 	Matrix4 projView = projectionMatrix * viewMatrix;
-	Vector4 camPos = Vector4(viewMatrix.values[12], viewMatrix.values[13], viewMatrix.values[14], 0);
+	const Vector4 camPos = Vector4(viewMatrix.values[12], viewMatrix.values[13], viewMatrix.values[14], 0);
 	dataPrep->UseProgram();
 
 	glUniformMatrix4fv(loc_projMatrix, 1, false, (float*)&projectionMatrix);

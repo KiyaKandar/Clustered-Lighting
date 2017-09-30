@@ -7,10 +7,8 @@
 #include "GL/wglew.h"
 #include "SOIL.h"
 
-#include "Vector2.h"
 #include "Matrix4.h"
 #include "Plane.h"
-#include "Cube.h"
 
 #include "ComputeShader.h"
 #include "GridUtility.h"
@@ -48,7 +46,7 @@ public:
 		delete compute;
 	}
 
-	TileData* GetTileData()
+	TileData* GetTileData() const
 	{
 		return tileData;
 	}
@@ -58,7 +56,7 @@ public:
 		return screenTiles;
 	}
 
-	int GetNumTiles() 
+	int GetNumTiles()  const
 	{
 		return numTiles;
 	}
@@ -67,16 +65,16 @@ public:
 	void InitGridSSBO();
 
 	void AllocateLightsCPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, GLuint buffer, const Vector3& cameraPos);
-	void AllocateLightsGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, const Vector3& cameraPos);
+	void AllocateLightsGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, const Vector3& cameraPos) const;
 	
 	ComputeShader* dataPrep;
 	ComputeShader* compute;
 
 private:
 	void PrepareDataCPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, const Vector3& cameraPos);
-	void PrepareDataGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, const Vector3& cameraPos);
+	void PrepareDataGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, const Vector3& cameraPos) const;
 
-	void FillTilesGPU();
+	void FillTilesGPU() const;
 	void FillTilesCPU(GLuint buffer);
 	void CullLights();
 

@@ -9,7 +9,7 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	camera = cam;
 	wparent = &parent;
 
-	projMatrix = Matrix4::Perspective(1.0f, 15000.0f, (float)width / (float)height, 45.0f);
+	projMatrix = Matrix4::Perspective(1.0f, 15000.0f, static_cast<float>(width) / static_cast<float>(height), 45.0f);
 
 	//Shadow casting lights must be declared first
 	lights[0] = new Light(Vector3(0, 1800, 200),	Vector4(0.9, 0.7, 0.4, 1),					30000.0f,	2.0f);
@@ -71,7 +71,6 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	tiles = new TileRenderer(lights, NUM_LIGHTS, 
 		GLConfig::NUM_X_AXIS_TILES, GLConfig::NUM_Y_AXIS_TILES, GLConfig::NUM_Z_AXIS_TILES,
 		GLConfig::MIN_NDC_COORDS,	GLConfig::MAX_NDC_COORDS);
-	//tiles->GenerateGrid();
 
 	screenTiles = tiles->GetScreenTiles();
 	tileData = tiles->GetTileData();
@@ -107,7 +106,7 @@ void Renderer::InitDebugLights() {
 		//Set size and position to match light.
 		sphere->Translate(lights[i]->GetPosition());
 
-		float radius = lights[i]->GetRadius();
+		const float radius = lights[i]->GetRadius();
 		sphere->Scale(Vector3(radius, radius, radius));
 
 		//Add it to a seperate list.
@@ -229,7 +228,7 @@ void Renderer::UpdateScene(float msec)
 	frameFrustum.FromMatrix(projMatrix * viewMatrix);
 }
 
-void Renderer::RelinkShaders()
+void Renderer::RelinkShaders() const
 {
 	for each (GSetting* component in GComponents)
 	{
