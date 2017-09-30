@@ -5,13 +5,13 @@
 #include "Vector4.h"
 #include "BoxCollider.h"
 
-const int NUM_FACES			= 6;
+const int NUM_FACES = 6;
 
-const Vector3 LEFT_NORMAL	= Vector3(-1, 0, 0);
-const Vector3 FRONT_NORMAL  = Vector3(0, 0, -1);
-const Vector3 RIGHT_NORMAL  = Vector3(1, 0, 0);
-const Vector3 BACK_NORMAL	= Vector3(0, 0, 1);
-const Vector3 TOP_NORMAL	= Vector3(0, 1, 0);
+const Vector3 LEFT_NORMAL = Vector3(-1, 0, 0);
+const Vector3 FRONT_NORMAL = Vector3(0, 0, -1);
+const Vector3 RIGHT_NORMAL = Vector3(1, 0, 0);
+const Vector3 BACK_NORMAL = Vector3(0, 0, 1);
+const Vector3 TOP_NORMAL = Vector3(0, 1, 0);
 const Vector3 BOTTOM_NORMAL = Vector3(0, -1, 0);
 
 /*

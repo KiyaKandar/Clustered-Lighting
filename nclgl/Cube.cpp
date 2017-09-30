@@ -27,18 +27,6 @@ Cube::~Cube()
 
 void Cube::GenerateFaces() 
 {
-	//faces[LEFT]	= Plane(LEFT_NORMAL, Vector3(position.x, position.y, 0));
-	//faces[RIGHT]	= Plane(RIGHT_NORMAL, Vector3(position.x, position.y, 0)
-	//	+ Vector3(dimensions.x, 0, 0));
-
-	//faces[BACK]	= Plane(BACK_NORMAL, Vector3(position.x, position.y, 0));
-	//faces[FRONT]	= Plane(FRONT_NORMAL, Vector3(position.x, position.y, 0)
-	//	+ Vector3(0, 0, dimensions.z));
-
-	//faces[BOTTOM] = Plane(BOTTOM_NORMAL, Vector3(position.x, position.y, 0));
-	//faces[TOP] = Plane(TOP_NORMAL, Vector3(position.x, position.y, 0)
-	//	+ Vector3(0, dimensions.y, 0));
-
 	faces[static_cast<int>(LEFT)] = Plane(LEFT_NORMAL, Vector3(position.x, position.y, 0));
 	faces[static_cast<int>(RIGHT)] = Plane(RIGHT_NORMAL, Vector3(position.x, position.y, 0)
 		+ Vector3(dimensions.x, 0, 0));

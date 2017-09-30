@@ -10,25 +10,26 @@ enum Faces
 	BOTTOM,
 };
 
+const int NUMBER_OF_FACES_IN_CUBE = 6;
+
 BoxCollider::BoxCollider(Plane faces[6])
 {
 	memcpy(this->faces, faces, 6 * sizeof(Plane));
 }
 
 BoxCollider::~BoxCollider()
-{
-}
+{}
 
 const bool BoxCollider::SphereInside(const Vector3& spherePosition, const float& radius) const
 {
-	if (!faces[LEFT].SphereInPlane(spherePosition, radius))		return false;
-	if (!faces[RIGHT].SphereInPlane(spherePosition, radius))	return false;
-	if (!faces[FRONT].SphereInPlane(spherePosition, radius))	return false;
-	if (!faces[BACK].SphereInPlane(spherePosition, radius))		return false;
-	if (!faces[TOP].SphereInPlane(spherePosition, radius))		return false;
-	if (!faces[BOTTOM].SphereInPlane(spherePosition, radius))	return false;
+	bool inside = false;
 
-	return true;
+	for (int i = 0; i < NUMBER_OF_FACES_IN_CUBE; ++i)
+	{
+		inside = inside || faces[i].SphereInPlane(spherePosition, radius);
+	}
+
+	return inside;
 }
 
 const bool BoxCollider::SphereIntersecting(const Vector3& spherePosition, const float& radius) const
