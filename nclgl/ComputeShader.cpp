@@ -43,7 +43,7 @@ void ComputeShader::UseProgram()
 void ComputeShader::Compute(Vector3 workGroups)
 {
 	glDispatchCompute(workGroups.x, workGroups.y, workGroups.z);
-	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+	glMemoryBarrier(GL_ALL_BARRIER_BITS);
 }
 
 GLuint ComputeShader::GenerateShader(string from)

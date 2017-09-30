@@ -15,8 +15,8 @@ uniform sampler2D gNormal;
 uniform sampler2D gAlbedo;
 uniform sampler2D ssao;
 
-uniform sampler2DShadow shadows[numLights];
-uniform mat4 texMatrices[numLights];
+uniform sampler2DShadow shadows[5];
+uniform mat4 texMatrices[5];
 uniform mat4 camMatrix;
 
 uniform sampler2D ambientTextures[1];
@@ -68,6 +68,8 @@ layout (std430, binding = 3) buffer TileLightsBuffer
 };
 
 void main(void){
+	int numZTiles = 10;
+
     //Retrieve data from gbuffer
     vec3 position	= texture(gPosition, TexCoords).rgb;
     vec3 normal		= normalize(texture(gNormal, TexCoords).rgb);
@@ -78,11 +80,16 @@ void main(void){
 	float yCoord = gl_FragCoord.y / 720;
 	float zCoord = gl_FragCoord.z;// gl_FragDepth;
 
-	int xIndex = int(xCoord * numXTiles);
-	int yIndex = int(yCoord * numYTiles);
-	int zIndex = int(zCoord * numXTiles);
+	zCoord = (position.z - 1.0f) / (15000.0f - 1.0f);
+	zCoord = abs(zCoord);
 
-	int tile = xIndex + numXTiles * (yIndex + numXTiles * zIndex);// (yIndex * (numYTiles + 10)) + (xIndex * 10) + zIndex;
+	int xIndex = int(xCoord * 10);
+	int yIndex = int(yCoord * 10);
+	int zIndex = int(zCoord * 10);
+
+	//int tile = xIndex + numXTiles * (yIndex + numXTiles * zIndex);// (yIndex * (numYTiles + 10)) + (xIndex * 10) + zIndex;
+
+	int tile = xIndex + (yIndex * 10) + (zIndex * (10 * 10));
 
 	//Default value
 	vec3 lightResult = vec3(0.0, 0.0, 0.0);

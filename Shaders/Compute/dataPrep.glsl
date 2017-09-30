@@ -58,7 +58,7 @@ layout(std430, binding = 4) buffer CubePlanesBuffer
 
 layout(std430, binding = 5) buffer ScreenSpaceDataBuffer
 {
-	float indexes[100];
+	float indexes[numLights];
 	//float padding[9];
 
 	vec4 numLightsIn;
@@ -139,7 +139,6 @@ float Length(vec3 v)
 	return sqrt((v.x*v.x) + (v.y*v.y) + (v.z*v.z));
 }
 
-const vec4 defaultPos = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 vec3 LEFT_NORMAL = vec3(-1, 0, 0);
 vec3 FRONT_NORMAL = vec3(0, 0, -1);
@@ -156,8 +155,8 @@ vec4 splanesf[6] = vec4[6](
 	vec4(RIGHT_NORMAL.x, RIGHT_NORMAL.y, RIGHT_NORMAL.z, Length(screenPos + vec3(screenDimension.x, 0, 0))),
 	vec4(FRONT_NORMAL.x, FRONT_NORMAL.y, FRONT_NORMAL.z, Length(screenPos + vec3(0, 0, screenDimension.z))),
 	vec4(BACK_NORMAL.x, BACK_NORMAL.y, BACK_NORMAL.z, Length(screenPos)),
-	vec4(TOP_NORMAL.x, TOP_NORMAL.y, TOP_NORMAL.z, Length(screenPos)),
-	vec4(BOTTOM_NORMAL.x, BOTTOM_NORMAL.y, BOTTOM_NORMAL.z, Length(screenPos + vec3(0, screenDimension.y, 0)))
+	vec4(TOP_NORMAL.x, TOP_NORMAL.y, TOP_NORMAL.z, Length(screenPos + vec3(0, screenDimension.y, 0))),
+	vec4(BOTTOM_NORMAL.x, BOTTOM_NORMAL.y, BOTTOM_NORMAL.z, Length(screenPos))
 	);
 
 vec4 splanesp[6] = vec4[6](
@@ -165,54 +164,72 @@ vec4 splanesp[6] = vec4[6](
 	vec4(screenPos.x + screenDimension.x, screenPos.y, screenPos.z, 0),
 	vec4(screenPos.x, screenPos.y, screenPos.z + screenDimension.z, 0),
 	vec4(screenPos.x, screenPos.y, screenPos.z, 0),
-	vec4(screenPos.x, screenPos.y, screenPos.z, 0),
-	vec4(screenPos.x, screenPos.y + screenDimension.y, screenPos.z, 0)
+	vec4(screenPos.x, screenPos.y + screenDimension.y, screenPos.z, 0),
+	vec4(screenPos.x, screenPos.y, screenPos.z, 0)
 	);
 
 CubePlanes screenCube = CubePlanes(splanesf, splanesp);
 
 void main()
 {
+
+	const vec4 defaultPos = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	//CubePlanes screenCube = screenCube1;
+	//barrier();
+
 	//Create a model matrix for the light.
 	//Translate to light position.
-	mat4 model;
+	mat4 model = mat4(1);
 	model[0][3] = ldata[gl_GlobalInvocationID.x].pos4.x;
 	model[1][3] = ldata[gl_GlobalInvocationID.x].pos4.y;
 	model[2][3] = ldata[gl_GlobalInvocationID.x].pos4.z;
+	//memoryBarrier();
 
 	//move to screenspace.
-	vec4 clip = projectionMatrix * cameraPos;
-	float clipz = clip.z;
+	//vec4 clip = projectionMatrix * cameraPos;
+	//float clipz = clip.z;
+	vec4 worldLight = vec4(ldata[gl_GlobalInvocationID.x].pos4.xyz, 1);
 
-	vec4 viewPos = projView * model * defaultPos;
+	vec4 viewPos = projView * worldLight;//model * defaultPos;
+
+	vec3 clipPos = viewPos.xyz / viewPos.w;
 
 	//Store reciprocal to avoid use of division below.
-	float w = 1 / viewPos.w;
+	float w = 1.0f / viewPos.w;
 
 	//Retrieve distance from camera to light + normalize.
-	float ndcz = clipz * w;// *100;
+	float ndcz = clipPos.z;//clipz * w;// *100;
 
 	//Final screenspace data.
 	vec4 result = vec4(viewPos.x * w, viewPos.y * w, ndcz, ldata[gl_GlobalInvocationID.x].lightRadius * w);
+	//memoryBarrier();
 	
 	//Synchronise tor read screencube SSBO
 	//memoryBarrier();
-	//bool colliding = SphereColliding(screenCube, result);
+	//CubePlanes localscreencube = screenCube1;
 
+	bool colliding = SphereColliding(screenCube, result);
 
 	//If light affects any clusters on screen, send to next shader for allocation, 
 	//else cull.
-	if (SphereColliding(screenCube, result))
-	{
-		//memoryBarrier();
-		uint currentLightCount = atomicCounterIncrement(count);
+	if (colliding) {
+	//if (gl_GlobalInvocationID.x == 0) {
+	//if (true) {
+			uint currentLightCount = atomicCounterIncrement(count);
+			data[currentLightCount] = result;
+			indexes[currentLightCount] = gl_GlobalInvocationID.x;
 
-		//Write to shared SSBO
-		data[currentLightCount] = result;
 
-		indexes[currentLightCount] = gl_GlobalInvocationID.x;
+			//memoryBarrier();
+			//data[gl_GlobalInvocationID.x] = result;
+			//atomicExchange(data[0].x, result.x);
+			//memoryBarrier();
+			//indexes[gl_GlobalInvocationID.x] =  gl_GlobalInvocationID.x;
+			//atomicExchange(indexes[0], 0);
+			//memoryBarrier();
+		//}
 	}
 
-	//barrier();
+			//barrier();
 }
 

@@ -40,7 +40,7 @@ layout(std430, binding = 4) buffer CubePlanesBuffer
 
 layout(std430, binding = 5) buffer ScreenSpaceDataBuffer
 {
-	float indexes[100];
+	float indexes[numLights];
 	//float padding[9];
 	vec4 numLightsIn;
 
@@ -113,23 +113,51 @@ bool SphereColliding(CubePlanes cube, vec4 light)
 
 void main()
 {
-	uint index = gl_GlobalInvocationID.x + numZTiles *
-		(gl_GlobalInvocationID.y + numZTiles * gl_GlobalInvocationID.z);
+
+	//uint tileIndex = gl_GlobalInvocationID.x + numZTiles *
+	//	(gl_GlobalInvocationID.y + numZTiles * gl_GlobalInvocationID.z);
+
+	int numXTiles = 10;
+	int numYTiles = 10;
+
+	int xIndex = int(gl_GlobalInvocationID.x);
+	int yIndex = int(gl_GlobalInvocationID.y);
+	int zIndex = int(gl_GlobalInvocationID.z);
+
+	int tile = xIndex + (yIndex * numXTiles) + (zIndex * (numXTiles * numYTiles));
+
+	uint index = uint(tile);
 
 	int intersections = 0;
+
+	//memoryBarrier();
+	//CubePlanes localCube = cubePlanes[tileIndex];
 
 	uint c = atomicCounter(count);
 	for (int i = 0; i < c; i++)
 	{
-		bool colliding = SphereColliding(cubePlanes[index], data[i]);
+		int ind = int(indexes[i]);
 
-		if (colliding)
+		//memoryBarrier();
+		//vec4 localvec = data[i];
+
+		//memoryBarrier();
+		//int localindex = int(indexes[i]);
+
+		if (SphereColliding(cubePlanes[index], data[i]))
 		{
-			tileLights[index][intersections] = int(indexes[i]);
+			//memoryBarrier();
+			//tileLights[tileIndex][intersections] = localindex;
+			//atomicExchange(tileLights[tileIndex][intersections], localindex);
+			tileLights[index][intersections] = ind;
 			intersections++;
 		}
 	}
-
+	//memoryBarrier();
+	//lightIndexes[tileIndex] = intersections;
+	//atomicExchange(lightIndexes[tileIndex], intersections);
 	lightIndexes[index] = intersections;
+	//
+	//barrier();
 }
 

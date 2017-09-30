@@ -71,7 +71,7 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	tiles = new TileRenderer(lights, NUM_LIGHTS, 
 		GLConfig::NUM_X_AXIS_TILES, GLConfig::NUM_Y_AXIS_TILES, GLConfig::NUM_Z_AXIS_TILES,
 		GLConfig::MIN_NDC_COORDS,	GLConfig::MAX_NDC_COORDS);
-	tiles->GenerateGrid();
+	//tiles->GenerateGrid();
 
 	screenTiles = tiles->GetScreenTiles();
 	tileData = tiles->GetTileData();
@@ -121,16 +121,20 @@ void Renderer::InitDebugLights() {
 
 void Renderer::InitLightSSBO()
 {
+	GLUtil::ClearGLErrorStack();
+
 	ssbo = GLUtil::InitSSBO(1, 1, ssbo, 
 		sizeof(LightData) * NUM_LIGHTS, &lightData, GL_STATIC_COPY);
+	GLUtil::CheckGLError("Light Data SSBO");
 
 	tilesssbo = GLUtil::InitSSBO(1, 2, tilesssbo, 
 		sizeof(Tile) * tiles->GetNumTiles(), screenTiles, GL_STATIC_COPY);
+	GLUtil::CheckGLError("Screen Tiles SSBO");
 
 	tilelightssssbo = GLUtil::InitSSBO(1, 3, tilelightssssbo, 
 		sizeof(TileData), tileData, GL_STATIC_COPY);
 
-	GLUtil::CheckGLError("Renderer Light SSBO");
+	GLUtil::CheckGLError("Tile Data SSBO");
 }
 
 void Renderer::Update(float deltatime)
@@ -150,13 +154,18 @@ void Renderer::Update(float deltatime)
 
 	UpdateScene(deltatime);
 
-	//tiles->AllocateLightsGPU(projMatrix, viewMatrix);
+	//tiles->AllocateLightsGPU(projMatrix, viewMatrix, camera->GetPosition());
 
-	tiles->AllocateLightsCPU(projMatrix, viewMatrix, tilelightssssbo);
-	//tileData = tiles->GetTileData();
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, tilelightssssbo);
-	//glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(TileData), tileData);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	//projMatrix = Matrix4::Perspective(1.0f, 15000.0f, (float)width / (float)height, 45.0f);
+	tiles->AllocateLightsCPU(projMatrix, viewMatrix, tilelightssssbo, camera->GetPosition());
+
+	tileData = tiles->GetTileData();
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, tilelightssssbo);
+	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(TileData), tileData);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+
+	//glMemoryBarrier(GL_ALL_BARRIER_BITS);
 
 	RenderScene();
 
@@ -238,6 +247,9 @@ void Renderer::RelinkShaders()
 
 	tiles->dataPrep->Regenerate();
 	tiles->dataPrep->LinkProgram();
+
+	tiles->compute->Regenerate();
+	tiles->compute->LinkProgram();
 }
 
 void Renderer::DrawTextBuffer()

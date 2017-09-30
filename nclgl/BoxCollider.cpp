@@ -21,12 +21,12 @@ BoxCollider::~BoxCollider()
 
 const bool BoxCollider::SphereInside(const Vector3& spherePosition, const float& radius) const
 {
-	if (!faces[static_cast<int>(LEFT)].SphereInPlane(spherePosition, radius))		return false;
-	if (!faces[static_cast<int>(RIGHT)].SphereInPlane(spherePosition, radius))	return false;
-	if (!faces[static_cast<int>(FRONT)].SphereInPlane(spherePosition, radius))	return false;
-	if (!faces[static_cast<int>(BACK)].SphereInPlane(spherePosition, radius))		return false;
-	if (!faces[static_cast<int>(TOP)].SphereInPlane(spherePosition, radius))		return false;
-	if (!faces[static_cast<int>(BOTTOM)].SphereInPlane(spherePosition, radius))	return false;
+	if (!faces[LEFT].SphereInPlane(spherePosition, radius))		return false;
+	if (!faces[RIGHT].SphereInPlane(spherePosition, radius))	return false;
+	if (!faces[FRONT].SphereInPlane(spherePosition, radius))	return false;
+	if (!faces[BACK].SphereInPlane(spherePosition, radius))		return false;
+	if (!faces[TOP].SphereInPlane(spherePosition, radius))		return false;
+	if (!faces[BOTTOM].SphereInPlane(spherePosition, radius))	return false;
 
 	return true;
 }
@@ -35,31 +35,31 @@ const bool BoxCollider::SphereIntersecting(const Vector3& spherePosition, const 
 {
 	float distSqr = radius * radius;
 
-	if (spherePosition.x < faces[static_cast<int>(LEFT)].position.x)
+	if (spherePosition.x < faces[LEFT].position.x)
 	{
-		distSqr -= std::powf(spherePosition.x - faces[static_cast<int>(LEFT)].position.x, 2);
+		distSqr -= std::powf(spherePosition.x - faces[LEFT].position.x, 2);
 	}
-	else if (spherePosition.x > faces[static_cast<int>(RIGHT)].position.x)
+	else if (spherePosition.x > faces[RIGHT].position.x)
 	{
-		distSqr -= std::powf(spherePosition.x - faces[static_cast<int>(RIGHT)].position.x, 2);
-	}
-
-	if (spherePosition.y < faces[static_cast<int>(BOTTOM)].position.y)
-	{
-		distSqr -= std::powf(spherePosition.y - faces[static_cast<int>(BOTTOM)].position.y, 2);
-	}
-	else if (spherePosition.y > faces[static_cast<int>(TOP)].position.y)
-	{
-		distSqr -= std::powf(spherePosition.y - faces[static_cast<int>(TOP)].position.y, 2);
+		distSqr -= std::powf(spherePosition.x - faces[RIGHT].position.x, 2);
 	}
 
-	if (spherePosition.z < faces[static_cast<int>(FRONT)].position.z)
+	if (spherePosition.y < faces[BOTTOM].position.y)
 	{
-		distSqr -= std::powf(spherePosition.z - faces[static_cast<int>(FRONT)].position.z, 2);
+		distSqr -= std::powf(spherePosition.y - faces[BOTTOM].position.y, 2);
 	}
-	else if (spherePosition.z > faces[static_cast<int>(BACK)].position.z)
+	else if (spherePosition.y > faces[TOP].position.y)
 	{
-		distSqr -= std::powf(spherePosition.z - faces[static_cast<int>(BACK)].position.z, 2);
+		distSqr -= std::powf(spherePosition.y - faces[TOP].position.y, 2);
+	}
+
+	if (spherePosition.z < faces[FRONT].position.z)
+	{
+		distSqr -= std::powf(spherePosition.z - faces[FRONT].position.z, 2);
+	}
+	else if (spherePosition.z > faces[BACK].position.z)
+	{
+		distSqr -= std::powf(spherePosition.z - faces[BACK].position.z, 2);
 	}
 
 	return distSqr > 0;
