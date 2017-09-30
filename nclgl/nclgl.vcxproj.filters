@@ -88,8 +88,12 @@
     <ClCompile Include="ComputeShader.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="GridUtility.cpp" />
-    <ClCompile Include="TextRenderer.cpp" />
+    <ClCompile Include="TextRenderer.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="GridUtility.cpp">
+      <Filter>Tile Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Text.h">
@@ -203,8 +207,12 @@
     <ClInclude Include="ComputeShader.h">
       <Filter>Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="GridUtility.h" />
-    <ClInclude Include="TextRenderer.h" />
+    <ClInclude Include="TextRenderer.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="GridUtility.h">
+      <Filter>Tile Rendering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Text">

@@ -25,14 +25,20 @@ void Profiler::Update(float deltatime)
 	  top left of the keyboard, below ESC, is called...(The one that brings up 
 	  the console to activate godmode on Fallout 3...).
 	*/
-	//if (window->GetKeyboard()->KeyTriggered(KEYBOARD_P)) renderingEnabled = !renderingEnabled;
+	if (window->GetKeyboard()->KeyTriggered(KEYBOARD_P))
+	{
+		renderingEnabled = !renderingEnabled;
+	}
 
 	UpdateProfiling();
-	//if (renderingEnabled)	RenderToScreen();
-	//else					updateTimer.StopTimer();
-
-	RenderToScreen();
-	updateTimer.StopTimer();
+	if (renderingEnabled)
+	{
+		RenderToScreen();
+	}
+	else
+	{
+		updateTimer.StopTimer();
+	}
 
 	//Timer is stopped in the render function if that is enabled.
 	//So it can time itself, with a minimal loss of accuracy.
@@ -47,15 +53,23 @@ void Profiler::UpdateProfiling()
 
 void Profiler::RenderToScreen()
 {
-	//FPS COUNTER
+	RenderFPSCounter();
+	RenderTimers();
+}
+
+void Profiler::RenderFPSCounter()
+{
 	fpsCounter.CalculateFPS(window->GetTimer()->GetMS());
 	renderer->AddText(Text(
-		("FPS: " + std::to_string(fpsCounter.fps)),
+		("FPS: " + to_string(fpsCounter.fps)),
 		Vector3(0, 0, 0), TEXT_SIZE));
+}
 
-	//TIMERS
+void Profiler::RenderTimers()
+{
 	float offset = 100.0f;
-	for each(std::pair<string, SubsystemTimer*> timer in timers) {
+	for each(std::pair<string, SubsystemTimer*> timer in timers)
+	{
 		renderer->AddText(Text(
 			(timer.first + ":" + std::to_string(timer.second->timePassed)),
 			Vector3(0, offset, 0), TEXT_SIZE));
@@ -63,9 +77,9 @@ void Profiler::RenderToScreen()
 	}
 
 	/*
-	  Very slight loss in accuracy of the Profiler's own timer.
-	  Couldnt think of another way to display a timer without
-	  actually stopping the timer...
+	Very slight loss in accuracy of the Profiler's own timer.
+	Couldnt think of another way to display a timer without
+	actually stopping the timer...
 	*/
 	updateTimer.StopTimer();
 	renderer->AddText(Text(

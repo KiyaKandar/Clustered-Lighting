@@ -44,12 +44,12 @@ int main()
 
 	//Game loop...
 	while (window->UpdateWindow() && !window->GetKeyboard()->KeyTriggered(KEYBOARD_ESCAPE)) {
-		float deltatime = window->GetTimer()->GetTimedMS();
+		const float deltatime = window->GetTimer()->GetTimedMS();
 
 		camControl->ApplyInputs(deltatime);
 
-		renderer->Update(deltatime);
 		profiler->Update(deltatime);
+		renderer->Update(deltatime);
 	}
 
 	delete window;

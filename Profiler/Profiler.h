@@ -16,21 +16,27 @@ class Profiler : public Subsystem
 {
 public:
 	Profiler(Renderer* ren, Window* win, int numTimers);
-	Profiler() {}
+	Profiler()
+	{}
 
-	~Profiler() {}
+	~Profiler()
+	{}
 
 	void Update(float deltatime = 0);
 
 	//Name is used when displaying the information
-	void AddSubSystemTimer(string name, SubsystemTimer* t) {
-		if (numAdded == numTimers) {
+	void AddSubSystemTimer(string name, SubsystemTimer* t)
+	{
+		if (numAdded == numTimers)
+		{
 			throw new exception("Reached max timers");
 		}
-		else if (name.empty()) {
+		else if (name.empty())
+		{
 			throw new exception("Timer name cannot be empty");
 		}
-		else {
+		else
+		{
 			timers.insert({ name, t });
 			numAdded++;
 		}
@@ -40,9 +46,13 @@ private:
 	void UpdateProfiling();
 	void RenderToScreen();
 
-	int		numTimers;
-	int		numAdded = 0;
-	bool	renderingEnabled = false;
+	void RenderMemory() const;
+	void RenderFPSCounter();
+	void RenderTimers();
+
+	int	numTimers;
+	int	numAdded = 0;
+	bool renderingEnabled = false;
 
 	Window*			 window;
 	Renderer*		 renderer;

@@ -88,7 +88,7 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	init = true;
 }
 
-Renderer::~Renderer(void)
+Renderer::~Renderer()
 {
 	delete camera;
 	
