@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		ASSIMP\lib\assimp-vc140-mt.pdb = ASSIMP\lib\assimp-vc140-mt.pdb
 		Shaders\Compute\compute.glsl = Shaders\Compute\compute.glsl
 		Shaders\Compute\dataPrep.glsl = Shaders\Compute\dataPrep.glsl
+		GLEW\lib\Debug\glew32.lib = GLEW\lib\Debug\glew32.lib
+		GLEW\lib\Release\glew32.lib = GLEW\lib\Release\glew32.lib
 		Shaders\SSAO\ssao_lightingfrag.glsl = Shaders\SSAO\ssao_lightingfrag.glsl
 	EndProjectSection
 EndProject
