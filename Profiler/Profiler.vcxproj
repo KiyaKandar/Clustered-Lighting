@@ -19,14 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FramerateCounter.h" />
+    <ClInclude Include="Framerate\FramerateCounter.h" />
     <ClInclude Include="Profiler.h" />
-    <ClInclude Include="SubsystemTimer.h" />
+    <ClInclude Include="Timers\SubsystemTimer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="FramerateCounter.cpp" />
+    <ClCompile Include="Framerate\FramerateCounter.cpp" />
     <ClCompile Include="Profiler.cpp" />
-    <ClCompile Include="SubsystemTimer.cpp" />
+    <ClCompile Include="Timers\SubsystemTimer.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{49F22D50-FAF7-4245-87A4-20CFA0E8957A}</ProjectGuid>

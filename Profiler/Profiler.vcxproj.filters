@@ -9,20 +9,20 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FramerateCounter.h">
+    <ClInclude Include="Profiler.h" />
+    <ClInclude Include="Framerate\FramerateCounter.h">
       <Filter>FrameRate</Filter>
     </ClInclude>
-    <ClInclude Include="Profiler.h" />
-    <ClInclude Include="SubsystemTimer.h">
+    <ClInclude Include="Timers\SubsystemTimer.h">
       <Filter>Timer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="FramerateCounter.cpp">
+    <ClCompile Include="Profiler.cpp" />
+    <ClCompile Include="Framerate\FramerateCounter.cpp">
       <Filter>FrameRate</Filter>
     </ClCompile>
-    <ClCompile Include="Profiler.cpp" />
-    <ClCompile Include="SubsystemTimer.cpp">
+    <ClCompile Include="Timers\SubsystemTimer.cpp">
       <Filter>Timer</Filter>
     </ClCompile>
   </ItemGroup>
