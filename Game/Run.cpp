@@ -1,5 +1,4 @@
 #pragma comment(lib, "nclgl.lib")
-#pragma comment(lib, "Threading.lib")
 #pragma comment(lib, "Profiler.lib")
 #pragma comment(lib, "assimp-vc140-mt.lib")
 

@@ -81,8 +81,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\ASSIMP\include\assimp;..\libvorbis-1.3.2\include;..\OpenAL 1.1 SDK\include;..\SOIL;..\GLEW\include;..\nclgl\;$(IncludePath)</IncludePath>
-    <LibraryPath>..\ASSIMP\lib;..\OpenAL 1.1 SDK\libs\$(Configuration);..\nclgl\$(Configuration);..\SOIL\$(Configuration);..\GLEW\lib\$(Configuration)\;..\libvorbis-1.3.2\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IncludePath>..\ASSIMP\include\assimp;..\SOIL;..\GLEW\include;..\nclgl\;$(IncludePath)</IncludePath>
+    <LibraryPath>..\ASSIMP\lib;..\nclgl\$(Configuration);..\SOIL\$(Configuration);..\GLEW\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -135,7 +135,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\ASSIMP\lib;..\Game Engine\GLEW\lib;..\libvorbis-1.3.2;..\OpenAL 1.1 SDK\libs\Win32;$(SolutionDir)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\ASSIMP\lib;..\Game Engine\GLEW\lib;$(SolutionDir)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <ProjectReference />
   </ItemDefinitionGroup>

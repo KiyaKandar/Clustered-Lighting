@@ -151,8 +151,8 @@
     <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>..\ASSIMP\include\assimp;..\libvorbis-1.3.2\include;..\OpenAL 1.1 SDK\include;..\GLEW\include;..\SOIL;$(IncludePath)</IncludePath>
-    <LibraryPath>..\ASSIMP\lib\$(Configuration);..\libvorbis-1.3.2\$(Configuration);..\OpenAL 1.1 SDK\libs\$(Configuration);..\SOIL\$(Configuration);..\GLEW\lib\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IncludePath>..\ASSIMP\include\assimp;..\GLEW\include;..\SOIL;$(IncludePath)</IncludePath>
+    <LibraryPath>..\ASSIMP\lib\$(Configuration);..\SOIL\$(Configuration);..\GLEW\lib\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>..\ASSIMP\include\assimp;..\libvorbis-1.3.2\include;..\OpenAL 1.1 SDK\include;..\GLEW\include;..\SOIL;$(IncludePath)</IncludePath>
