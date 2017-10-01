@@ -2,7 +2,7 @@
 
 #include "FramerateCounter.h"
 #include "../Game/Subsystems/Subsystem.h"
-#include "../nclgl/Text.h"
+#include "../nclgl/Rendering/Text/Text.h"
 #include <map>
 
 class Window;

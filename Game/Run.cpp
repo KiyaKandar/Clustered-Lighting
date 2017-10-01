@@ -6,11 +6,11 @@
 #include "CameraControl/CameraController.h"
 #include "../Profiler/Profiler.h"
 
-#include "../NCLGL/window.h"
-#include "../NCLGL/Renderer.h"
-#include "../NCLGL/Model.h"
-#include "../NCLGL/Light.h"
-#include "../NCLGL/GConfiguration.h"
+#include "../NCLGL/Rendering/View/window.h"
+#include "../NCLGL/Rendering/Renderer/Renderer.h"
+#include "../NCLGL/ASSIMP/Model.h"
+#include "../NCLGL/Utility/Light.h"
+#include "../NCLGL/GraphicsSettings/SettingsType/GConfiguration.h"
 #include "GraphicsConfiguration/GLConfig.h"
 
 void ApplyLightInput(Light* light, const Window& window);

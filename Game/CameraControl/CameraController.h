@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../nclgl/Camera.h"
-#include "../nclgl/Window.h"
+#include "../nclgl/Rendering/View/Camera.h"
+#include "../nclgl/Rendering/View/Window.h"
 
 class CameraController
 {

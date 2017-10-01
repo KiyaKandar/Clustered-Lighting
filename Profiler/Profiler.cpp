@@ -1,7 +1,7 @@
 #include "Profiler.h"
 
-#include "../nclgl/Window.h"
-#include "../nclgl/Renderer.h"
+#include "../nclgl/Rendering/View/Window.h"
+#include "../nclgl/Rendering/Renderer/Renderer.h"
 
 #define FRAME_MIN 1
 #define TEXT_SIZE 15.0f

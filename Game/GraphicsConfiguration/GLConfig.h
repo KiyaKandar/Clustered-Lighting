@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../nclgl/Vector2.h"
-#include "../nclgl/Matrix4.h"
+#include "../nclgl/Maths/Vector2.h"
+#include "../nclgl/Maths/Matrix4.h"
 
 class GLConfig
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../nclgl/GSetting.h"
+#include "../nclgl/GraphicsSettings/SettingsType/GSetting.h"
 #include "GLConfig.h"
 
 class GLUtil
