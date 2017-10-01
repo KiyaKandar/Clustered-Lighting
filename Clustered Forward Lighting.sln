@@ -23,7 +23,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Shaders\Compute\dataPrep.glsl = Shaders\Compute\dataPrep.glsl
 		GLEW\lib\Debug\glew32.lib = GLEW\lib\Debug\glew32.lib
 		GLEW\lib\Release\glew32.lib = GLEW\lib\Release\glew32.lib
+		SOIL\Debug\SOIL.lib = SOIL\Debug\SOIL.lib
+		SOIL\Release\SOIL.lib = SOIL\Release\SOIL.lib
 		Shaders\SSAO\ssao_lightingfrag.glsl = Shaders\SSAO\ssao_lightingfrag.glsl
+		SOIL\Debug\vc120.pdb = SOIL\Debug\vc120.pdb
+		SOIL\Release\vc120.pdb = SOIL\Release\vc120.pdb
 	EndProjectSection
 EndProject
 Global
