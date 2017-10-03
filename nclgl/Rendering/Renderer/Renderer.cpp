@@ -72,7 +72,6 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 		GLConfig::NUM_X_AXIS_TILES, GLConfig::NUM_Y_AXIS_TILES, GLConfig::NUM_Z_AXIS_TILES,
 		GLConfig::MIN_NDC_COORDS,	GLConfig::MAX_NDC_COORDS);
 
-	screenTiles = tiles->GetScreenTiles();
 	tileData = tiles->GetTileData();
 
 	InitLightSSBO();
@@ -151,13 +150,12 @@ void Renderer::Update(const float& deltatime)
 
 	UpdateScene(deltatime);
 
-	tiles->AllocateLightsGPU(GLConfig::SHARED_PROJ_MATRIX, viewMatrix, camera->GetPosition());
+	tiles->AllocateLightsCPU(GLConfig::SHARED_PROJ_MATRIX, viewMatrix, tilelightssssbo, camera->GetPosition());
 
-	//tiles->AllocateLightsCPU(GLConfig::SHARED_PROJ_MATRIX, viewMatrix, tilelightssssbo, camera->GetPosition());
-	//tileData = tiles->GetTileData();
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, tilelightssssbo);
-	//glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(TileData), tileData);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	tileData = tiles->GetTileData();
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, tilelightssssbo);
+	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(TileData), tileData);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 	RenderScene();
 
@@ -236,12 +234,6 @@ void Renderer::RelinkShaders() const
 		component->RegenerateShaders();
 		component->LinkShaders();
 	}
-
-	tiles->dataPrep->Regenerate();
-	tiles->dataPrep->LinkProgram();
-
-	tiles->compute->Regenerate();
-	tiles->compute->LinkProgram();
 }
 
 void Renderer::DrawAllText() const

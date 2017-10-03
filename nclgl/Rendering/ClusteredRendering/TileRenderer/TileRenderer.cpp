@@ -37,16 +37,6 @@ TileRenderer::TileRenderer(Light** lights, int numLights, int numXTiles, int num
 
 	gridPlanes = new CubePlanes[numTiles];
 
-	compute = new ComputeShader(SHADERDIR"/Compute/compute.glsl", true);
-	compute->LinkProgram();
-	loc_numZTiles = glGetUniformLocation(compute->GetProgram(), "numZTiles");
-
-	dataPrep = new ComputeShader(SHADERDIR"/Compute/dataPrep.glsl", true);
-	dataPrep->LinkProgram();
-	loc_projMatrix = glGetUniformLocation(dataPrep->GetProgram(), "projectionMatrix");
-	loc_projView = glGetUniformLocation(dataPrep->GetProgram(), "projView");
-	loc_cameraPos = glGetUniformLocation(dataPrep->GetProgram(), "cameraPos");
-
 	tileData = new TileData();
 	GenerateGrid();
 	InitGridSSBO();
@@ -62,12 +52,6 @@ TileRenderer::TileRenderer()
 
 	numTiles = 0;
 
-	compute = new ComputeShader(SHADERDIR"/Compute/compute.glsl", true);
-	compute->LinkProgram();
-
-	dataPrep = new ComputeShader(SHADERDIR"/Compute/dataPrep.glsl", true);
-	dataPrep->LinkProgram();
-
 	InitGridSSBO();
 }
 
@@ -77,7 +61,6 @@ void TileRenderer::GenerateGrid()
 	const Vector3 screenDimension(2, 2, 15000.0f);
 
 	screenCube = Cube(screenPos, screenDimension);
-	screenPlanes = GridUtility::GenerateCubePlanes(screenPos, screenDimension);
 
 	const GridData gridData(grid, gridPlanes, screenTiles, minCoord);
 	GridUtility::Generate3DGrid(gridData, gridDimensions, gridSize);
@@ -85,21 +68,8 @@ void TileRenderer::GenerateGrid()
 
 void TileRenderer::InitGridSSBO()
 {
-	gridPlanesSSBO = GLUtil::InitSSBO(1, 4, gridPlanesSSBO,
-		sizeof(CubePlanes) * numTiles, gridPlanes, GL_STATIC_COPY);
-
 	screenSpaceDataSSBO = GLUtil::InitSSBO(1, 5, screenSpaceDataSSBO,
 		sizeof(ScreenSpaceData), &ssdata, GL_STATIC_COPY);
-
-	screenCubeSSBO = GLUtil::InitSSBO(1, 6, screenCubeSSBO,
-		sizeof(CubePlanes), &screenPlanes, GL_STATIC_COPY);
-
-	glGenBuffers(1, &countBuffer);
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, countBuffer);
-	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint), NULL, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
-	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, countBuffer);
-
 }
 
 void TileRenderer::AllocateLightsCPU(const Matrix4& projectionMatrix,
@@ -108,19 +78,6 @@ void TileRenderer::AllocateLightsCPU(const Matrix4& projectionMatrix,
 	PrepareDataCPU(projectionMatrix, viewMatrix, cameraPos);
 	CullLights();
 	FillTilesCPU(buffer);
-}
-
-void TileRenderer::AllocateLightsGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, 
-	const Vector3& cameraPos) const
-{
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, countBuffer);
-	glInvalidateBufferData(countBuffer);
-	GLuint zero = 0;
-	glClearBufferData(GL_ATOMIC_COUNTER_BUFFER, GL_R32UI, GL_RED_INTEGER, GL_UNSIGNED_INT, &zero);
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
-
-	PrepareDataGPU(projectionMatrix, viewMatrix, cameraPos);
-	FillTilesGPU();
 }
 
 void TileRenderer::FillTilesCPU(GLuint buffer)
@@ -157,7 +114,6 @@ void TileRenderer::PrepareDataCPU(const Matrix4& projectionMatrix, const Matrix4
 	{
 		const Vector4 worldLight = Vector4(lights[i]->GetPosition().x, lights[i]->GetPosition().y, lights[i]->GetPosition().z, 1.0f);
 		const Vector4 viewPos = projView * worldLight;
-		const Vector3 clipPos = Vector3(viewPos.x, viewPos.y, viewPos.z) / viewPos.w;
 
 		//Store reciprocal to avoid use of division below.
 		const float w = 1.f / viewPos.w;
@@ -169,51 +125,13 @@ void TileRenderer::PrepareDataCPU(const Matrix4& projectionMatrix, const Matrix4
 	}
 }
 
-void TileRenderer::FillTilesGPU() const
-{
-	//Writes to the shared buffer used in lighting pass
-	compute->UseProgram();
-
-	glUniform1i(loc_numZTiles, gridSize.z);
-
-	compute->Compute(Vector3(1, 1, 1));
-
-	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT);
-}
-
-void TileRenderer::PrepareDataGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, 
-	const Vector3& cameraPos) const 
-{
-	Matrix4 projView = projectionMatrix * viewMatrix;
-	const Vector4 camPos = Vector4(viewMatrix.values[12], viewMatrix.values[13], viewMatrix.values[14], 0);
-	dataPrep->UseProgram();
-
-	glUniformMatrix4fv(loc_projMatrix, 1, false, (float*)&projectionMatrix);
-	glUniformMatrix4fv(loc_projView, 1, false, (float*)&projView);
-
-	float vec4[4] = { camPos.x, camPos.y, camPos.z, 0 };
-	glUniform4fv(loc_cameraPos, 1, vec4);
-
-	dataPrep->Compute(Vector3(2, 1, 1));
-	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT);
-}
-
 void TileRenderer::CullLights()
 {
-	const Matrix4 invProj = Matrix4::Inverse(GLConfig::SHARED_PROJ_MATRIX);
-
 	numLightsInFrustum = 0;
 
 	for (int i = 0; i < numLights; ++i)
 	{
-
-		Vector3 lightWorld = invProj * Vector3(screenLightData[i].x, screenLightData[i].y, screenLightData[i].z);
-		float lightWorldRadius = (invProj * Vector3(screenLightData[i].x, 0.f, 0.f)).x;
-
-
-
 		if (screenCube.SphereColliding(screenLightData[i]))
-		//if(true)
 		{
 			ssdata.data[numLightsInFrustum] = screenLightData[i];
 			ssdata.indexes[numLightsInFrustum] = i;

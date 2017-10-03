@@ -44,17 +44,11 @@ public:
 
 	~TileRenderer() 
 	{
-		delete compute;
 	}
 
 	TileData* GetTileData() const
 	{
 		return tileData;
-	}
-
-	Tile* GetScreenTiles()
-	{
-		return screenTiles;
 	}
 
 	int GetNumTiles()  const
@@ -66,16 +60,10 @@ public:
 	void InitGridSSBO();
 
 	void AllocateLightsCPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, GLuint buffer, const Vector3& cameraPos);
-	void AllocateLightsGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, const Vector3& cameraPos) const;
-	
-	ComputeShader* dataPrep;
-	ComputeShader* compute;
 
 private:
 	void PrepareDataCPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, const Vector3& cameraPos);
-	void PrepareDataGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, const Vector3& cameraPos) const;
 
-	void FillTilesGPU() const;
 	void FillTilesCPU(GLuint buffer);
 	void CullLights();
 
@@ -106,14 +94,7 @@ private:
 
 	//SSBO Stuff
 	GLuint tileDataSSBO;
-	GLuint gridPlanesSSBO;
 	GLuint screenSpaceDataSSBO;
-	GLuint modelMatricesSSBO;
-	GLuint screenCubeSSBO;
-
-	GLuint countBuffer;
-	GLuint count;
-	CubePlanes screenPlanes;
 
 	//Uniform location
 	GLuint loc_numZTiles;
