@@ -63,12 +63,12 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	SetAsDebugDrawingRenderer(); //For light debugging
 	SetCurrentShader(textShader);
 
-	for (int i = 0; i < NUM_LIGHTS; ++i)
+	for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
 	{
 		lightData[i] = lights[i]->GetData();
 	}
 
-	tiles = new TileRenderer(lights, NUM_LIGHTS, 
+	tiles = new TileRenderer(lights, GLConfig::NUM_LIGHTS,
 		GLConfig::NUM_X_AXIS_TILES, GLConfig::NUM_Y_AXIS_TILES, GLConfig::NUM_Z_AXIS_TILES,
 		GLConfig::MIN_NDC_COORDS,	GLConfig::MAX_NDC_COORDS);
 
@@ -102,7 +102,7 @@ Renderer::~Renderer()
 }
 
 void Renderer::InitDebugLights() {
-	for (int i = 1; i < NUM_LIGHTS; ++i) {
+	for (int i = 1; i < GLConfig::NUM_LIGHTS; ++i) {
 		//Create new sphere.
 		Model* sphere = new Model("../sphere/sphere.obj");
 	
@@ -122,7 +122,7 @@ void Renderer::InitLightSSBO()
 	GLUtil::ClearGLErrorStack();
 
 	ssbo = GLUtil::InitSSBO(1, 1, ssbo, 
-		sizeof(LightData) * NUM_LIGHTS, &lightData, GL_STATIC_COPY);
+		sizeof(LightData) * GLConfig::NUM_LIGHTS, &lightData, GL_STATIC_COPY);
 	GLUtil::CheckGLError("Light Data SSBO");
 
 	tilesssbo = GLUtil::InitSSBO(1, 2, tilesssbo, 
@@ -208,7 +208,7 @@ void Renderer::UpdateScene(float msec)
 
 void Renderer::DrawDebugLights()
 {
-	for (int i = 0; i < NUM_LIGHTS - 1; ++i)
+	for (int i = 0; i < GLConfig::NUM_LIGHTS - 1; ++i)
 	{
 		//Prepare everything to render transparent spheres + debug shapes
 		glEnable(GL_BLEND);
@@ -221,7 +221,7 @@ void Renderer::DrawDebugLights()
 		glDisable(GL_BLEND);
 	}
 
-	for (int i = 0; i < NUM_LIGHTS; ++i) 
+	for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i) 
 	{
 		//Blue centre
 		DrawDebugCross(DEBUGDRAW_PERSPECTIVE, lights[i]->GetPosition(), Vector3(100, 100, 100), Vector3(0, 0, 1));

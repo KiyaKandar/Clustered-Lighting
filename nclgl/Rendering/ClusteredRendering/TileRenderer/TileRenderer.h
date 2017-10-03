@@ -15,6 +15,7 @@
 
 #include <vector>
 #include <type_traits>
+#include "../Game/GraphicsConfiguration/GLConfig.h"
 
 class Light;
 
@@ -22,16 +23,16 @@ const bool THROW_ERROR = true;
 
 struct TileData 
 {
-	int lightIndexes[1000];
-	int tileLights[1000][100];
+	int lightIndexes[GLConfig::NUM_TILES];
+	int tileLights[GLConfig::NUM_TILES][GLConfig::NUM_LIGHTS];
 };
 
 struct ScreenSpaceData
 {
-	float indexes[100];
+	float indexes[GLConfig::NUM_LIGHTS];
 	Vector4 numLightsIn;
 
-	Vector4 data[100];
+	Vector4 data[GLConfig::NUM_LIGHTS];
 };
 
 class TileRenderer
@@ -90,8 +91,8 @@ private:
 	Vector3 gridDimensions;
 
 	//Data
-	Tile screenTiles[1000];
-	Cube grid[1000];
+	Tile screenTiles[GLConfig::NUM_TILES];
+	Cube grid[GLConfig::NUM_TILES];
 	CubePlanes* gridPlanes;
 	
 	Cube screenCube;
@@ -99,9 +100,9 @@ private:
 
 	std::vector<int> lightsInFrustrum;
 
-	Vector4 screenLightData[100];
+	Vector4 screenLightData[GLConfig::NUM_LIGHTS];
 	ScreenSpaceData ssdata;
-	Matrix4 lightModelMatrices[100];
+	Matrix4 lightModelMatrices[GLConfig::NUM_LIGHTS];
 
 	//SSBO Stuff
 	GLuint tileDataSSBO;

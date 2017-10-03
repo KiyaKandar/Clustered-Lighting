@@ -18,7 +18,6 @@
 
 #define DEBUG_LIGHTS
 
-const int NUM_LIGHTS = 100;
 const int SHADOW_SIZE = 4096;
 const int RESX = 1280;
 const int RESY = 720;
@@ -126,8 +125,8 @@ protected:
 	GLuint tilelightssssbo;
 	void InitLightSSBO();
 
-	Light* lights[NUM_LIGHTS];
-	LightData lightData[NUM_LIGHTS];
+	Light* lights[GLConfig::NUM_LIGHTS];
+	LightData lightData[GLConfig::NUM_LIGHTS];
 
 	//Frustum culling + ordering.
 	void BuildMeshLists();

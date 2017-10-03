@@ -24,6 +24,9 @@ public:
 	static const int NUM_X_AXIS_TILES = 10;
 	static const int NUM_Y_AXIS_TILES = 10;
 	static const int NUM_Z_AXIS_TILES = 10;
+	static constexpr int NUM_TILES = NUM_X_AXIS_TILES * NUM_Y_AXIS_TILES * NUM_Z_AXIS_TILES;
+
+	static const int NUM_LIGHTS = 100;
 
 	static const int SHADOW_LIGHTS = 5;
 
