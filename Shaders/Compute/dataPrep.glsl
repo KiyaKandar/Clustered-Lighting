@@ -40,7 +40,7 @@ struct LightData
 //Shared with lighting shader
 layout(std430, binding = 1) buffer LightDataBuffer
 {
-	LightData ldata[];
+	LightData lightData[];
 };
 
 //Shared with compute shader
@@ -58,15 +58,8 @@ layout(std430, binding = 4) buffer CubePlanesBuffer
 layout(std430, binding = 5) buffer ScreenSpaceDataBuffer
 {
 	float indexes[numLights];
-	//float padding[9];
-
 	vec4 numLightsIn;
-	vec4 data[];
-};
-
-layout(std430, binding = 6) buffer ScreenCubeBuffer
-{
-	CubePlanes screenCube1;
+	vec4 NDCCoords[];
 };
 
 layout(binding = 0) uniform atomic_uint count;
@@ -79,23 +72,24 @@ CubePlanes screenCube = CubePlanes(splanesf, splanesp);
 void main()
 {
 	//move to screenspace.
-	vec4 worldLight = vec4(ldata[gl_GlobalInvocationID.x].pos4.xyz, 1);
+	vec4 worldLight = vec4(lightData[gl_GlobalInvocationID.x].pos4.xyz, 1);
 	vec4 viewPos = projView * worldLight;
 
 	//Store reciprocal to avoid use of division below.
 	float w = 1.0f / viewPos.w;
 
 	//Final screenspace data.
-	vec4 result = vec4(viewPos.x * w, viewPos.y * w, viewPos.z, ldata[gl_GlobalInvocationID.x].lightRadius * w);
+	vec4 ndcCoord = vec4(viewPos.x * w, viewPos.y * w, viewPos.z, lightData[gl_GlobalInvocationID.x].lightRadius * w);
 
-	bool colliding = SphereColliding(screenCube, result);
+	bool colliding = SphereColliding(screenCube, ndcCoord);
 
 	//If light affects any clusters on screen, send to next shader for allocation, 
 	//else cull.
 	if (colliding) 
 	{
 		uint currentLightCount = atomicCounterIncrement(count);
-		data[currentLightCount] = result;
+
+		NDCCoords[currentLightCount] = ndcCoord;
 		indexes[currentLightCount] = gl_GlobalInvocationID.x;
 	}
 }

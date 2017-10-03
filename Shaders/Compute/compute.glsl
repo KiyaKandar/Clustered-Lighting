@@ -40,10 +40,8 @@ layout(std430, binding = 4) buffer CubePlanesBuffer
 layout(std430, binding = 5) buffer ScreenSpaceDataBuffer
 {
 	float indexes[numLights];
-	//float padding[9];
 	vec4 numLightsIn;
-
-	vec4 data[];
+	vec4 NDCCoords[];
 };
 
 layout(binding = 0) uniform atomic_uint count;
@@ -62,14 +60,14 @@ void main()
 
 	int intersections = 0;
 
-	uint c = atomicCounter(count);
-	for (int i = 0; i < c; i++)
+	uint lightsOnScreen = atomicCounter(count);
+	for (int i = 0; i < lightsOnScreen; i++)
 	{
-		int ind = int(indexes[i]);
+		int lightIndex = int(indexes[i]);
 
-		if (SphereColliding(cubePlanes[index], data[i]))
+		if (SphereColliding(cubePlanes[index], NDCCoords[i]))
 		{
-			tileLights[index][intersections] = ind;
+			tileLights[index][intersections] = lightIndex;
 			intersections++;
 		}
 	}

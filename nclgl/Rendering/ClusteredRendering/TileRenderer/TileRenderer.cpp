@@ -65,12 +65,6 @@ TileRenderer::TileRenderer()
 
 void TileRenderer::GenerateGrid()
 {
-	const Vector3 screenPos(-1.0f, -1.0f, 1.0f);
-	const Vector3 screenDimension(2, 2, 15000.0f);
-
-	screenCube = Cube(screenPos, screenDimension);
-	screenPlanes = GridUtility::GenerateCubePlanes(screenPos, screenDimension);
-
 	const GridData gridData(grid, gridPlanes, screenTiles, minCoord);
 	GridUtility::Generate3DGrid(gridData, gridDimensions, gridSize);
 }
@@ -82,9 +76,6 @@ void TileRenderer::InitGridSSBO()
 
 	screenSpaceDataSSBO = GLUtil::InitSSBO(1, 5, screenSpaceDataSSBO,
 		sizeof(ScreenSpaceData), &ssdata, GL_STATIC_COPY);
-
-	screenCubeSSBO = GLUtil::InitSSBO(1, 6, screenCubeSSBO,
-		sizeof(CubePlanes), &screenPlanes, GL_STATIC_COPY);
 
 	glGenBuffers(1, &countBuffer);
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, countBuffer);

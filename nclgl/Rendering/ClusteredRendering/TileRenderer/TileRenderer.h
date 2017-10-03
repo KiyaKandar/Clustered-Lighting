@@ -101,11 +101,9 @@ private:
 	GLuint gridPlanesSSBO;
 	GLuint screenSpaceDataSSBO;
 	GLuint modelMatricesSSBO;
-	GLuint screenCubeSSBO;
 
 	GLuint countBuffer;
 	GLuint count;
-	CubePlanes screenPlanes;
 
 	//Uniform location
 	GLuint loc_numZTiles;

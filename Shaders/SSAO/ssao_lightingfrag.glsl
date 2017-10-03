@@ -52,12 +52,7 @@ struct Tile
 
 layout (std430, binding = 1) buffer LightDataBuffer
 {
-	LightData data[];
-};
-
-layout (std430, binding = 2) buffer TileDataBuffer
-{
-	Tile screenTiles[];
+	LightData lightData[];
 };
 
 layout (std430, binding = 3) buffer TileLightsBuffer
@@ -93,7 +88,7 @@ void main(void){
 	{
 		int lightIndex = tileLights[tile][j];
 
-		vec3 lightPosition = data[lightIndex].pos4.xyz;
+		vec3 lightPosition = lightData[lightIndex].pos4.xyz;
 
 		vec3 colour = vec3(0.0, 0.0, 0.0);
 
@@ -103,17 +98,17 @@ void main(void){
 		vec3 viewDir = normalize(-position);
 		vec3 lightDir = normalize(lightPosView - position);
 		vec3 diffuse = max(dot(normal, lightDir), 0.0) *
-			albedoCol * data[lightIndex].lightColour.rgb;
+			albedoCol * lightData[lightIndex].lightColour.rgb;
 
 		//Specular
 		vec3 halfDir = normalize(lightDir + viewDir);
 		float specPower = pow(max(dot(normal, halfDir), 0.0), 500.0);
-		vec3 specular = data[lightIndex].lightColour.rgb * specPower;
+		vec3 specular = lightData[lightIndex].lightColour.rgb * specPower;
 
 		//Attenuation
 		float dist = length(lightPosView - position);
-		float attenuation = 1.0 - clamp(dist / data[lightIndex].lightRadius, 0.0, 1.0);
-		attenuation *= data[lightIndex].intensity;
+		float attenuation = 1.0 - clamp(dist / lightData[lightIndex].lightRadius, 0.0, 1.0);
+		attenuation *= lightData[lightIndex].intensity;
 
 		if (lightIndex < numShadowCastingLights)
 		{
