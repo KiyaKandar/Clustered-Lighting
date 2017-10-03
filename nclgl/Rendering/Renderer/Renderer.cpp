@@ -9,7 +9,7 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	camera = cam;
 	wparent = &parent;
 
-	projMatrix = Matrix4::Perspective(1.0f, 15000.0f, static_cast<float>(width) / static_cast<float>(height), 45.0f);
+	projMatrix = GLConfig::SHARED_PROJ_MATRIX;// Matrix4::Perspective(1.0f, 15000.0f, static_cast<float>(width) / static_cast<float>(height), 45.0f);
 
 	//Shadow casting lights must be declared first
 	lights[0] = new Light(Vector3(0, 1800, 200),	Vector4(0.9, 0.7, 0.4, 1),					30000.0f,	2.0f);
@@ -151,11 +151,9 @@ void Renderer::Update(const float& deltatime)
 
 	UpdateScene(deltatime);
 
-	tiles->AllocateLightsGPU(projMatrix, viewMatrix, camera->GetPosition());
+	tiles->AllocateLightsGPU(GLConfig::SHARED_PROJ_MATRIX, viewMatrix, camera->GetPosition());
 
-	//projMatrix = Matrix4::Perspective(1.0f, 15000.0f, (float)width / (float)height, 45.0f);
-	//tiles->AllocateLightsCPU(projMatrix, viewMatrix, tilelightssssbo, camera->GetPosition());
-
+	//tiles->AllocateLightsCPU(GLConfig::SHARED_PROJ_MATRIX, viewMatrix, tilelightssssbo, camera->GetPosition());
 	//tileData = tiles->GetTileData();
 	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, tilelightssssbo);
 	//glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(TileData), tileData);
@@ -217,6 +215,7 @@ void Renderer::DrawDebugLights()
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		
 		UpdateShaderMatrices();
+
 		DrawDebugSphere(debugSpheres[i]);
 
 		glDisable(GL_BLEND);
@@ -226,7 +225,6 @@ void Renderer::DrawDebugLights()
 	{
 		//Blue centre
 		DrawDebugCross(DEBUGDRAW_PERSPECTIVE, lights[i]->GetPosition(), Vector3(100, 100, 100), Vector3(0, 0, 1));
-
 		DrawDebugBox(DEBUGDRAW_PERSPECTIVE, lights[i]->GetPosition(), Vector3(100, 100, 0), Vector3(0, 1, 0));
 	}
 }

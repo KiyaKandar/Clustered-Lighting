@@ -19,6 +19,7 @@ public:
 	void Regenerate();
 protected:
 	bool	LoadShaderFile(string from, string & into);
+	string IncludeShader(string includeLine);
 	GLuint	GenerateShader(string from);
 
 	GLuint	object[1];

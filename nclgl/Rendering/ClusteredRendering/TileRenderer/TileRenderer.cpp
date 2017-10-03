@@ -23,7 +23,7 @@ TileRenderer::TileRenderer(Light** lights, int numLights, int numXTiles, int num
 	gridDimensions = Vector3(
 		std::abs(minScreenCoord.x - maxScreenCoord.x) / static_cast<float>(gridSize.x),
 		std::abs(minScreenCoord.y - maxScreenCoord.y) / static_cast<float>(gridSize.y),
-		1 / static_cast<float>(gridSize.z));
+		15000.0f / static_cast<float>(gridSize.z));
 
 	numTiles = gridSize.x * gridSize.y * gridSize.z;
 
@@ -73,8 +73,8 @@ TileRenderer::TileRenderer()
 
 void TileRenderer::GenerateGrid()
 {
-	const Vector3 screenPos(-1, -1, 0);
-	const Vector3 screenDimension(2, 2, 1);
+	const Vector3 screenPos(-1.0f, -1.0f, 1.0f);
+	const Vector3 screenDimension(2, 2, 15000.0f);
 
 	screenCube = Cube(screenPos, screenDimension);
 	screenPlanes = GridUtility::GenerateCubePlanes(screenPos, screenDimension);
@@ -151,6 +151,7 @@ void TileRenderer::FillTilesCPU(GLuint buffer)
 void TileRenderer::PrepareDataCPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, const Vector3& cameraPos)
 {
 	const Matrix4 projView = projectionMatrix * viewMatrix;
+	//const Matrix4 projView = viewMatrix;
 
 	for (int i = 0; i < numLights; ++i)
 	{
@@ -159,10 +160,10 @@ void TileRenderer::PrepareDataCPU(const Matrix4& projectionMatrix, const Matrix4
 		const Vector3 clipPos = Vector3(viewPos.x, viewPos.y, viewPos.z) / viewPos.w;
 
 		//Store reciprocal to avoid use of division below.
-		const float w = 1 / viewPos.w;
+		const float w = 1.f / viewPos.w;
 
 		//Retrieve distance from camera to light + normalize.
-		const float ndcz = clipPos.z;
+		const float ndcz = viewPos.z;// clipPos.z; // 
 
 		screenLightData[i] = Vector4(viewPos.x * w, viewPos.y * w, ndcz, lights[i]->GetRadius() * w);
 	}
@@ -199,11 +200,20 @@ void TileRenderer::PrepareDataGPU(const Matrix4& projectionMatrix, const Matrix4
 
 void TileRenderer::CullLights()
 {
+	const Matrix4 invProj = Matrix4::Inverse(GLConfig::SHARED_PROJ_MATRIX);
+
 	numLightsInFrustum = 0;
 
 	for (int i = 0; i < numLights; ++i)
 	{
+
+		Vector3 lightWorld = invProj * Vector3(screenLightData[i].x, screenLightData[i].y, screenLightData[i].z);
+		float lightWorldRadius = (invProj * Vector3(screenLightData[i].x, 0.f, 0.f)).x;
+
+
+
 		if (screenCube.SphereColliding(screenLightData[i]))
+		//if(true)
 		{
 			ssdata.data[numLightsInFrustum] = screenLightData[i];
 			ssdata.indexes[numLightsInFrustum] = i;

@@ -22,14 +22,15 @@ BoxCollider::~BoxCollider()
 
 const bool BoxCollider::SphereInside(const Vector3& spherePosition, const float& radius) const
 {
-	bool inside = false;
-
 	for (int i = 0; i < NUMBER_OF_FACES_IN_CUBE; ++i)
 	{
-		inside = inside || faces[i].SphereInPlane(spherePosition, radius);
+		if(!faces[i].SphereInPlane(spherePosition, radius))
+		{
+			return false;
+		}
 	}
 
-	return inside;
+	return true;
 }
 
 const bool BoxCollider::SphereIntersecting(const Vector3& spherePosition, const float& radius) const

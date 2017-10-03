@@ -1,5 +1,9 @@
 #include "Shader.h"
 
+#include <vector>
+#include <sstream>
+#include <iterator>
+
 Shader::Shader(string vFile, string fFile, 
 	string gFile, bool isVerbose)
 {
@@ -98,13 +102,34 @@ bool Shader::LoadShaderFile(string from, string & into) {
 	}
 	while (!file.eof()) {
 		getline(file, temp);
-		into += temp + "\n";
+
+		if (temp.find("#include") != std::string::npos)
+		{
+			into += IncludeShader(temp) + "\n";
+		}
+		else
+		{
+			into += temp + "\n";
+		}
 	}
 
 	file.close();
 	if (verbose) cout << into << endl << endl;
 	if (verbose) cout << "Loaded shader text !" << endl << endl;
 	return true;
+}
+
+string Shader::IncludeShader(string includeLine)
+{
+	std::istringstream iss(includeLine);
+
+	vector<string> tokens{ istream_iterator<string>{iss},
+		istream_iterator<string>{} };
+
+	string glslToAppend;
+	LoadShaderFile(tokens.at(1), glslToAppend);
+
+	return glslToAppend;
 }
 
 void Shader::SetDefaultAttributes() {

@@ -78,7 +78,7 @@ void main(void){
 	//Transform screenspace coordinates into a tile index
 	float xCoord = gl_FragCoord.x / 1280;
 	float yCoord = gl_FragCoord.y / 720;
-	float zCoord = gl_FragCoord.z;// gl_FragDepth;
+	float zCoord = gl_FragCoord.z;
 
 	zCoord = (position.z - 1.0f) / (15000.0f - 1.0f);
 	zCoord = abs(zCoord);
@@ -86,8 +86,6 @@ void main(void){
 	int xIndex = int(xCoord * 10);
 	int yIndex = int(yCoord * 10);
 	int zIndex = int(zCoord * 10);
-
-	//int tile = xIndex + numXTiles * (yIndex + numXTiles * zIndex);// (yIndex * (numYTiles + 10)) + (xIndex * 10) + zIndex;
 
 	int tile = xIndex + (yIndex * 10) + (zIndex * (10 * 10));
 

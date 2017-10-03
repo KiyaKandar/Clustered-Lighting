@@ -6,6 +6,8 @@
 
 #include "../Renderer/OGLRenderer.h"
 
+#include <vector>
+
 #define SHADER_VERTEX	0
 #define SHADER_FRAGMENT 1
 #define SHADER_GEOMETRY 2
@@ -52,6 +54,7 @@ public:
 protected:
 	void	SetDefaultAttributes();
 	bool	LoadShaderFile(string from, string & into);
+	string IncludeShader(string includeLine);
 	GLuint	GenerateShader(string from, GLenum type);
 
 	GLuint	objects[3];

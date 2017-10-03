@@ -1,6 +1,13 @@
 #include "ComputeShader.h"
 #include "../Game/Utility/Util.h"
 
+#include <string>
+#include <algorithm>
+#include <vector>
+#include <sstream>
+#include <fstream>
+#include <iterator>
+
 ComputeShader::ComputeShader(string compute, bool isVerbose)
 {
 	verbose = isVerbose;
@@ -99,13 +106,34 @@ bool ComputeShader::LoadShaderFile(string from, string & into) {
 	}
 	while (!file.eof()) {
 		getline(file, temp);
-		into += temp + "\n";
+
+		if (temp.find("#include") != std::string::npos)
+		{
+			into += IncludeShader(temp) + "\n";
+		}
+		else
+		{
+			into += temp + "\n";
+		}
 	}
 
 	file.close();
 	if (verbose) cout << into << endl << endl;
 	if (verbose) cout << "Loaded shader text !" << endl << endl;
 	return true;
+}
+
+string ComputeShader::IncludeShader(string includeLine)
+{
+	std::istringstream iss(includeLine);
+
+	vector<string> tokens{ istream_iterator<string>{iss},
+		istream_iterator<string>{} };
+
+	string glslToAppend;
+	LoadShaderFile(tokens.at(1), glslToAppend);
+
+	return glslToAppend;
 }
 
 bool ComputeShader::LinkProgram() {

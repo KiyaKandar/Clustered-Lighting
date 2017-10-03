@@ -115,6 +115,154 @@ public:
 		);
 	};
 
+
+	inline const float& operator[](int i) const
+	{
+		return values[i];
+	}
+
+	inline float& operator[](int i)
+	{
+		return values[i];
+	}
+
+		//Added for GameTech - Code from taken from GLU library (all rights reserved).
+		static Matrix4 Inverse(const Matrix4& rhs)
+		{
+			Matrix4 inv;
+			int i;
+
+			inv[0] = rhs[5] * rhs[10] * rhs[15] -
+				rhs[5] * rhs[11] * rhs[14] -
+				rhs[9] * rhs[6] * rhs[15] +
+				rhs[9] * rhs[7] * rhs[14] +
+				rhs[13] * rhs[6] * rhs[11] -
+				rhs[13] * rhs[7] * rhs[10];
+
+			inv[4] = -rhs[4] * rhs[10] * rhs[15] +
+				rhs[4] * rhs[11] * rhs[14] +
+				rhs[8] * rhs[6] * rhs[15] -
+				rhs[8] * rhs[7] * rhs[14] -
+				rhs[12] * rhs[6] * rhs[11] +
+				rhs[12] * rhs[7] * rhs[10];
+
+			inv[8] = rhs[4] * rhs[9] * rhs[15] -
+				rhs[4] * rhs[11] * rhs[13] -
+				rhs[8] * rhs[5] * rhs[15] +
+				rhs[8] * rhs[7] * rhs[13] +
+				rhs[12] * rhs[5] * rhs[11] -
+				rhs[12] * rhs[7] * rhs[9];
+
+			inv[12] = -rhs[4] * rhs[9] * rhs[14] +
+				rhs[4] * rhs[10] * rhs[13] +
+				rhs[8] * rhs[5] * rhs[14] -
+				rhs[8] * rhs[6] * rhs[13] -
+				rhs[12] * rhs[5] * rhs[10] +
+				rhs[12] * rhs[6] * rhs[9];
+
+			inv[1] = -rhs[1] * rhs[10] * rhs[15] +
+				rhs[1] * rhs[11] * rhs[14] +
+				rhs[9] * rhs[2] * rhs[15] -
+				rhs[9] * rhs[3] * rhs[14] -
+				rhs[13] * rhs[2] * rhs[11] +
+				rhs[13] * rhs[3] * rhs[10];
+
+			inv[5] = rhs[0] * rhs[10] * rhs[15] -
+				rhs[0] * rhs[11] * rhs[14] -
+				rhs[8] * rhs[2] * rhs[15] +
+				rhs[8] * rhs[3] * rhs[14] +
+				rhs[12] * rhs[2] * rhs[11] -
+				rhs[12] * rhs[3] * rhs[10];
+
+			inv[9] = -rhs[0] * rhs[9] * rhs[15] +
+				rhs[0] * rhs[11] * rhs[13] +
+				rhs[8] * rhs[1] * rhs[15] -
+				rhs[8] * rhs[3] * rhs[13] -
+				rhs[12] * rhs[1] * rhs[11] +
+				rhs[12] * rhs[3] * rhs[9];
+
+			inv[13] = rhs[0] * rhs[9] * rhs[14] -
+				rhs[0] * rhs[10] * rhs[13] -
+				rhs[8] * rhs[1] * rhs[14] +
+				rhs[8] * rhs[2] * rhs[13] +
+				rhs[12] * rhs[1] * rhs[10] -
+				rhs[12] * rhs[2] * rhs[9];
+
+			inv[2] = rhs[1] * rhs[6] * rhs[15] -
+				rhs[1] * rhs[7] * rhs[14] -
+				rhs[5] * rhs[2] * rhs[15] +
+				rhs[5] * rhs[3] * rhs[14] +
+				rhs[13] * rhs[2] * rhs[7] -
+				rhs[13] * rhs[3] * rhs[6];
+
+			inv[6] = -rhs[0] * rhs[6] * rhs[15] +
+				rhs[0] * rhs[7] * rhs[14] +
+				rhs[4] * rhs[2] * rhs[15] -
+				rhs[4] * rhs[3] * rhs[14] -
+				rhs[12] * rhs[2] * rhs[7] +
+				rhs[12] * rhs[3] * rhs[6];
+
+			inv[10] = rhs[0] * rhs[5] * rhs[15] -
+				rhs[0] * rhs[7] * rhs[13] -
+				rhs[4] * rhs[1] * rhs[15] +
+				rhs[4] * rhs[3] * rhs[13] +
+				rhs[12] * rhs[1] * rhs[7] -
+				rhs[12] * rhs[3] * rhs[5];
+
+			inv[14] = -rhs[0] * rhs[5] * rhs[14] +
+				rhs[0] * rhs[6] * rhs[13] +
+				rhs[4] * rhs[1] * rhs[14] -
+				rhs[4] * rhs[2] * rhs[13] -
+				rhs[12] * rhs[1] * rhs[6] +
+				rhs[12] * rhs[2] * rhs[5];
+
+			inv[3] = -rhs[1] * rhs[6] * rhs[11] +
+				rhs[1] * rhs[7] * rhs[10] +
+				rhs[5] * rhs[2] * rhs[11] -
+				rhs[5] * rhs[3] * rhs[10] -
+				rhs[9] * rhs[2] * rhs[7] +
+				rhs[9] * rhs[3] * rhs[6];
+
+			inv[7] = rhs[0] * rhs[6] * rhs[11] -
+				rhs[0] * rhs[7] * rhs[10] -
+				rhs[4] * rhs[2] * rhs[11] +
+				rhs[4] * rhs[3] * rhs[10] +
+				rhs[8] * rhs[2] * rhs[7] -
+				rhs[8] * rhs[3] * rhs[6];
+
+			inv[11] = -rhs[0] * rhs[5] * rhs[11] +
+				rhs[0] * rhs[7] * rhs[9] +
+				rhs[4] * rhs[1] * rhs[11] -
+				rhs[4] * rhs[3] * rhs[9] -
+				rhs[8] * rhs[1] * rhs[7] +
+				rhs[8] * rhs[3] * rhs[5];
+
+			inv[15] = rhs[0] * rhs[5] * rhs[10] -
+				rhs[0] * rhs[6] * rhs[9] -
+				rhs[4] * rhs[1] * rhs[10] +
+				rhs[4] * rhs[2] * rhs[9] +
+				rhs[8] * rhs[1] * rhs[6] -
+				rhs[8] * rhs[2] * rhs[5];
+
+			float det = rhs[0] * inv[0] + rhs[1] * inv[4] + rhs[2] * inv[8] + rhs[3] * inv[12];
+
+			if (det == 0)
+			{
+				inv.ToIdentity();
+				return inv;
+			}
+
+			det = 1.f / det;
+
+			for (i = 0; i < 16; i++)
+			{
+				inv[i] = inv[i] * det;
+			}
+
+			return inv;
+		}
+
+
 	//Handy string output for the matrix. Can get a bit messy, but better than nothing!
 	inline friend std::ostream& operator<<(std::ostream& o, const Matrix4& m){
 		o << "Mat4(";
