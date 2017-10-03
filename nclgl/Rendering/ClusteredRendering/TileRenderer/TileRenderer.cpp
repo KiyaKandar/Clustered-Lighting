@@ -27,14 +27,6 @@ TileRenderer::TileRenderer(Light** lights, int numLights, int numXTiles, int num
 
 	numTiles = gridSize.x * gridSize.y * gridSize.z;
 
-	for (int i = 0; i < numLights; ++i)
-	{
-		Matrix4 modelMat;
-		modelMat.SetPositionVector(lights[i]->GetPosition());
-
-		lightModelMatrices[i] = modelMat;
-	}
-
 	gridPlanes = new CubePlanes[numTiles];
 
 	compute = new ComputeShader(SHADERDIR"/Compute/compute.glsl", true);
@@ -102,14 +94,6 @@ void TileRenderer::InitGridSSBO()
 
 }
 
-void TileRenderer::AllocateLightsCPU(const Matrix4& projectionMatrix,
-	const Matrix4& viewMatrix, GLuint buffer, const Vector3& cameraPos)
-{
-	PrepareDataCPU(projectionMatrix, viewMatrix, cameraPos);
-	CullLights();
-	FillTilesCPU(buffer);
-}
-
 void TileRenderer::AllocateLightsGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, 
 	const Vector3& cameraPos) const
 {
@@ -121,52 +105,6 @@ void TileRenderer::AllocateLightsGPU(const Matrix4& projectionMatrix, const Matr
 
 	PrepareDataGPU(projectionMatrix, viewMatrix, cameraPos);
 	FillTilesGPU();
-}
-
-void TileRenderer::FillTilesCPU(GLuint buffer)
-{
-	/*
-	For each tile, check which light is within range.
-	Record:
-	- Which lights are intersecting (light indexes are global).
-	- The number of intersections (this provides the length of the array in 2nd dimension).
-	*/
-	for (int t = 0; t < numTiles; ++t)
-	{
-		int intersections = 0;
-
-		for (int l = 0; l < numLightsInFrustum; ++l)
-		{
-			if (grid[t].SphereColliding(ssdata.data[l]))
-			{
-				tileData->tileLights[t][intersections] = inds[l];
-				++intersections;
-			}
-		}
-
-		tileData->lightIndexes[t] = intersections;
-	}
-}
-
-void TileRenderer::PrepareDataCPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, const Vector3& cameraPos)
-{
-	const Matrix4 projView = projectionMatrix * viewMatrix;
-	//const Matrix4 projView = viewMatrix;
-
-	for (int i = 0; i < numLights; ++i)
-	{
-		const Vector4 worldLight = Vector4(lights[i]->GetPosition().x, lights[i]->GetPosition().y, lights[i]->GetPosition().z, 1.0f);
-		const Vector4 viewPos = projView * worldLight;
-		const Vector3 clipPos = Vector3(viewPos.x, viewPos.y, viewPos.z) / viewPos.w;
-
-		//Store reciprocal to avoid use of division below.
-		const float w = 1.f / viewPos.w;
-
-		//Retrieve distance from camera to light + normalize.
-		const float ndcz = viewPos.z;// clipPos.z; // 
-
-		screenLightData[i] = Vector4(viewPos.x * w, viewPos.y * w, ndcz, lights[i]->GetRadius() * w);
-	}
 }
 
 void TileRenderer::FillTilesGPU() const
@@ -196,32 +134,4 @@ void TileRenderer::PrepareDataGPU(const Matrix4& projectionMatrix, const Matrix4
 
 	dataPrep->Compute(Vector3(2, 1, 1));
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT);
-}
-
-void TileRenderer::CullLights()
-{
-	const Matrix4 invProj = Matrix4::Inverse(GLConfig::SHARED_PROJ_MATRIX);
-
-	numLightsInFrustum = 0;
-
-	for (int i = 0; i < numLights; ++i)
-	{
-
-		Vector3 lightWorld = invProj * Vector3(screenLightData[i].x, screenLightData[i].y, screenLightData[i].z);
-		float lightWorldRadius = (invProj * Vector3(screenLightData[i].x, 0.f, 0.f)).x;
-
-
-
-		if (screenCube.SphereColliding(screenLightData[i]))
-		//if(true)
-		{
-			ssdata.data[numLightsInFrustum] = screenLightData[i];
-			ssdata.indexes[numLightsInFrustum] = i;
-			inds[numLightsInFrustum] = i;
-
-			++numLightsInFrustum;
-		}
-	}
-
-	ssdata.numLightsIn.x = numLightsInFrustum;
 }
