@@ -20,15 +20,20 @@ Uses an additional culling stage.
 * One screen space sized cube is used.
 * Any lights that do not collide with it are not considered for the algorithm above.
 
+
 ### Other Graphical Features
 * Real time shadows.
 * Screen space ambient occlusion.
 * Bloom.
 
+
+
 ## How To Use
 *See Game/run.cpp*
+
 *See Game/GLConfig*
 
+### Adjusting The Algorithm
 Global settings can be modified in GLConfig.h and GLConfig.cpp.
 Any changes that are made to the grid and lights here must correspond to those specified in Shaders/Compute/configuration.glsl.
 This is included/added in the required compute shaders and lighting pass.
@@ -45,9 +50,17 @@ GLConfig:
 	//...
 ```
 
-condiguration.glsl
+configuration.glsl
 ```cpp
 	const int numTiles = 1000;
 	const int numLights = 100;
 	const vec3 tilesOnAxes = vec3(10, 10, 10);
 ```
+
+### Controls
+
+* WASD = Move.
+* C = Move down.
+* Space = Move up.
+* R = Recompile and link shaders.
+* P = Display profiler.
