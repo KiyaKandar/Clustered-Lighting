@@ -3,8 +3,7 @@
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out vec4 BrightnessCol;
 
-const int numTiles = 1000;
-const int numLights = 100;
+#include ../Shaders/compute/configuration.glsl
 
 uniform int numShadowCastingLights;
 
@@ -68,8 +67,6 @@ layout (std430, binding = 3) buffer TileLightsBuffer
 };
 
 void main(void){
-	int numZTiles = 10;
-
     //Retrieve data from gbuffer
     vec3 position	= texture(gPosition, TexCoords).rgb;
     vec3 normal		= normalize(texture(gNormal, TexCoords).rgb);
@@ -83,11 +80,11 @@ void main(void){
 	zCoord = (position.z - 1.0f) / (15000.0f - 1.0f);
 	zCoord = abs(zCoord);
 
-	int xIndex = int(xCoord * 10);
-	int yIndex = int(yCoord * 10);
-	int zIndex = int(zCoord * 10);
+	int xIndex = int(xCoord * tilesOnAxes.x);
+	int yIndex = int(yCoord * tilesOnAxes.y);
+	int zIndex = int(zCoord * tilesOnAxes.z);
 
-	int tile = xIndex + (yIndex * 10) + (zIndex * (10 * 10));
+	int tile = xIndex + (yIndex * int(tilesOnAxes.y)) + (zIndex * (int(tilesOnAxes.x * tilesOnAxes.z)));
 
 	//Default value
 	vec3 lightResult = vec3(0.0, 0.0, 0.0);

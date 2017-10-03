@@ -1,9 +1,6 @@
 #version 430 core
 
-const int numTiles = 1000;
-const int numLights = 100;
-const int numXTiles = 10;
-const int numYTiles = 10;
+#include ../Shaders/compute/configuration.glsl
 
 uniform int numZTiles;
 uniform int numLightsInFrustum;
@@ -59,7 +56,7 @@ void main()
 	int yIndex = int(gl_GlobalInvocationID.y);
 	int zIndex = int(gl_GlobalInvocationID.z);
 
-	int tile = xIndex + (yIndex * numXTiles) + (zIndex * (numXTiles * numYTiles));
+	int tile = xIndex + (yIndex * int(tilesOnAxes.x)) + (zIndex * (int(tilesOnAxes.x * tilesOnAxes.y)));
 
 	uint index = uint(tile);
 

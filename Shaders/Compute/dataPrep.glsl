@@ -1,7 +1,6 @@
 #version 430 core
 
-const int numTiles = 1000;
-const int numLights = 100;
+#include ../Shaders/compute/configuration.glsl
 
 uniform mat4 projectionMatrix;
 uniform mat4 projView;
@@ -79,16 +78,8 @@ CubePlanes screenCube = CubePlanes(splanesf, splanesp);
 
 void main()
 {
-	//Create a model matrix for the light.
-	//Translate to light position.
-	mat4 model = mat4(1);
-	model[0][3] = ldata[gl_GlobalInvocationID.x].pos4.x;
-	model[1][3] = ldata[gl_GlobalInvocationID.x].pos4.y;
-	model[2][3] = ldata[gl_GlobalInvocationID.x].pos4.z;
-
 	//move to screenspace.
 	vec4 worldLight = vec4(ldata[gl_GlobalInvocationID.x].pos4.xyz, 1);
-
 	vec4 viewPos = projView * worldLight;
 
 	//Store reciprocal to avoid use of division below.
