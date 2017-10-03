@@ -31,8 +31,7 @@ struct ScreenSpaceData
 {
 	float indexes[GLConfig::NUM_LIGHTS];
 	Vector4 numLightsIn;
-
-	Vector4 data[GLConfig::NUM_LIGHTS];
+	Vector4 NDCCoords[GLConfig::NUM_LIGHTS];
 };
 
 class TileRenderer
