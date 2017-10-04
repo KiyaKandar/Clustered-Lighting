@@ -11,19 +11,20 @@ public:
 	BPLighting(Camera* cam, GBufferData* gBuffer, ShadowData* shadowData,
 		AmbientTextures* ambientTextures, int numAmbTex);
 
-	virtual ~BPLighting() {
+	virtual ~BPLighting()
+	{
 		delete lightingPass;
 	}
 
-	void LinkShaders();
-	void RegenerateShaders();
+	void LinkShaders()  override;
+	void RegenerateShaders()  override;
 
-	void Initialise();
-	void Apply();
+	void Initialise() override;
+	void Apply() override;
 
 	GLuint* FBO;
 private:
-	void LocateUniforms();
+	void LocateUniforms() override;
 	void LightingPass();
 
 	//Uniform locations

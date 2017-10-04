@@ -5,21 +5,21 @@
 class Bloom : public GSetting
 {
 public:
-	Bloom(int strength);
+	explicit Bloom(int strength);
 	~Bloom();
 
-	void LinkShaders();
-	void RegenerateShaders();
+	void LinkShaders() override;
+	void RegenerateShaders() override;
 
-	void Initialise();
-	void Apply();
+	void Initialise() override;
+	void Apply() override;
 
 	GLuint FBO;
 private:
 	void CreateTexture();
 	void InitialiseBlur();
 
-	void LocateUniforms();
+	void LocateUniforms() override;
 
 	void ApplyBlur();
 	void Combine();

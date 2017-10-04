@@ -35,8 +35,8 @@ public:
 	unsigned int TextureFromFile(const char *path, const string &directory);
 
 	//Modifiers
-	void Translate(Vector3 translation);
-	void Scale(Vector3 scale);
+	void Translate(Vector3 translation) const;
+	void Scale(Vector3 scale) const;
 
 	//Model Data 
 	std::vector<ModelMesh*> meshes;

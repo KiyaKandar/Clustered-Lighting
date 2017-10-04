@@ -9,11 +9,12 @@ public:
 	CameraController(Camera* camera, Window* window);
 	~CameraController() {}
 
-	void ApplyInputs(float msec);
+	void ApplyInputs(const float& msec);
+	void ApplyCustomRotation(const float& pitch, const float& yaw, const float& msec);
 
 private:
-	void ApplyMovement(float msec);
-	void ApplyRotation(float msec);
+	void ApplyMovement(const float& msec) const;
+	void ApplyRotation(const float& msec);
 
 	Camera* camera;
 	Window* window;

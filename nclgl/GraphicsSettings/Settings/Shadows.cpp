@@ -3,7 +3,7 @@
 #include "../Game/GraphicsConfiguration/GLConfig.h"
 #include "../Game/GraphicsConfiguration/GLUtil.h"
 
-Shadows::Shadows(int numShadowCastingLights, Light** lights, 
+Shadows::Shadows(int numShadowCastingLights, Light** lights,
 	std::vector<Model*>* models)
 {
 	shadowFBOs = new GLuint[numShadowCastingLights];

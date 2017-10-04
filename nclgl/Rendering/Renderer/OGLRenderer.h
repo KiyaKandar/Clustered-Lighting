@@ -105,7 +105,7 @@ public:
 	virtual ~OGLRenderer(void);
 
 	virtual void	RenderScene()		= 0;
-	virtual void	UpdateScene(float msec);
+	virtual void	UpdateScene(const float& msec);
 	void			SwapBuffers();
 
 	bool			HasInitialised() const;	

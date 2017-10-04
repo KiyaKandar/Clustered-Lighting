@@ -3,19 +3,19 @@
 #include "../Game/GraphicsConfiguration/GLConfig.h"
 #include "../Game/GraphicsConfiguration/GLUtil.h"
 
-const int KERNEL_SIZE = 64;
+const int KERNEL_SIZE = 32;
 const int RESOLUTION_SCALE_X = 640;
 const int RESOLUTION_SCALE_Y = 360;
 
 SSAO::SSAO(Camera* cam, AmbientTextures* ambientTextures, GBufferData* SGBuffer)
 {
-	this->ambientTextures	= ambientTextures;
-	this->SGBuffer			= SGBuffer;
+	this->ambientTextures = ambientTextures;
+	this->SGBuffer = SGBuffer;
 	camera = cam;
 
 	//SSAO Shaders
-	SSAOCol		 = new Shader(SHADERDIR"/SSAO/ssao_vert.glsl",			SHADERDIR"/SSAO/ssao_frag.glsl");
-	SSAOBlur	 = new Shader(SHADERDIR"/SSAO/ssao_vert.glsl",			SHADERDIR"/SSAO/ssao_blurfrag.glsl");
+	SSAOCol = new Shader(SHADERDIR"/SSAO/ssao_vert.glsl", SHADERDIR"/SSAO/ssao_frag.glsl");
+	SSAOBlur = new Shader(SHADERDIR"/SSAO/ssao_vert.glsl", SHADERDIR"/SSAO/ssao_blurfrag.glsl");
 
 	ambientTextures->textures[GLConfig::SSAO_INDEX] = &ssaoColorBufferBlur;
 	ambientTextures->texUnits[GLConfig::SSAO_INDEX] = 3;
@@ -26,8 +26,8 @@ SSAO::SSAO(Camera* cam, AmbientTextures* ambientTextures, GBufferData* SGBuffer)
 
 void SSAO::LinkShaders()
 {
-	SSAOCol		->LinkProgram();
-	SSAOBlur	->LinkProgram();
+	SSAOCol->LinkProgram();
+	SSAOBlur->LinkProgram();
 }
 
 void SSAO::Initialise()
@@ -43,11 +43,11 @@ void SSAO::Initialise()
 
 void SSAO::LocateUniforms()
 {
-	loc_ssaoRadius	= glGetUniformLocation(SSAOCol->GetProgram(), "radius");
-	loc_ssaoBias	= glGetUniformLocation(SSAOCol->GetProgram(), "bias");
-	loc_gPosition	= glGetUniformLocation(SSAOCol->GetProgram(), "gPosition");
-	loc_gNormal		= glGetUniformLocation(SSAOCol->GetProgram(), "gNormal");
-	loc_texNoise	= glGetUniformLocation(SSAOCol->GetProgram(), "texNoise");
+	loc_ssaoRadius = glGetUniformLocation(SSAOCol->GetProgram(), "radius");
+	loc_ssaoBias = glGetUniformLocation(SSAOCol->GetProgram(), "bias");
+	loc_gPosition = glGetUniformLocation(SSAOCol->GetProgram(), "gPosition");
+	loc_gNormal = glGetUniformLocation(SSAOCol->GetProgram(), "gNormal");
+	loc_texNoise = glGetUniformLocation(SSAOCol->GetProgram(), "texNoise");
 
 	for (unsigned int i = 0; i < KERNEL_SIZE; ++i)
 	{
@@ -55,10 +55,10 @@ void SSAO::LocateUniforms()
 		loc_kernel[i] = glGetUniformLocation(SSAOCol->GetProgram(), uniform.c_str());
 	}
 
-	loc_ssaoInput	= glGetUniformLocation(SSAOBlur->GetProgram(), "ssaoInput");
-	loc_xSize		= glGetUniformLocation(SSAOBlur->GetProgram(), "xSize");
-	loc_ySize		= glGetUniformLocation(SSAOBlur->GetProgram(), "ySize");
-}	
+	loc_ssaoInput = glGetUniformLocation(SSAOBlur->GetProgram(), "ssaoInput");
+	loc_xSize = glGetUniformLocation(SSAOBlur->GetProgram(), "xSize");
+	loc_ySize = glGetUniformLocation(SSAOBlur->GetProgram(), "ySize");
+}
 
 void SSAO::Apply()
 {
@@ -71,7 +71,7 @@ void SSAO::Apply()
 
 void SSAO::RegenerateShaders()
 {
-	SSAOCol	->Regenerate();
+	SSAOCol->Regenerate();
 	SSAOBlur->Regenerate();
 }
 
@@ -99,7 +99,7 @@ void SSAO::InitSSAOBuffers()
 
 void SSAO::GenerateSampleKernel()
 {
-	std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0);
+	const std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0);
 	std::default_random_engine generator;
 
 	for (unsigned int i = 0; i < KERNEL_SIZE; ++i)
@@ -120,20 +120,20 @@ void SSAO::GenerateSampleKernel()
 
 void SSAO::GenerateNoiseTexture()
 {
-	std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0);
+	const std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0);
 	std::default_random_engine generator;
 
-	int xSize = GLConfig::RESOLUTION.x / 640;
-	int ySize = GLConfig::RESOLUTION.y / 360;
+	const int xSize = GLConfig::RESOLUTION.x / 640;
+	const int ySize = GLConfig::RESOLUTION.y / 360;
 
-	int noiseSize = (xSize * 2) * (ySize * 2);
+	const int noiseSize = (xSize * 2) * (ySize * 2);
 
 	//Generate the texture
 	for (unsigned int i = 0; i < noiseSize; i++)
 	{
 		Vector3 noise(
 			randomFloats(generator) * 2.0 - 1.0,
-			randomFloats(generator) * 2.0 - 1.0, 
+			randomFloats(generator) * 2.0 - 1.0,
 			0.0f); // rotate around z-axis (in tangent space)
 
 		ssaoNoise.push_back(noise);
@@ -169,12 +169,12 @@ void SSAO::GenerateSSAOTex()
 	glUniform1i(loc_ssaoBias, ssaoBias);
 
 	//Texture units
-	glUniform1i(loc_gPosition,	GLConfig::GPOSITION);
-	glUniform1i(loc_gNormal,	GLConfig::GNORMAL);
-	glUniform1i(loc_texNoise,	NOISE_TEX);
+	glUniform1i(loc_gPosition, GLConfig::GPOSITION);
+	glUniform1i(loc_gNormal, GLConfig::GNORMAL);
+	glUniform1i(loc_texNoise, NOISE_TEX);
 
-	currentShader->ApplyTexture(GLConfig::GPOSITION,	*SGBuffer->gPosition);
-	currentShader->ApplyTexture(GLConfig::GNORMAL,		*SGBuffer->gNormal);
+	currentShader->ApplyTexture(GLConfig::GPOSITION, *SGBuffer->gPosition);
+	currentShader->ApplyTexture(GLConfig::GNORMAL, *SGBuffer->gNormal);
 	currentShader->ApplyTexture(NOISE_TEX, noiseTexture);
 
 	RenderScreenQuad();

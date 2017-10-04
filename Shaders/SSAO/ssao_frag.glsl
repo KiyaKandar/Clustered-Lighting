@@ -1,16 +1,14 @@
 #version 330 core
 
 uniform mat4 projMatrix;
-uniform vec3 samples[64];
+uniform vec3 samples[32];
 
-int kernelSize = 64;
-uniform float radius;// = 0.4;
-uniform float bias;// = 0.020;
+int kernelSize = 32;
+uniform float radius;
+uniform float bias;
 
 uniform float resolutionX;
 uniform float resolutionY;
-
-//vec2 noiseScale;// = vec2(1280.0 / 4.0, 720.0 / 4.0);
 
 in vec2 TexCoords;
 

@@ -8,10 +8,10 @@ typedef ModelMesh* (*processmeshFunc)(aiMesh*, aiScene*);
 void Model::LoadModel(std::string path)
 {
 	Assimp::Importer import;
-	const aiScene *scene = import.ReadFile(path, 
-		aiProcess_Triangulate		| aiProcess_FlipUVs |
-		aiProcess_GenNormals		| aiProcess_CalcTangentSpace | 
-		aiProcess_SplitLargeMeshes	| aiProcess_OptimizeMeshes);
+	const aiScene *scene = import.ReadFile(path,
+		aiProcess_Triangulate | aiProcess_FlipUVs |
+		aiProcess_GenNormals | aiProcess_CalcTangentSpace |
+		aiProcess_SplitLargeMeshes | aiProcess_OptimizeMeshes);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -50,8 +50,8 @@ ModelMesh* Model::ProcessMesh(aiMesh *mesh, const aiScene *scene)
 	vector<Texture> textures;
 	vector<Texture> heights;
 
-	float maxFloat = (std::numeric_limits<float>::max)();
-	float minFloat = (std::numeric_limits<float>::lowest());
+	const float maxFloat = (std::numeric_limits<float>::max)();
+	const float minFloat = (std::numeric_limits<float>::lowest());
 
 	Vector3 minBounds(maxFloat, maxFloat, maxFloat);
 	Vector3 maxBounds(minFloat, minFloat, minFloat);
@@ -221,14 +221,18 @@ unsigned int Model::TextureFromFile(const char *path, const string &directory)
 	return textureID;
 }
 
-void Model::Translate(Vector3 translation) {
-	for each (ModelMesh* mesh in meshes) {
+void Model::Translate(Vector3 translation) const
+{
+	for each (ModelMesh* mesh in meshes)
+	{
 		mesh->SetPosition(translation);
 	}
 }
 
-void Model::Scale(Vector3 scale) {
-	for each (ModelMesh* mesh in meshes) {
+void Model::Scale(Vector3 scale) const
+{
+	for each (ModelMesh* mesh in meshes)
+	{
 		mesh->SetScale(scale);
 	}
 }

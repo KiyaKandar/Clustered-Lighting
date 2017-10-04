@@ -21,19 +21,20 @@ public:
 		delete shadowFBOs;
 	}
 
-	void LinkShaders();
-	void Initialise();
-	void Apply();
+	void LinkShaders() override;
+	void Initialise() override;
+	void Apply() override;
 
-	void RegenerateShaders();
+	void RegenerateShaders() override;
 
-	ShadowData* GetShadowData()
+	ShadowData* GetShadowData() const
 	{
 		return shadowData;
 	}
 
 private:
-	void LocateUniforms() {}
+	void LocateUniforms() override
+	{}
 
 	//Shadow prep
 	void InitShadowTex();

@@ -32,7 +32,7 @@ public:
 
 	void Update(const float& deltatime) override;
 
-	void UpdateScene(float msec) override;
+	void UpdateScene(const float& msec) override;
 	void RenderScene() override;
 
 	void AddModel(Model* model) noexcept
@@ -60,7 +60,7 @@ public:
 		return lights[GLOBAL_LIGHT];
 	}
 
-	Light** GetAllLights() 
+	Light** GetAllLights()
 	{
 		return lights;
 	}

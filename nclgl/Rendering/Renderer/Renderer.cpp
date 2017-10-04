@@ -12,11 +12,11 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	projMatrix = GLConfig::SHARED_PROJ_MATRIX;// Matrix4::Perspective(1.0f, 15000.0f, static_cast<float>(width) / static_cast<float>(height), 45.0f);
 
 	//Shadow casting lights must be declared first
-	lights[0] = new Light(Vector3(0, 1800, 200),	Vector4(0.9, 0.7, 0.4, 1),					30000.0f,	2.0f);
-	lights[1] = new Light(Vector3(-630, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1),	150.0f,		3.0f);
-	lights[2] = new Light(Vector3(500, 140, -200),	Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1),	150.0f,		3.0f);
-	lights[3] = new Light(Vector3(-630, 140, 150),	Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1),	150.0f,		3.0f);
-	lights[4] = new Light(Vector3(500, 140, 150),	Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1),	150.0f,		3.0f);
+	lights[0] = new Light(Vector3(0, 1800, 200), Vector4(0.9, 0.7, 0.4, 1), 30000.0f, 2.0f);
+	lights[1] = new Light(Vector3(-630, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 3.0f);
+	lights[2] = new Light(Vector3(500, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 3.0f);
+	lights[3] = new Light(Vector3(-630, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 3.0f);
+	lights[4] = new Light(Vector3(500, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 3.0f);
 
 	for (int i = 5; i < 10; i++)
 	{
@@ -70,7 +70,7 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 
 	tiles = new TileRenderer(lights, GLConfig::NUM_LIGHTS,
 		GLConfig::NUM_X_AXIS_TILES, GLConfig::NUM_Y_AXIS_TILES, GLConfig::NUM_Z_AXIS_TILES,
-		GLConfig::MIN_NDC_COORDS,	GLConfig::MAX_NDC_COORDS);
+		GLConfig::MIN_NDC_COORDS, GLConfig::MAX_NDC_COORDS);
 
 	screenTiles = tiles->GetScreenTiles();
 	tileData = tiles->GetTileData();
@@ -91,7 +91,7 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 Renderer::~Renderer()
 {
 	delete camera;
-	
+
 	for each (Light* light in lights)
 	{
 		delete light;
@@ -101,11 +101,13 @@ Renderer::~Renderer()
 	delete textRenderer;
 }
 
-void Renderer::InitDebugLights() {
-	for (int i = 1; i < GLConfig::NUM_LIGHTS; ++i) {
+void Renderer::InitDebugLights()
+{
+	for (int i = 1; i < GLConfig::NUM_LIGHTS; ++i)
+	{
 		//Create new sphere.
 		Model* sphere = new Model("../sphere/sphere.obj");
-	
+
 		//Set size and position to match light.
 		sphere->Translate(lights[i]->GetPosition());
 
@@ -121,15 +123,15 @@ void Renderer::InitLightSSBO()
 {
 	GLUtil::ClearGLErrorStack();
 
-	ssbo = GLUtil::InitSSBO(1, 1, ssbo, 
+	ssbo = GLUtil::InitSSBO(1, 1, ssbo,
 		sizeof(LightData) * GLConfig::NUM_LIGHTS, &lightData, GL_STATIC_COPY);
 	GLUtil::CheckGLError("Light Data SSBO");
 
-	tilesssbo = GLUtil::InitSSBO(1, 2, tilesssbo, 
+	tilesssbo = GLUtil::InitSSBO(1, 2, tilesssbo,
 		sizeof(Tile) * tiles->GetNumTiles(), screenTiles, GL_STATIC_COPY);
 	GLUtil::CheckGLError("Screen Tiles SSBO");
 
-	tilelightssssbo = GLUtil::InitSSBO(1, 3, tilelightssssbo, 
+	tilelightssssbo = GLUtil::InitSSBO(1, 3, tilelightssssbo,
 		sizeof(TileData), tileData, GL_STATIC_COPY);
 
 	GLUtil::CheckGLError("Tile Data SSBO");
@@ -139,7 +141,7 @@ void Renderer::Update(const float& deltatime)
 {
 	updateTimer.StartTimer();
 
-	if (wparent->GetKeyboard()->KeyTriggered(KEYBOARD_P)) 
+	if (wparent->GetKeyboard()->KeyTriggered(KEYBOARD_P))
 	{
 		debugMode = !debugMode;
 	}
@@ -152,12 +154,6 @@ void Renderer::Update(const float& deltatime)
 	UpdateScene(deltatime);
 
 	tiles->AllocateLightsGPU(GLConfig::SHARED_PROJ_MATRIX, viewMatrix, camera->GetPosition());
-
-	//tiles->AllocateLightsCPU(GLConfig::SHARED_PROJ_MATRIX, viewMatrix, tilelightssssbo, camera->GetPosition());
-	//tileData = tiles->GetTileData();
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, tilelightssssbo);
-	//glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(TileData), tileData);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 	RenderScene();
 
@@ -173,12 +169,12 @@ void Renderer::RenderScene()
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	const int numComponents = GComponents.size();
-	for (int i = 0; i < numComponents; ++i )
+	for (int i = 0; i < numComponents; ++i)
 	{
 		GComponents[i]->Apply();
 	}
 
-	if (debugMode) 
+	if (debugMode)
 	{
 		if (!textRenderer->textbuffer.empty())
 		{
@@ -198,7 +194,7 @@ void Renderer::RenderScene()
 	ClearMeshLists();
 }
 
-void Renderer::UpdateScene(float msec)
+void Renderer::UpdateScene(const float& msec)
 {
 	camera->UpdateCamera(msec);
 	viewMatrix = camera->BuildViewMatrix();
@@ -213,7 +209,7 @@ void Renderer::DrawDebugLights()
 		//Prepare everything to render transparent spheres + debug shapes
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		
+
 		UpdateShaderMatrices();
 
 		DrawDebugSphere(debugSpheres[i]);
@@ -221,7 +217,7 @@ void Renderer::DrawDebugLights()
 		glDisable(GL_BLEND);
 	}
 
-	for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i) 
+	for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
 	{
 		//Blue centre
 		DrawDebugCross(DEBUGDRAW_PERSPECTIVE, lights[i]->GetPosition(), Vector3(100, 100, 100), Vector3(0, 0, 1));

@@ -6,9 +6,12 @@ CameraController::CameraController(Camera* camera, Window* window)
 {
 	this->camera = camera;
 	this->window = window;
+
+	pitch = 0.0f;
+	yaw = 0.0f;
 }
 
-void CameraController::ApplyInputs(float msec)
+void CameraController::ApplyInputs(const float& msec)
 {
 	ApplyRotation(msec);
 	ApplyMovement(msec);
@@ -18,9 +21,17 @@ void CameraController::ApplyInputs(float msec)
 	camera->SetYaw(yaw);
 }
 
-void CameraController::ApplyMovement(float msec)
+void CameraController::ApplyCustomRotation(const float& pitch, const float& yaw, const float& msec)
 {
-	float speed = msec * MOVEMENT_DAMPING;
+	this->pitch = pitch;
+	this->yaw = yaw;
+
+	ApplyRotation(msec);
+}
+
+void CameraController::ApplyMovement(const float& msec) const
+{
+	const float speed = msec * MOVEMENT_DAMPING;
 
 	if (window->GetKeyboard()->KeyDown(KEYBOARD_W)) {
 		camera->SetPosition(camera->GetPosition() + 
@@ -51,7 +62,7 @@ void CameraController::ApplyMovement(float msec)
 	}
 }
 
-void CameraController::ApplyRotation(float msec)
+void CameraController::ApplyRotation(const float& msec)
 {
 	pitch	-= (Window::GetMouse()->GetRelativePosition().y);
 	yaw		-= (Window::GetMouse()->GetRelativePosition().x);

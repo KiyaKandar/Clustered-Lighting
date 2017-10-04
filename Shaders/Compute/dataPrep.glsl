@@ -67,7 +67,9 @@ layout(binding = 0) uniform atomic_uint count;
 #include ../Shaders/compute/collisionFunctions.glsl
 #include ../Shaders/compute/screenCube.glsl
 
-CubePlanes screenCube = CubePlanes(splanesf, splanesp);
+//CubePlanes screenCube = CubePlanes(splanesf, splanesp);
+
+
 
 void main()
 {
@@ -79,9 +81,17 @@ void main()
 	float w = 1.0f / viewPos.w;
 
 	//Final screenspace data.
-	vec4 ndcCoord = vec4(viewPos.x * w, viewPos.y * w, viewPos.z, lightData[gl_GlobalInvocationID.x].lightRadius * w);
+	vec4 ndcCoord = vec4(viewPos.x * w, viewPos.y * w, viewPos.z * w, lightData[gl_GlobalInvocationID.x].lightRadius * w);
 
-	bool colliding = SphereColliding(screenCube, ndcCoord);
+	
+	
+//PIERAN - CHANGED//
+	vec4 frustum[6];
+	FrustumFromMatrix(projView, frustum);
+	
+	
+	bool colliding = QuickSphereColliding(frustum, vec4(worldLight.xyz, lightData[gl_GlobalInvocationID.x].lightRadius));
+//EOF CHANGE//
 
 	//If light affects any clusters on screen, send to next shader for allocation, 
 	//else cull.

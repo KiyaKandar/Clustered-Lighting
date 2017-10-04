@@ -12,15 +12,15 @@
 #include "../NCLGL/GraphicsSettings/SettingsType/GConfiguration.h"
 #include "GraphicsConfiguration/GLConfig.h"
 
-void ApplyLightInput(Light* light, const Window& window);
+const bool FULLSCREEN = false;
 
 int main()
 {
-	Window* window = new Window("CFL", GLConfig::RESOLUTION.x, GLConfig::RESOLUTION.y, false);
+	Window* window = new Window("CFL", GLConfig::RESOLUTION.x, GLConfig::RESOLUTION.y, FULLSCREEN);
 	window->LockMouseToWindow(true);
 	window->ShowOSPointer(false);
 
-	Camera* camera = new Camera(0, 0, Vector3(900, 600, 100));
+	Camera* camera = new Camera(0, 0, Vector3(1200, 600, 150));
 	Renderer* renderer = new Renderer(*window, camera);
 
 	if (!renderer->HasInitialised() || !window->HasInitialised())
@@ -32,6 +32,7 @@ int main()
 	profiler->AddSubSystemTimer("Renderer", &renderer->updateTimer);
 
 	CameraController* camControl = new CameraController(camera, window);
+	camControl->ApplyCustomRotation(-10, 75, 0);
 
 	GConfiguration config(renderer, camera, GLConfig::RESOLUTION);
 	config.InitialiseSettings();
@@ -56,40 +57,4 @@ int main()
 	delete camControl;
 
     return 0;
-}
-
-void ApplyLightInput(Light* light, const Window& window) {
-	bool moved = false;
-
-	if (window.GetKeyboard()->KeyDown(KEYBOARD_UP)) {
-		light->SetPosition(light->GetPosition() + Vector3(0, 0, 3));
-		moved = true;
-	}
-
-	if (window.GetKeyboard()->KeyDown(KEYBOARD_DOWN)) {
-		light->SetPosition(light->GetPosition() + Vector3(0, 0, -3));
-		moved = true;
-	}
-
-	if (window.GetKeyboard()->KeyDown(KEYBOARD_LEFT)) {
-		light->SetPosition(light->GetPosition() + Vector3(-3, 0, 0));
-		moved = true;
-	}
-
-	if (window.GetKeyboard()->KeyDown(KEYBOARD_RIGHT)) {
-		light->SetPosition(light->GetPosition() + Vector3(3, 0, 0));
-		moved = true;
-	}
-
-	if (window.GetKeyboard()->KeyDown(KEYBOARD_O)) {
-		light->SetPosition(light->GetPosition() + Vector3(0, 3, 0));
-		moved = true;
-	}
-
-	if (window.GetKeyboard()->KeyDown(KEYBOARD_L)) {
-		light->SetPosition(light->GetPosition() + Vector3(0, -3, 0));
-		moved = true;
-	}
-
-	if (moved) std::cout << light->GetPosition() << std::endl;
 }

@@ -17,18 +17,18 @@ class SSAO : public GSetting
 public:
 	SSAO(Camera* cam, AmbientTextures* ambientTextures, GBufferData* SGBuffer);
 
-	virtual ~SSAO() 
+	virtual ~SSAO()
 	{
 		delete SSAOCol;
 		delete SSAOBlur;
 		delete SGBuffer;
 	}
 
-	void LinkShaders();
-	void Initialise();
-	void Apply();
+	void LinkShaders() override;
+	void Initialise() override;
+	void Apply() override;
 
-	void RegenerateShaders();
+	void RegenerateShaders() override;
 
 	void SetViewMatrix(Matrix4 mat)
 	{
@@ -41,7 +41,7 @@ public:
 	}
 
 private:
-	void LocateUniforms();
+	void LocateUniforms() override;
 
 	Camera* camera;
 	AmbientTextures* ambientTextures;
@@ -53,7 +53,7 @@ private:
 	void GenerateNoiseTexture();
 
 	/*
-	  Render Functions. 
+	  Render Functions.
 	  MUST TAKE PLACE IN THIS ORDER.
 	*/
 	void GenerateSSAOTex();

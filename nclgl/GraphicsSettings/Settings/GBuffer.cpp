@@ -6,14 +6,14 @@
 GBuffer::GBuffer(Camera* camera, std::vector<ModelMesh*>* modelsInFrame)
 {
 	this->modelsInFrame = modelsInFrame;
-	this->camera		= camera;
+	this->camera = camera;
 
-	geometryPass = new Shader(SHADERDIR"/SSAO/ssao_geometryvert.glsl", 
+	geometryPass = new Shader(SHADERDIR"/SSAO/ssao_geometryvert.glsl",
 		SHADERDIR"/SSAO/ssao_geometryfrag.glsl");
 
 	SGBuffer = new GBufferData();
-	SGBuffer->gAlbedo	= &gAlbedo;
-	SGBuffer->gNormal	= &gNormal;
+	SGBuffer->gAlbedo = &gAlbedo;
+	SGBuffer->gNormal = &gNormal;
 	SGBuffer->gPosition = &gPosition;
 }
 

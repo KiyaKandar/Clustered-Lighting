@@ -49,7 +49,8 @@ void Bloom::CreateTexture()
 
 	//Brightness texture
 	glGenTextures(2, colourBuffers);
-	for (unsigned int i = 0; i < 2; i++) {
+	for (unsigned int i = 0; i < 2; i++)
+	{
 		//Clamp to the edge as the blur filter would otherwise sample repeated texture values!
 		GLUtil::CreateScreenTexture(colourBuffers[i], GL_RGB16F, GL_RGB, GL_FLOAT, GL_LINEAR, i, true);
 	}
@@ -83,10 +84,10 @@ void Bloom::InitialiseBlur()
 	GLUtil::CheckGLError("Bloom blur");
 }
 
-void Bloom::LocateUniforms() 
+void Bloom::LocateUniforms()
 {
-	loc_horizontal = glGetUniformLocation(blurShader->GetProgram(),	"horizontal");
-	loc_image = glGetUniformLocation(blurShader->GetProgram(),	"image");
+	loc_horizontal = glGetUniformLocation(blurShader->GetProgram(), "horizontal");
+	loc_image = glGetUniformLocation(blurShader->GetProgram(), "image");
 
 	loc_scene = glGetUniformLocation(combineShader->GetProgram(), "scene");
 	loc_bloomBlur = glGetUniformLocation(combineShader->GetProgram(), "bloomBlur");
@@ -116,8 +117,8 @@ void Bloom::ApplyBlur()
 
 		//Bind texture of other framebuffer (or scene if first iteration)
 		glActiveTexture(GL_TEXTURE0 + IMAGE);
-		glBindTexture(GL_TEXTURE_2D, first_iteration ? colourBuffers[1] : 
-			pingpongColourBuffers[!horizontal]);  
+		glBindTexture(GL_TEXTURE_2D, first_iteration ? colourBuffers[1] :
+			pingpongColourBuffers[!horizontal]);
 
 		RenderScreenQuad();
 
