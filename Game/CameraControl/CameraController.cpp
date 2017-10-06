@@ -1,6 +1,6 @@
 #include "CameraController.h"
 
-#define MOVEMENT_DAMPING 0.5f
+#define MOVEMENT_DAMPING 0.2f
 
 CameraController::CameraController(Camera* camera, Window* window)
 {

@@ -65,7 +65,7 @@ void main(void){
     //Retrieve data from gbuffer
     vec3 position	= texture(gPosition, TexCoords).rgb;
     vec3 normal		= normalize(texture(gNormal, TexCoords).rgb);
-	vec3 albedoCol = vec3(0.6f, 0.6f, 0.6f);// texture(gAlbedo, TexCoords).rgb; // 
+	vec3 albedoCol = texture(gAlbedo, TexCoords).rgb; // vec3(0.6f, 0.6f, 0.6f);// 
 
 	//Transform screenspace coordinates into a tile index
 	float xCoord = gl_FragCoord.x / 1280;

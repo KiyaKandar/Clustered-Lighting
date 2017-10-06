@@ -12,7 +12,7 @@
 #include "../NCLGL/GraphicsSettings/SettingsType/GConfiguration.h"
 #include "GraphicsConfiguration/GLConfig.h"
 
-const bool FULLSCREEN = false;
+const bool FULLSCREEN = true;
 
 int main()
 {
