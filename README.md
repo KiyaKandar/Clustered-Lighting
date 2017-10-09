@@ -2,6 +2,9 @@
 
 https://youtu.be/Z0RuzZkAeWs
 
+## ABOUT
+http://kiyavashkandar.com/clustered-forward-lighting
+
 ## Description
 * C++ OpenGL lighting technique using GPU computing.
 * Suitable for large numbers of lights in a scene.
