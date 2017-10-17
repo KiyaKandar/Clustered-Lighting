@@ -5,6 +5,9 @@ https://youtu.be/Z0RuzZkAeWs
 ## ABOUT
 http://kiyavashkandar.com/clustered-forward-lighting
 
+** IMPORTANT ** 
+Please copy assimp-vc140-mt.dll from /ASSIMP/lib to the Debug and Release folders.
+
 ## Description
 * C++ OpenGL lighting technique using GPU computing.
 * Suitable for large numbers of lights in a scene.
