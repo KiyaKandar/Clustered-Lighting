@@ -52,6 +52,8 @@ public:
 	//Sets pitch, in degrees
 	void	SetPitch(float p) {pitch = p;}
 
+	Matrix4 viewMatrix;
+
 protected:
 	Vector3 position;
 	float	yaw;

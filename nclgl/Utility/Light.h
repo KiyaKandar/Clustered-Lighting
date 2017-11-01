@@ -34,9 +34,6 @@ public:
 		data.lightColour = colour;
 		data.lightRadius = radius;
 		data.intensity	 = intensity;
-
-		std::cout << sizeof(data) << std::endl;
-
 	}
 
 	Light() {
@@ -45,7 +42,21 @@ public:
 		this->radius	= 0.0f;
 	}
 
+	Light(const Light& rhs)
+	{
+		position = rhs.position;
+		colour = rhs.colour;
+		radius = rhs.radius;
+
+		data.lightPosition = Vector4(position.x, position.y, position.z, 1.0f);
+		data.lightColour = colour;
+		data.lightRadius = radius;
+		data.intensity = rhs.data.intensity;
+	}
+
 	~Light(void) {};
+
+	static void AddLightsToArray(Light** lights, int numberExistingLights, int numberOfLights, Light lightToCopy);
 
 	Vector3 GetPosition() const			{ return position; }
 	void	SetPosition(Vector3 val)	{ position = val; }

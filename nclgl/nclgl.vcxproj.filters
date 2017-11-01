@@ -94,6 +94,7 @@
     <ClCompile Include="Rendering\View\Window.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="GraphicsSettings\Settings\MotionBlur.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphicsSettings\Settings\Bloom.h">
@@ -213,6 +214,7 @@
     <ClInclude Include="Rendering\View\Window.h">
       <Filter>Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="GraphicsSettings\Settings\MotionBlur.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Text">

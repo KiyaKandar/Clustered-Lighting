@@ -5,7 +5,9 @@
 #include "../Settings/BPLighting.h"
 #include "../Settings/GBuffer.h"
 #include "../Settings/Bloom.h"
+#include "../Settings/MotionBlur.h"
 #include "../../Maths/Vector2.h"
+#include "../Profiler/Profiler.h"
 
 #include <vector>
 
@@ -15,17 +17,18 @@ class Camera;
 class GConfiguration
 {
 public:
-	GConfiguration(Renderer* renderer, Camera* camera, Vector2 resolution);
+	GConfiguration(Renderer* renderer, Camera* camera, Vector2 resolution, Profiler* profiler);
 
 	~GConfiguration();
 
 	void InitialiseSettings();
 	void LinkToRenderer();
 
-private: 
+private:
 	Vector2		resolution;
 	Renderer*	renderer;
 	Camera*		camera;
+	Profiler* profiler;
 
 	//Settings
 	Shadows* shadows;
@@ -34,5 +37,6 @@ private:
 	BPLighting* lighting;
 	Bloom* bloom;
 	AmbientTextures* ambTex;
+	MotionBlur* motionBlur;
 };
 

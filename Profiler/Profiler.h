@@ -42,6 +42,11 @@ public:
 		}
 	}
 
+	FramerateCounter* GetFPSCounter()
+	{
+		return &fpsCounter;
+	}
+
 private:
 	void UpdateProfiling();
 	void RenderToScreen();

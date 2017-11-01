@@ -105,6 +105,10 @@ public:
 
 	//vector<Text> textbuffer;
 	Font* basicFont;
+	Matrix4 previousViewMatrix;
+	Matrix4 inverseViewProj;
+	Matrix4 previousViewProj;
+	Matrix4 currentViewProj;
 
 protected:
 	std::vector<GSetting*> GComponents;

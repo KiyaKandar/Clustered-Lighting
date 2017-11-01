@@ -102,11 +102,13 @@ OGLRenderer::OGLRenderer(Window &window)	{
 	int attribs[] = {
         WGL_CONTEXT_MAJOR_VERSION_ARB, major,	//TODO: Maybe lock this to 3? We might actually get an OpenGL 4.x context...
         WGL_CONTEXT_MINOR_VERSION_ARB, minor, 
-		WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB 
+		WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB
 #ifdef OPENGL_DEBUGGING 
 		| WGL_CONTEXT_DEBUG_BIT_ARB
 #endif		//No deprecated stuff!! DIE DIE DIE glBegin!!!!
 		,WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,		//We want everything OpenGL 3.2 provides...
+		//WGL_SAMPLE_BUFFERS_ARB, 1,
+		//WGL_SAMPLES_ARB, 8,
 		0					//That's enough attributes...
     };
 

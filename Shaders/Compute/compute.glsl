@@ -65,11 +65,8 @@ void main()
 	{
 		int lightIndex = int(indexes[i]);
 
-		if (SphereColliding(cubePlanes[index], NDCCoords[i]))
-		{
-			tileLights[index][intersections] = lightIndex;
-			intersections++;
-		}
+		tileLights[index][intersections] = lightIndex;
+		intersections++;
 	}
 
 	lightIndexes[index] = intersections;

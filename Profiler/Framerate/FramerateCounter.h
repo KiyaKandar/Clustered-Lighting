@@ -15,7 +15,7 @@ public:
 	{
 		//Only update it periodically to stop a flickering number.
 		//After a set amount of time and number of frames.
-		if (time - lastTime > MIN_TIME_PASSED && frames > MIN_FRAMES) {
+		if (/*time - lastTime > MIN_TIME_PASSED && */frames > MIN_FRAMES) {
 			fps = ((float)frames / (time - lastTime)) * SECONDS;
 			lastTime = time;
 			frames = 0;

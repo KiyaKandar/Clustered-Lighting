@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsSettings\Settings\Bloom.cpp" />
+    <ClCompile Include="GraphicsSettings\Settings\MotionBlur.cpp" />
     <ClCompile Include="Rendering\ClusteredRendering\ClusterMaths\BoxCollider.cpp" />
     <ClCompile Include="GraphicsSettings\Settings\BPLighting.cpp" />
     <ClCompile Include="Rendering\View\Camera.cpp" />
@@ -53,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphicsSettings\Settings\Bloom.h" />
+    <ClInclude Include="GraphicsSettings\Settings\MotionBlur.h" />
     <ClInclude Include="Rendering\ClusteredRendering\ClusterMaths\BoxCollider.h" />
     <ClInclude Include="GraphicsSettings\Settings\BPLighting.h" />
     <ClInclude Include="Rendering\View\Camera.h" />
@@ -95,7 +97,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{98D6B51B-CB0A-4389-ADC6-24082B967C3F}</ProjectGuid>
     <RootNamespace>Shared</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.10240.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -115,7 +117,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>

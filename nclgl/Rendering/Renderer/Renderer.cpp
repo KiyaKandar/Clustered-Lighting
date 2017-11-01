@@ -83,7 +83,7 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	glEnable(GL_CULL_FACE);
 
 	textRenderer = new TextRenderer(this);
-
+	glEnable(GL_MULTISAMPLE);
 	GLUtil::CheckGLError("Renderer Initialisation");
 	init = true;
 }
@@ -151,7 +151,9 @@ void Renderer::Update(const float& deltatime)
 		RelinkShaders();
 	}
 
+	previousViewMatrix = camera->viewMatrix;
 	UpdateScene(deltatime);
+	currentViewProj = camera->viewMatrix;
 
 	tiles->AllocateLightsGPU(GLConfig::SHARED_PROJ_MATRIX, viewMatrix, camera->GetPosition());
 

@@ -12,7 +12,7 @@
 #include "../NCLGL/GraphicsSettings/SettingsType/GConfiguration.h"
 #include "GraphicsConfiguration/GLConfig.h"
 
-const bool FULLSCREEN = true;
+const bool FULLSCREEN = false;
 
 int main()
 {
@@ -34,12 +34,16 @@ int main()
 	CameraController* camControl = new CameraController(camera, window);
 	camControl->ApplyCustomRotation(-10, 75, 0);
 
-	GConfiguration config(renderer, camera, GLConfig::RESOLUTION);
+	GConfiguration config(renderer, camera, GLConfig::RESOLUTION, profiler);
 	config.InitialiseSettings();
 	config.LinkToRenderer();
 
 	Model sponza("../sponza/sponza.obj");
 	renderer->AddModel(&sponza);
+
+	//Model tank("../tank/Abrams_BF3.obj");
+	//tank.Scale(Vector3(100, 100, 100));
+	//renderer->AddModel(&tank);
 
 	//Game loop...
 	while (window->UpdateWindow() && !window->GetKeyboard()->KeyTriggered(KEYBOARD_ESCAPE)) {

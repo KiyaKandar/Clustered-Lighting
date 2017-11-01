@@ -3,11 +3,12 @@
 #include "../../Rendering/Renderer/Renderer.h"
 #include "../Game/GraphicsConfiguration/GLConfig.h"
 
-GConfiguration::GConfiguration(Renderer* renderer, Camera* camera, Vector2 resolution)
+GConfiguration::GConfiguration(Renderer* renderer, Camera* camera, Vector2 resolution, Profiler* profiler)
 {
 	this->resolution = resolution;
-	this->renderer	 = renderer;
-	this->camera	 = camera;
+	this->renderer = renderer;
+	this->camera = camera;
+	this->profiler = profiler;
 }
 
 GConfiguration::~GConfiguration()
@@ -18,6 +19,7 @@ GConfiguration::~GConfiguration()
 	delete ssao;
 	delete lighting;
 	delete bloom;
+	delete motionBlur;
 }
 
 void GConfiguration::InitialiseSettings()
@@ -48,14 +50,21 @@ void GConfiguration::InitialiseSettings()
 	bloom->LinkShaders();
 	bloom->Initialise();
 
+	motionBlur = new MotionBlur(SGBuffer->GetGBuffer(), &renderer->previousViewMatrix,
+		&renderer->currentViewProj, &profiler->GetFPSCounter()->fps);
+	motionBlur->FBO = &bloom->FBO;
+	motionBlur->LinkShaders();
+	motionBlur->Initialise();
+
 	lighting->FBO = &bloom->FBO;
 }
 
-void GConfiguration::LinkToRenderer() 
+void GConfiguration::LinkToRenderer()
 {
 	renderer->AddGSetting(shadows);
 	renderer->AddGSetting(SGBuffer);
 	renderer->AddGSetting(ssao);
 	renderer->AddGSetting(lighting);
 	renderer->AddGSetting(bloom);
+	renderer->AddGSetting(motionBlur);
 }
