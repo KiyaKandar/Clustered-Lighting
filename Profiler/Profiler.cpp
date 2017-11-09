@@ -57,12 +57,12 @@ void Profiler::RenderFPSCounter()
 	fpsCounter.CalculateFPS(window->GetTimer()->GetMS());
 	renderer->AddText(Text(
 		("FPS: " + to_string(fpsCounter.fps)),
-		Vector3(0, 0, 0), TEXT_SIZE));
+		Vector3(0, 50, 0), TEXT_SIZE));
 }
 
 void Profiler::RenderTimers()
 {
-	float offset = 100.0f;
+	float offset = 70.0f;
 	for each(std::pair<string, SubsystemTimer*> timer in timers)
 	{
 		renderer->AddText(Text(

@@ -7,6 +7,9 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <matrix4x4.h>
+
+const int NUM_BONES_PER_VEREX = 10;
 
 struct Vertex
 {
@@ -34,7 +37,8 @@ class ModelMesh
 {
 public:
 	ModelMesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices,
-		std::vector<Texture> textures, std::vector<Texture> heights, BoundingBox AABB);
+		std::vector<Texture> textures, std::vector<Texture> heights, 
+		BoundingBox AABB);
 	~ModelMesh()
 	{}
 
@@ -44,11 +48,20 @@ public:
 	void SetScale(const Vector3& scale)
 	{
 		transform.SetScalingVector(scale);
+
+		box.max = box.max * scale;
+		CalculateBoundingRadius();
+		//box.min = box.min * scale;
 	}
 
 	void SetPosition(const Vector3& position)
 	{
 		transform.SetPositionVector(position);
+	}
+
+	void Rotate(const Vector3& axis, const float& degrees)
+	{
+		transform = transform * Matrix4::Rotation(degrees, axis);
 	}
 
 	Matrix4* GetTransform()
@@ -77,6 +90,11 @@ public:
 			? true : false;
 	}
 
+	void CalculateBoundingRadius()
+	{
+		boundingRadius = (box.max - box.min).Length() / 2;
+	}
+
 	//Mesh Data
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
@@ -84,6 +102,8 @@ public:
 	std::vector<Texture> heights;
 
 	BoundingBox box;
+
+	bool hasTexture;
 private:
 	void SetupMesh();
 
@@ -93,6 +113,5 @@ private:
 
 	float boundingRadius;
 	float distanceFromCamera;
-
 };
 

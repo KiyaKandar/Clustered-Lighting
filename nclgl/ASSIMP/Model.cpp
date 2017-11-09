@@ -5,18 +5,22 @@
 
 typedef ModelMesh* (*processmeshFunc)(aiMesh*, aiScene*);
 
+const aiMatrix4x4	conversion(
+	-1,  0, 0, 0,
+	0,  0, 1, 0,
+	0,  1, 0, 0,
+	0,  0, 0, 1
+);
+
 void Model::LoadModel(std::string path)
 {
-	Assimp::Importer import;
-	const aiScene *scene = import.ReadFile(path,
+	scene = import.ReadFile(path,
 		aiProcess_Triangulate | aiProcess_FlipUVs |
-		aiProcess_GenNormals | aiProcess_CalcTangentSpace |
-		aiProcess_SplitLargeMeshes | aiProcess_OptimizeMeshes);
+		aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace |
+		aiProcess_SplitLargeMeshes | aiProcess_OptimizeMeshes | aiProcess_OptimizeMeshes);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
-		std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
-		return;
 	}
 
 	directory = path.substr(0, path.find_last_of('/'));
@@ -31,9 +35,7 @@ void Model::ProcessNode(aiNode *node, const aiScene *scene)
 	for (unsigned int i = 0; i < node->mNumMeshes; i++)
 	{
 		aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-
 		meshes.push_back(ProcessMesh(mesh, scene));
-
 	}
 
 	//Then do the same for each of its children
@@ -142,7 +144,18 @@ ModelMesh* Model::ProcessMesh(aiMesh *mesh, const aiScene *scene)
 		heights.insert(heights.end(), heightMaps.begin(), heightMaps.end());
 	}
 
-	return new ModelMesh(vertices, indices, textures, heights, AABB);
+	ModelMesh* modelMesh = new ModelMesh(vertices, indices, textures, heights, AABB);
+
+	if (textures.size() == 0)
+	{
+		modelMesh->hasTexture = false;
+	}
+	else
+	{
+		modelMesh->hasTexture = true;
+	}
+
+	return modelMesh;
 }
 
 vector<Texture> Model::LoadMaterialTextures(aiMaterial *mat, aiTextureType type, string typeName)
@@ -191,6 +204,22 @@ unsigned int Model::TextureFromFile(const char *path, const string &directory)
 
 	int width, height, nrComponents;
 	unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
+
+	if (!data)
+	{
+		//Try another location... ARRHHHA
+		string spath = string(path);
+		spath = spath.substr((spath.find_last_of(("\\/") + 1)), string::npos);
+
+		filename = directory + '/' + spath;
+		data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
+
+		if (!data)
+		{
+			std::cout << "Texture failed to load at path: " << spath << std::endl;
+		}
+	}
+
 	if (data)
 	{
 		GLenum format;
@@ -234,5 +263,13 @@ void Model::Scale(Vector3 scale) const
 	for each (ModelMesh* mesh in meshes)
 	{
 		mesh->SetScale(scale);
+	}
+}
+
+void Model::Rotate(Vector3 axis, float degrees) const
+{
+	for each (ModelMesh* mesh in meshes)
+	{
+		mesh->Rotate(axis, degrees);
 	}
 }

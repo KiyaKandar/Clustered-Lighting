@@ -17,13 +17,19 @@ struct LightData
 	float padding[2];
 };
 
+struct SpotLightData
+{
+	Vector4 direction;
+};
+
 class Light
 {
 public:
-	Light(Vector3 position, Vector4 colour, float radius, float intensity) {
+	Light(Vector3 position, Vector4 colour, float radius, float intensity, Vector4 direction = Vector4(0, 0, 0, 0)) {
 		this->position	= position;
 		this->colour	= colour;
 		this->radius	= radius;
+		this->direction = direction;
 
 		//float positionData[3] = { position.x, position.y, position.z };
 		//float colourData[4] = { colour.x, colour.y, colour.z, colour.w };
@@ -34,12 +40,14 @@ public:
 		data.lightColour = colour;
 		data.lightRadius = radius;
 		data.intensity	 = intensity;
+		spotLightData.direction = direction;
 	}
 
 	Light() {
 		this->position	= Vector3(0, 0, 0);
 		this->colour	= Vector4(1, 1, 1, 1);
 		this->radius	= 0.0f;
+		this->direction = Vector4(0, 0, 0, 0);
 	}
 
 	Light(const Light& rhs)
@@ -47,11 +55,13 @@ public:
 		position = rhs.position;
 		colour = rhs.colour;
 		radius = rhs.radius;
+		direction = rhs.direction;
 
 		data.lightPosition = Vector4(position.x, position.y, position.z, 1.0f);
 		data.lightColour = colour;
 		data.lightRadius = radius;
 		data.intensity = rhs.data.intensity;
+		spotLightData.direction = rhs.direction;
 	}
 
 	~Light(void) {};
@@ -72,10 +82,17 @@ public:
 		return data;
 	}
 
+	SpotLightData GetSpotData()
+	{
+		return spotLightData;
+	}
+
 protected:
 	LightData data;
+	SpotLightData spotLightData;
 	Vector3 position;
 	Vector4 colour;
+	Vector4 direction;
 	float radius;
 };
 

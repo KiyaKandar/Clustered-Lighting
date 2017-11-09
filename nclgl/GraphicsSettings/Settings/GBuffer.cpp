@@ -3,13 +3,16 @@
 #include "../Game/GraphicsConfiguration/GLConfig.h"
 #include "../Game/GraphicsConfiguration/GLUtil.h"
 
-GBuffer::GBuffer(Camera* camera, std::vector<ModelMesh*>* modelsInFrame)
+GBuffer::GBuffer(Window* window, Camera* camera, std::vector<ModelMesh*>* modelsInFrame,
+	std::vector<Model*>* models)
 {
 	this->modelsInFrame = modelsInFrame;
+	this->models = models;
 	this->camera = camera;
+	this->window = window;
 
 	geometryPass = new Shader(SHADERDIR"/SSAO/ssao_geometryvert.glsl",
-		SHADERDIR"/SSAO/ssao_geometryfrag.glsl");
+		SHADERDIR"/SSAO/ssao_geometryfrag.glsl", "", true);
 
 	SGBuffer = new GBufferData();
 	SGBuffer->gAlbedo = &gAlbedo;
@@ -55,17 +58,17 @@ void GBuffer::InitGBuffer()
 
 	//Position colour buffer
 	glGenTextures(1, &gPosition);
-	GLUtil::CreateScreenTexture(gPosition, GL_RGB16F, GL_RGB, GL_FLOAT, GL_NEAREST, 0, true);
+	GLUtil::CreateScreenTexture(gPosition, GL_RGB16F, GL_RGB, GL_FLOAT, GL_NEAREST, GLConfig::GPOSITION, true);
 	GLUtil::CheckGLError("GPosition");
 
 	//Normal coluor buffer
 	glGenTextures(1, &gNormal);
-	GLUtil::CreateScreenTexture(gNormal, GL_RGB16F, GL_RGB, GL_FLOAT, GL_NEAREST, 1, false);
+	GLUtil::CreateScreenTexture(gNormal, GL_RGB16F, GL_RGB, GL_FLOAT, GL_NEAREST, GLConfig::GNORMAL, false);
 	GLUtil::CheckGLError("GNormal");
 
 	//Colour + specular colour buffer
 	glGenTextures(1, &gAlbedo);
-	GLUtil::CreateScreenTexture(gAlbedo, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_NEAREST, 2, false);
+	GLUtil::CreateScreenTexture(gAlbedo, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_NEAREST, GLConfig::GALBEDO, false);
 	GLUtil::CheckGLError("GAlbedo");
 
 	GLUtil::VerifyBuffer("GBuffer", false);
@@ -97,6 +100,7 @@ void GBuffer::FillGBuffer()
 	const int numModels = modelsInFrame->size();
 	for (int i = 0; i < numModels; ++i)
 	{
+		glUniform1i(glGetUniformLocation(geometryPass->GetProgram(), "hasTexture"), modelsInFrame->at(i)->hasTexture);
 		modelsInFrame->at(i)->Draw(*currentShader);
 	}
 

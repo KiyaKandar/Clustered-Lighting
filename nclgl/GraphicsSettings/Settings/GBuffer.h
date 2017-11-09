@@ -4,6 +4,7 @@
 
 #include "../../Rendering/View/Camera.h"
 #include "../../ASSIMP/ModelMesh.h"
+#include "../../ASSIMP/Model.h"
 
 #include <vector>
 
@@ -11,7 +12,8 @@ class GBuffer :
 	public GSetting
 {
 public:
-	GBuffer(Camera* camera, std::vector<ModelMesh*>* modelsInFrame);
+	GBuffer(Window* window, Camera* camera, std::vector<ModelMesh*>* modelsInFrame,
+		std::vector<Model*>* models);
 	virtual ~GBuffer();
 
 	void LinkShaders() override;
@@ -44,7 +46,10 @@ private:
 	Shader* geometryPass;
 
 	Camera* camera;
+	Window* window;
+
 	std::vector<ModelMesh*>* modelsInFrame;
+	std::vector<Model*>* models;
 	GBufferData* SGBuffer;
 };
 

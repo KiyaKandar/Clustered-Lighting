@@ -25,6 +25,19 @@ bool Frustum::InsideFrustum(const BoundingBox &b)
 	return true;
 }
 
+bool Frustum::InsideFrustum(const Vector3& position, const float& radius)
+{
+	for (int p = 0; p < 6; ++p)
+	{
+		if(!planes[p].SphereInPlane(position, radius))
+		{
+			return false;
+		}
+	}
+
+	return false;
+}
+
 void Frustum::FromMatrix(const Matrix4 &mat)
 {
 	Vector3 xaxis = Vector3(mat.values[0], mat.values[4], mat.values[8]);

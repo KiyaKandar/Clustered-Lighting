@@ -6,7 +6,7 @@
 MotionBlur::MotionBlur(GBufferData* gBuffer, 
 	Matrix4* previousView, Matrix4* currentView, float* fps)
 {
-	blurShader = new Shader(SHADERDIR"/MotionBlur/combinevert.glsl", SHADERDIR"/MotionBlur/combinefrag.glsl", "", true);
+	blurShader = new Shader(SHADERDIR"/MotionBlur/combinevert.glsl", SHADERDIR"/MotionBlur/combinefrag.glsl");
 	this->gBuffer = gBuffer;
 
 	this->previousView = previousView;
@@ -39,27 +39,28 @@ void MotionBlur::CreateTexture()
 {
 	GLUtil::ClearGLErrorStack();
 
-	//glGenFramebuffers(1, FBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, *FBO);
+	glGenFramebuffers(1, &screenTexFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, screenTexFBO);
 
 	glGenTextures(1, colourBuffer);
-	GLUtil::CreateScreenTexture(colourBuffer[0], GL_RGB16F, GL_RGB, GL_FLOAT, GL_LINEAR, 2, true);
+	GLUtil::CreateScreenTexture(colourBuffer[0], GL_RGB16F, GL_RGB, GL_FLOAT, GL_LINEAR, 0, true);
 
-	glGenRenderbuffers(1, &rboDepth);
-	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+	glGenRenderbuffers(1, &renderBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, renderBuffer);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, GLConfig::RESOLUTION.x, GLConfig::RESOLUTION.y);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderBuffer);
 
 	glDrawBuffers(1, attachment);
 
-	GLUtil::VerifyBuffer("RBO DEPTH", false);
+	GLUtil::VerifyBuffer("Motion Blur Buffer", false);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	GLUtil::CheckGLError("Bloom texture");
+	GLUtil::CheckGLError("Motion blur texture");
 }
 
 void MotionBlur::Apply()
 {
+	//glBindFramebuffer(GL_FRAMEBUFFER, screenTexFBO);
 	glEnable(GL_DEPTH_TEST);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -77,9 +78,10 @@ void MotionBlur::Apply()
 	glUniform1i(glGetUniformLocation(blurShader->GetProgram(), "gPosition"), GLConfig::GPOSITION);
 
 	currentShader->ApplyTexture(GLConfig::GPOSITION, *gBuffer->gPosition);
-	glUniform1i(glGetUniformLocation(blurShader->GetProgram(), "scene"), 1);
-	glActiveTexture(GL_TEXTURE1);
+	glUniform1i(glGetUniformLocation(blurShader->GetProgram(), "scene"), 5);
+	glActiveTexture(GL_TEXTURE5);
 	glBindTexture(GL_TEXTURE_2D, colourBuffer[0]);
 
 	RenderScreenQuad();
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

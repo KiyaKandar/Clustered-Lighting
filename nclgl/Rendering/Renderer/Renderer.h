@@ -125,12 +125,14 @@ protected:
 
 	//Light SSBO
 	GLuint ssbo;
+	GLuint spotlightssbo;
 	GLuint tilesssbo;
 	GLuint tilelightssssbo;
 	void InitLightSSBO();
 
 	Light* lights[GLConfig::NUM_LIGHTS];
 	LightData lightData[GLConfig::NUM_LIGHTS];
+	SpotLightData spotLightData[GLConfig::NUM_LIGHTS];
 
 	//Frustum culling + ordering.
 	void BuildMeshLists();

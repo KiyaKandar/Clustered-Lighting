@@ -17,7 +17,7 @@ class Camera;
 class GConfiguration
 {
 public:
-	GConfiguration(Renderer* renderer, Camera* camera, Vector2 resolution, Profiler* profiler);
+	GConfiguration(Window* window, Renderer* renderer, Camera* camera, Vector2 resolution, Profiler* profiler);
 
 	~GConfiguration();
 
@@ -29,6 +29,7 @@ private:
 	Renderer*	renderer;
 	Camera*		camera;
 	Profiler* profiler;
+	Window* window;
 
 	//Settings
 	Shadows* shadows;

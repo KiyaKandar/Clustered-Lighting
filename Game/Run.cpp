@@ -14,6 +14,9 @@
 
 const bool FULLSCREEN = false;
 
+void CreateSponzaScene(Renderer* renderer);
+void CreateShowroomScene(Renderer* renderer);
+
 int main()
 {
 	Window* window = new Window("CFL", GLConfig::RESOLUTION.x, GLConfig::RESOLUTION.y, FULLSCREEN);
@@ -34,16 +37,12 @@ int main()
 	CameraController* camControl = new CameraController(camera, window);
 	camControl->ApplyCustomRotation(-10, 75, 0);
 
-	GConfiguration config(renderer, camera, GLConfig::RESOLUTION, profiler);
+	//CreateSponzaScene(renderer);
+	CreateShowroomScene(renderer);
+
+	GConfiguration config(window, renderer, camera, GLConfig::RESOLUTION, profiler);
 	config.InitialiseSettings();
 	config.LinkToRenderer();
-
-	Model sponza("../sponza/sponza.obj");
-	renderer->AddModel(&sponza);
-
-	//Model tank("../tank/Abrams_BF3.obj");
-	//tank.Scale(Vector3(100, 100, 100));
-	//renderer->AddModel(&tank);
 
 	//Game loop...
 	while (window->UpdateWindow() && !window->GetKeyboard()->KeyTriggered(KEYBOARD_ESCAPE)) {
@@ -61,4 +60,39 @@ int main()
 	delete camControl;
 
     return 0;
+}
+
+void CreateSponzaScene(Renderer* renderer)
+{
+	Model* sponza = new Model("../sponza/sponza.obj");
+	renderer->AddModel(sponza);
+}
+
+void CreateShowroomScene(Renderer* renderer)
+{
+	Model* tank = new Model("../tank/T-90/T-90.obj");
+	tank->Scale(Vector3(100, 100, 100));
+	renderer->AddModel(tank);
+
+	Model* tank1 = new Model("../tank/T-90/T-90.obj");
+	tank1->Scale(Vector3(100, 100, 100));
+	tank1->Translate(Vector3(450, 0, 0));
+	renderer->AddModel(tank1);
+
+	Model* tank2 = new Model("../tank/T-90/T-90.obj");
+	tank2->Scale(Vector3(100, 100, 100));
+	tank2->Translate(Vector3(-450, 0, 0));
+	renderer->AddModel(tank2);
+
+	Model* cube = new Model("../centeredcube.obj");
+	cube->Scale(Vector3(1000, 100, 1000));
+	cube->Translate(Vector3(0, -100, 0));
+	renderer->AddModel(cube);
+
+	Model* hellknight = new Model("../models/Hellknight/hellknight.md5mesh");
+	hellknight->Scale(Vector3(3.0f, 3.0f, 3.0f));
+	hellknight->Translate(Vector3(750, 0, 0));
+	hellknight->Rotate(Vector3(1, 0, 0), 90);
+	hellknight->Rotate(Vector3(0, 1, 0), 180);
+	renderer->AddModel(hellknight);
 }

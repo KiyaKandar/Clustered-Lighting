@@ -12,46 +12,49 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	projMatrix = GLConfig::SHARED_PROJ_MATRIX;// Matrix4::Perspective(1.0f, 15000.0f, static_cast<float>(width) / static_cast<float>(height), 45.0f);
 
 	//Shadow casting lights must be declared first
-	lights[0] = new Light(Vector3(0, 1800, 200), Vector4(0.9, 0.7, 0.4, 1), 30000.0f, 2.0f);
-	lights[1] = new Light(Vector3(-630, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 3.0f);
-	lights[2] = new Light(Vector3(500, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 3.0f);
-	lights[3] = new Light(Vector3(-630, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 3.0f);
-	lights[4] = new Light(Vector3(500, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 3.0f);
+	//lights[0] = new Light(Vector3(0, 700, -10), Vector4(1, 1, 1, 1), 2000.0f, 10.5f, Vector4(0, -1, 0, 1));
+	lights[0] = new Light(Vector3(0, 1800, 200), Vector4(0.9, 0.7, 0.4, 1), 30000.0f, 0.5f);
+	lights[1] = new Light(Vector3(-630, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f);
+	lights[2] = new Light(Vector3(500, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f);
+	lights[3] = new Light(Vector3(-630, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f);
+	lights[4] = new Light(Vector3(500, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f);
 
 	for (int i = 5; i < 10; i++)
 	{
-		lights[i] = new Light(Vector3(-3500 + (500 * i), 500, 450), Vector4(1, 0, 0, 1), 270.0f, 3.0f);
+		lights[i] = new Light(Vector3(-3500 + (500 * i), 500, 450), Vector4(1, 0, 0, 1), 270.0f, 1.0f);
 	}
 
 	for (int i = 10; i < 15; i++)
 	{
-		lights[i] = new Light(Vector3(-3500 + (500 * (i - 5)), 500, -450), Vector4(0, 1, 0, 1), 270.0f, 3.0f);
+		lights[i] = new Light(Vector3(-3500 + (500 * (i - 5)), 500, -450), Vector4(0, 1, 0, 1), 270.0f, 1.0f);
 	}
 
 	for (int i = 15; i < 20; i++)
 	{
-		lights[i] = new Light(Vector3(-3500 + (500 * (i - 10)), 100, 450), Vector4(0, 0, 1, 1), 270.0f, 3.0f);
+		lights[i] = new Light(Vector3(-3500 + (500 * (i - 10)), 100, 450), Vector4(0, 0, 1, 1), 270.0f, 1.0f);
 	}
 
 	for (int i = 20; i < 25; i++)
 	{
-		lights[i] = new Light(Vector3(-3500 + (500 * (i - 15)), 100, -450), Vector4(1, 1, 0, 1), 270.0f, 3.0f);
+		lights[i] = new Light(Vector3(-3500 + (500 * (i - 15)), 100, -450), Vector4(1, 1, 0, 1), 270.0f, 1.0f);
 	}
 
 	for (int i = 25; i < 50; i++)
 	{
-		lights[i] = new Light(Vector3(-1300 + (75 * (i - 20)), 1000, 150), Vector4(1, 0, 1, 1), 75.0f, 3.0f);
+		lights[i] = new Light(Vector3(-1300 + (75 * (i - 20)), 1000, 150), Vector4(1, 0, 1, 1), 75.0f, 1.0f);
 	}
 
 	for (int i = 50; i < 75; i++)
 	{
-		lights[i] = new Light(Vector3(-1300 + (75 * (i - 45)), 1000, -200), Vector4(0, 1, 1, 1), 75.0f, 3.0f);
+		lights[i] = new Light(Vector3(-1300 + (75 * (i - 45)), 1000, -200), Vector4(0, 1, 1, 1), 75.0f, 1.0f);
 	}
 
 	for (int i = 75; i < 100; i++)
 	{
-		lights[i] = new Light(Vector3(-1300 + (75 * (i - 70)), 50, 150), Vector4(1, 0.5, 0, 1), 100.0f, 2.0f);
+		lights[i] = new Light(Vector3(-1300 + (75 * (i - 70)), 50, 150), Vector4(1, 0.5, 0, 1), 100.0f, 0.5f);
 	}
+
+	//lights[99] = new Light(Vector3(100, 150, 100), Vector4(1, 0, 0, 1), 500, 0.5f);
 
 	//Initialise text for the profiler
 	textShader = new Shader(SHADERDIR"TexturedVertex.glsl", SHADERDIR"TexturedFragment.glsl");
@@ -66,6 +69,7 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
 	{
 		lightData[i] = lights[i]->GetData();
+		spotLightData[i] = lights[i]->GetSpotData();
 	}
 
 	tiles = new TileRenderer(lights, GLConfig::NUM_LIGHTS,
@@ -97,6 +101,11 @@ Renderer::~Renderer()
 		delete light;
 	}
 
+	for each (Model* model in models)
+	{
+		delete model;
+	}
+
 	delete tiles;
 	delete textRenderer;
 }
@@ -126,6 +135,10 @@ void Renderer::InitLightSSBO()
 	ssbo = GLUtil::InitSSBO(1, 1, ssbo,
 		sizeof(LightData) * GLConfig::NUM_LIGHTS, &lightData, GL_STATIC_COPY);
 	GLUtil::CheckGLError("Light Data SSBO");
+
+	spotlightssbo = GLUtil::InitSSBO(1, 7, spotlightssbo,
+		sizeof(SpotLightData) * GLConfig::NUM_LIGHTS, &spotLightData, GL_STATIC_COPY);
+	GLUtil::CheckGLError("SpotLight Data SSBO");
 
 	tilesssbo = GLUtil::InitSSBO(1, 2, tilesssbo,
 		sizeof(Tile) * tiles->GetNumTiles(), screenTiles, GL_STATIC_COPY);
@@ -263,14 +276,15 @@ void Renderer::BuildMeshLists()
 
 		for (int mes = 0; mes < numMeshes; ++mes)
 		{
-			if (frameFrustum.InsideFrustum(models[mod]->meshes[mes]->box))
-			{
+			//if (frameFrustum.InsideFrustum(models[mod]->meshes[mes]->box))
+			//if(frameFrustum.InsideFrustum(models[mod]->meshes[mes]->GetTransform()->GetPositionVector(), models[mod]->meshes[mes]->GetBoundingRadius()))
+			//{
 				const Vector3 dir = models[mod]->meshes[mes]->GetTransform()->GetPositionVector() -
 					camera->GetPosition();
 				models[mod]->meshes[mes]->SetCameraDistance(Vector3::Dot(dir, dir));
 
 				modelsInFrame.push_back(models[mod]->meshes[mes]);
-			}
+			//}
 		}
 	}
 }

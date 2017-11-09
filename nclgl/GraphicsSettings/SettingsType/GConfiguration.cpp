@@ -3,12 +3,13 @@
 #include "../../Rendering/Renderer/Renderer.h"
 #include "../Game/GraphicsConfiguration/GLConfig.h"
 
-GConfiguration::GConfiguration(Renderer* renderer, Camera* camera, Vector2 resolution, Profiler* profiler)
+GConfiguration::GConfiguration(Window* window, Renderer* renderer, Camera* camera, Vector2 resolution, Profiler* profiler)
 {
 	this->resolution = resolution;
 	this->renderer = renderer;
 	this->camera = camera;
 	this->profiler = profiler;
+	this->window = window;
 }
 
 GConfiguration::~GConfiguration()
@@ -33,7 +34,7 @@ void GConfiguration::InitialiseSettings()
 	shadows->LinkShaders();
 	shadows->Initialise();
 
-	SGBuffer = new GBuffer(camera, renderer->GetModelsInFrustum());
+	SGBuffer = new GBuffer(window, camera, renderer->GetModelsInFrustum(), renderer->GetModels());
 	SGBuffer->LinkShaders();
 	SGBuffer->Initialise();
 
@@ -46,17 +47,19 @@ void GConfiguration::InitialiseSettings()
 	lighting->LinkShaders();
 	lighting->Initialise();
 
+
 	bloom = new Bloom(GLConfig::BLOOM_STRENGTH);
 	bloom->LinkShaders();
 	bloom->Initialise();
 
 	motionBlur = new MotionBlur(SGBuffer->GetGBuffer(), &renderer->previousViewMatrix,
 		&renderer->currentViewProj, &profiler->GetFPSCounter()->fps);
-	motionBlur->FBO = &bloom->FBO;
 	motionBlur->LinkShaders();
 	motionBlur->Initialise();
+	//motionBlur->FBO = &bloom->FBO;
 
 	lighting->FBO = &bloom->FBO;
+	bloom->motionBlurFBO = &motionBlur->screenTexFBO;
 }
 
 void GConfiguration::LinkToRenderer()

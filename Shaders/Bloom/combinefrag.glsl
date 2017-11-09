@@ -1,10 +1,12 @@
 #version 430
 
+layout(location = 0) out vec4 FragColor;
+
 uniform sampler2D scene;
 uniform sampler2D bloomBlur;
 
 in vec2 TexCoords;
-out vec4 FragColor;
+//out vec4 FragColor;
 
 void main(void){
 	const float gamma = 1;
@@ -14,5 +16,5 @@ void main(void){
 
 	finalColour += bloomColour;
 
-	FragColor = vec4(finalColour, 1.0);
+	FragColor = vec4(finalColour, 1.0f);
 }

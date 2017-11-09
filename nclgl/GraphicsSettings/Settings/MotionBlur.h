@@ -15,7 +15,7 @@ public:
 	void Initialise() override;
 	void Apply() override;
 
-	GLuint* FBO;
+	GLuint screenTexFBO;
 
 private:
 	void CreateTexture();
@@ -24,8 +24,8 @@ private:
 	Shader* blurShader;
 
 	GLuint colourBuffer[1];
-	GLuint attachment[1] = { GL_COLOR_ATTACHMENT2 };
-	GLuint rboDepth;
+	GLuint attachment[1] = { GL_COLOR_ATTACHMENT0 };
+	GLuint renderBuffer;
 
 	GBufferData* gBuffer;
 

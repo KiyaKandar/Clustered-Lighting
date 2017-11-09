@@ -12,13 +12,14 @@ out vec3 FragPos;
 out vec2 TexCoords;
 out vec3 Normal;
 
-void main(void) {
+void main(void) 
+{
 	vec4 viewPos = viewMatrix * modelMatrix * vec4(aPos, 1.0);
 	FragPos = viewPos.xyz;
 	TexCoords = aTexCoords;
 	
 	mat3 normalMatrix = transpose(inverse(mat3(viewMatrix * modelMatrix)));
-	Normal = normalMatrix * aNormal;
+	Normal = normalMatrix * (vec4(aNormal, 1.0)).xyz;
 
 	gl_Position = projMatrix * viewPos;
 }

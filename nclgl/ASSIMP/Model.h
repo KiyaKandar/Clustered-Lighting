@@ -22,7 +22,13 @@ public:
 		LoadModel(path);
 	}
 
-	~Model() {};
+	~Model()
+	{
+		for each (ModelMesh* mesh in meshes)
+		{
+			delete mesh;
+		}
+	};
 
 	void LoadModel(std::string path);
 
@@ -37,10 +43,14 @@ public:
 	//Modifiers
 	void Translate(Vector3 translation) const;
 	void Scale(Vector3 scale) const;
+	void Rotate(Vector3 axis, float degrees) const;
 
 	//Model Data 
 	std::vector<ModelMesh*> meshes;
 	std::string directory;
 	std::vector<Texture> loadedTextures;
+
+	Assimp::Importer import;
+	const aiScene* scene;
 };
 

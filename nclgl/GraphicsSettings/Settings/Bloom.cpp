@@ -12,7 +12,7 @@ Bloom::Bloom(int strength)
 	blurStrength = strength;
 
 	blurShader = new Shader(SHADERDIR"/Bloom/blurvert.glsl", SHADERDIR"/Bloom/blurfrag.glsl");
-	combineShader = new Shader(SHADERDIR"/Bloom/combinevert.glsl", SHADERDIR"/Bloom/combinefrag.glsl");
+	combineShader = new Shader(SHADERDIR"/Bloom/combinevert.glsl", SHADERDIR"/Bloom/combinefrag.glsl", "", true);
 }
 
 Bloom::~Bloom()
@@ -131,6 +131,7 @@ void Bloom::ApplyBlur()
 
 void Bloom::Combine()
 {
+	glBindFramebuffer(GL_FRAMEBUFFER, *motionBlurFBO);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	SetCurrentShader(combineShader);
@@ -145,4 +146,6 @@ void Bloom::Combine()
 	glBindTexture(GL_TEXTURE_2D, pingpongColourBuffers[!horizontal]);
 
 	RenderScreenQuad();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

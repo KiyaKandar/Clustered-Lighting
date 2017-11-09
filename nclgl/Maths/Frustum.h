@@ -18,6 +18,7 @@ public:
 
 	void FromMatrix(const Matrix4 &mvp);
 	bool InsideFrustum(const BoundingBox &b);
+	bool InsideFrustum(const Vector3& position, const float& radius);
 
 protected:
 	Plane planes[6];

@@ -15,6 +15,8 @@ public:
 	void Apply() override;
 
 	GLuint FBO;
+	GLuint* motionBlurFBO;
+
 private:
 	void CreateTexture();
 	void InitialiseBlur();
