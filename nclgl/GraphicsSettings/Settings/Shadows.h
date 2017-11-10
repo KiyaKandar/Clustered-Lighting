@@ -12,7 +12,7 @@
 class Shadows : public GSetting
 {
 public:
-	Shadows(int numShadowCastingLights, Light** lights, std::vector<Model*>* models);
+	Shadows(int numShadowCastingLights, Light** lights, std::vector<Model*>** models);
 
 	~Shadows()
 	{
@@ -48,6 +48,6 @@ private:
 	Shader* shadowShader;
 
 	Light** lights;
-	std::vector<Model*>* models;
+	std::vector<Model*>** models;
 };
 

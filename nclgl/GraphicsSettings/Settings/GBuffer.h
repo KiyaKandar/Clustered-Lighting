@@ -13,7 +13,7 @@ class GBuffer :
 {
 public:
 	GBuffer(Window* window, Camera* camera, std::vector<ModelMesh*>* modelsInFrame,
-		std::vector<Model*>* models);
+		std::vector<Model*>** models);
 	virtual ~GBuffer();
 
 	void LinkShaders() override;
@@ -49,7 +49,7 @@ private:
 	Window* window;
 
 	std::vector<ModelMesh*>* modelsInFrame;
-	std::vector<Model*>* models;
+	std::vector<Model*>** models;
 	GBufferData* SGBuffer;
 };
 

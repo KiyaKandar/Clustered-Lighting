@@ -101,9 +101,9 @@ Renderer::~Renderer()
 		delete light;
 	}
 
-	for each (Model* model in models)
+	for each (Scene* scene in scenes)
 	{
-		delete model;
+		delete scene;
 	}
 
 	delete tiles;
@@ -211,6 +211,18 @@ void Renderer::RenderScene()
 
 void Renderer::UpdateScene(const float& msec)
 {
+	if (wparent->GetKeyboard()->KeyTriggered(KEYBOARD_T))
+	{
+		++sceneIndex;
+
+		if (sceneIndex == scenes.size())
+		{
+			sceneIndex = 0;
+		}
+
+		models = scenes[sceneIndex]->GetModels();
+	}
+
 	camera->UpdateCamera(msec);
 	viewMatrix = camera->BuildViewMatrix();
 
@@ -268,22 +280,22 @@ void Renderer::DrawAllText() const
 
 void Renderer::BuildMeshLists()
 {
-	const int numModels = models.size();
+	const int numModels = models->size();
 
 	for (int mod = 0; mod < numModels; ++mod)
 	{
-		const int numMeshes = models[mod]->meshes.size();
+		const int numMeshes = (*models)[mod]->meshes.size();
 
 		for (int mes = 0; mes < numMeshes; ++mes)
 		{
 			//if (frameFrustum.InsideFrustum(models[mod]->meshes[mes]->box))
 			//if(frameFrustum.InsideFrustum(models[mod]->meshes[mes]->GetTransform()->GetPositionVector(), models[mod]->meshes[mes]->GetBoundingRadius()))
 			//{
-				const Vector3 dir = models[mod]->meshes[mes]->GetTransform()->GetPositionVector() -
+				const Vector3 dir = (*models)[mod]->meshes[mes]->GetTransform()->GetPositionVector() -
 					camera->GetPosition();
-				models[mod]->meshes[mes]->SetCameraDistance(Vector3::Dot(dir, dir));
+				(*models)[mod]->meshes[mes]->SetCameraDistance(Vector3::Dot(dir, dir));
 
-				modelsInFrame.push_back(models[mod]->meshes[mes]);
+				modelsInFrame.push_back((*models)[mod]->meshes[mes]);
 			//}
 		}
 	}

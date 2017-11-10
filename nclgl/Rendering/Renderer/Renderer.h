@@ -15,6 +15,7 @@
 #include <vector>
 #include <random>
 #include <functional>
+#include "../../../Game/SceneManagement/Scene.h"
 
 #define DEBUG_LIGHTS
 
@@ -35,9 +36,15 @@ public:
 	void UpdateScene(const float& msec) override;
 	void RenderScene() override;
 
-	void AddModel(Model* model) noexcept
+	//void AddModel(Model* model) noexcept
+	//{
+	//	models.push_back(model);
+	//}
+
+	void AddScene(Scene* scene) noexcept
 	{
-		models.push_back(model);
+		scenes.push_back(scene);
+		models = scene->GetModels();
 	}
 
 	std::vector<ModelMesh*>* GetModelsInFrustum() noexcept
@@ -45,7 +52,7 @@ public:
 		return &modelsInFrame;
 	}
 
-	std::vector<Model*>* GetModels() noexcept
+	std::vector<Model*>** GetModels() noexcept
 	{
 		return &models;
 	}
@@ -103,6 +110,8 @@ public:
 		textRenderer->textbuffer.push_back(text);
 	}
 
+	void AddLight(std::pair<Light*, int>){}
+
 	//vector<Text> textbuffer;
 	Font* basicFont;
 	Matrix4 previousViewMatrix;
@@ -112,8 +121,8 @@ public:
 
 protected:
 	std::vector<GSetting*> GComponents;
-
-	std::vector<Model*> models;
+	std::vector<Scene*> scenes;
+	vector<Model*>* models;
 	std::vector<ModelMesh*> modelsInFrame;
 
 	TileData* tileData;
@@ -154,4 +163,5 @@ protected:
 	Frustum frameFrustum;
 
 	Window* wparent;
+	int sceneIndex = 0;
 };

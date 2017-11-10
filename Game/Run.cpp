@@ -16,6 +16,7 @@ const bool FULLSCREEN = false;
 
 void CreateSponzaScene(Renderer* renderer);
 void CreateShowroomScene(Renderer* renderer);
+void CreateScaryScene(Renderer* renderer);
 
 int main()
 {
@@ -37,8 +38,9 @@ int main()
 	CameraController* camControl = new CameraController(camera, window);
 	camControl->ApplyCustomRotation(-10, 75, 0);
 
-	//CreateSponzaScene(renderer);
 	CreateShowroomScene(renderer);
+	CreateSponzaScene(renderer);
+	CreateScaryScene(renderer);
 
 	GConfiguration config(window, renderer, camera, GLConfig::RESOLUTION, profiler);
 	config.InitialiseSettings();
@@ -64,35 +66,70 @@ int main()
 
 void CreateSponzaScene(Renderer* renderer)
 {
-	Model* sponza = new Model("../sponza/sponza.obj");
-	renderer->AddModel(sponza);
+	vector<pair<string, int>> files;
+	files.push_back(make_pair("../sponza/sponza.obj", 1));
+
+	Scene* scene = new Scene(files);
+	scene->LoadModels();
+	renderer->AddScene(scene);
 }
 
 void CreateShowroomScene(Renderer* renderer)
 {
-	Model* tank = new Model("../tank/T-90/T-90.obj");
-	tank->Scale(Vector3(100, 100, 100));
-	renderer->AddModel(tank);
+	vector<pair<string, int>> files;
+	files.push_back(make_pair("../tank/T-90/T-90.obj", 3));
+	files.push_back(make_pair("../centeredcube.obj", 1));
+	files.push_back(make_pair("../models/Hellknight/hellknight.md5mesh", 1));
 
-	Model* tank1 = new Model("../tank/T-90/T-90.obj");
-	tank1->Scale(Vector3(100, 100, 100));
-	tank1->Translate(Vector3(450, 0, 0));
-	renderer->AddModel(tank1);
+	Scene* scene = new Scene(files);
+	scene->LoadModels();
 
-	Model* tank2 = new Model("../tank/T-90/T-90.obj");
-	tank2->Scale(Vector3(100, 100, 100));
-	tank2->Translate(Vector3(-450, 0, 0));
-	renderer->AddModel(tank2);
+	Model* cube = scene->GetModel("../centeredcube.obj");
+	Model* hellknight = scene->GetModel("../models/Hellknight/hellknight.md5mesh");
+	Model* tank = scene->GetModel("../tank/T-90/T-90.obj");
+	Model* tank1 = scene->GetModel("../tank/T-90/T-90.obj", 1);
+	Model* tank2 = scene->GetModel("../tank/T-90/T-90.obj", 2);
 
-	Model* cube = new Model("../centeredcube.obj");
 	cube->Scale(Vector3(1000, 100, 1000));
 	cube->Translate(Vector3(0, -100, 0));
-	renderer->AddModel(cube);
 
-	Model* hellknight = new Model("../models/Hellknight/hellknight.md5mesh");
+	hellknight->Scale(Vector3(100, 100, 100));
 	hellknight->Scale(Vector3(3.0f, 3.0f, 3.0f));
 	hellknight->Translate(Vector3(750, 0, 0));
 	hellknight->Rotate(Vector3(1, 0, 0), 90);
 	hellknight->Rotate(Vector3(0, 1, 0), 180);
-	renderer->AddModel(hellknight);
+
+	tank->Scale(Vector3(100, 100, 100));
+
+	tank1->Scale(Vector3(100, 100, 100));
+	tank1->Translate(Vector3(450, 0, 0));
+
+	tank2->Scale(Vector3(100, 100, 100));
+	tank2->Translate(Vector3(-450, 0, 0));
+
+	renderer->AddScene(scene);
+}
+
+void CreateScaryScene(Renderer* renderer)
+{
+	vector<pair<string, int>> files;
+	files.push_back(make_pair("../centeredcube.obj", 1));
+	files.push_back(make_pair("../models/Hellknight/hellknight.md5mesh", 1));
+
+	Scene* scene = new Scene(files);
+	scene->LoadModels();
+
+	Model* cube = scene->GetModel("../centeredcube.obj");
+	Model* hellknight = scene->GetModel("../models/Hellknight/hellknight.md5mesh");
+
+	cube->Scale(Vector3(1000, 100, 1000));
+	cube->Translate(Vector3(0, -100, 0));
+
+	hellknight->Scale(Vector3(100, 100, 100));
+	hellknight->Scale(Vector3(3.0f, 3.0f, 3.0f));
+	hellknight->Translate(Vector3(0, 0, 0));
+	hellknight->Rotate(Vector3(1, 0, 0), 90);
+	hellknight->Rotate(Vector3(0, 1, 0), 180);
+
+	renderer->AddScene(scene);
 }

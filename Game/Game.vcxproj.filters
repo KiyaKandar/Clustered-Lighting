@@ -27,6 +27,7 @@
     <ClInclude Include="Utility\Util.h">
       <Filter>Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="SceneManagement\Scene.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Run.cpp" />
@@ -36,5 +37,6 @@
     <ClCompile Include="GraphicsConfiguration\GLConfig.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="SceneManagement\Scene.cpp" />
   </ItemGroup>
 </Project>

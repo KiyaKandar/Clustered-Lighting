@@ -4,7 +4,7 @@
 #include "../Game/GraphicsConfiguration/GLUtil.h"
 
 GBuffer::GBuffer(Window* window, Camera* camera, std::vector<ModelMesh*>* modelsInFrame,
-	std::vector<Model*>* models)
+	std::vector<Model*>** models)
 {
 	this->modelsInFrame = modelsInFrame;
 	this->models = models;

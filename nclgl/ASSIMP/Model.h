@@ -22,6 +22,11 @@ public:
 		LoadModel(path);
 	}
 
+	Model(const string path)
+	{
+		LoadModel(path);
+	}
+
 	~Model()
 	{
 		for each (ModelMesh* mesh in meshes)

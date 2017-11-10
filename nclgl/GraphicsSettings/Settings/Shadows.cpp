@@ -4,7 +4,7 @@
 #include "../Game/GraphicsConfiguration/GLUtil.h"
 
 Shadows::Shadows(int numShadowCastingLights, Light** lights,
-	std::vector<Model*>* models)
+	std::vector<Model*>** models)
 {
 	shadowFBOs = new GLuint[numShadowCastingLights];
 
@@ -104,7 +104,7 @@ void Shadows::DrawShadowScene()
 
 		UpdateShaderMatrices();
 
-		for each (Model* m in *models)
+		for each (Model* m in **models)
 		{
 			for each (ModelMesh* mesh in m->meshes)
 			{
