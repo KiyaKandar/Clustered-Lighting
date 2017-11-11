@@ -38,9 +38,9 @@ int main()
 	CameraController* camControl = new CameraController(camera, window);
 	camControl->ApplyCustomRotation(-10, 75, 0);
 
+	CreateScaryScene(renderer);
 	CreateShowroomScene(renderer);
 	CreateSponzaScene(renderer);
-	CreateScaryScene(renderer);
 
 	GConfiguration config(window, renderer, camera, GLConfig::RESOLUTION, profiler);
 	config.InitialiseSettings();
@@ -69,7 +69,7 @@ void CreateSponzaScene(Renderer* renderer)
 	vector<pair<string, int>> files;
 	files.push_back(make_pair("../sponza/sponza.obj", 1));
 
-	Scene* scene = new Scene(files);
+	Scene* scene = new Scene(files, Vector3(100, 1, 1));
 	scene->LoadModels();
 	renderer->AddScene(scene);
 }
@@ -81,7 +81,7 @@ void CreateShowroomScene(Renderer* renderer)
 	files.push_back(make_pair("../centeredcube.obj", 1));
 	files.push_back(make_pair("../models/Hellknight/hellknight.md5mesh", 1));
 
-	Scene* scene = new Scene(files);
+	Scene* scene = new Scene(files, Vector3(100, 1, 1));
 	scene->LoadModels();
 
 	Model* cube = scene->GetModel("../centeredcube.obj");
@@ -116,7 +116,9 @@ void CreateScaryScene(Renderer* renderer)
 	files.push_back(make_pair("../centeredcube.obj", 1));
 	files.push_back(make_pair("../models/Hellknight/hellknight.md5mesh", 1));
 
-	Scene* scene = new Scene(files);
+	Scene* scene = new Scene(files, Vector3(1, 1, 1));
+	scene->AddLight(new Light(Vector3(0, 700, -10),
+		Vector4(1, 1, 1, 1), 2000.0f, 10.5f, Vector4(0, -1, 0, 1)), 0);
 	scene->LoadModels();
 
 	Model* cube = scene->GetModel("../centeredcube.obj");

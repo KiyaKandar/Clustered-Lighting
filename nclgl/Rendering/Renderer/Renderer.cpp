@@ -13,45 +13,45 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 
 	//Shadow casting lights must be declared first
 	//lights[0] = new Light(Vector3(0, 700, -10), Vector4(1, 1, 1, 1), 2000.0f, 10.5f, Vector4(0, -1, 0, 1));
-	lights[0] = new Light(Vector3(0, 1800, 200), Vector4(0.9, 0.7, 0.4, 1), 30000.0f, 0.5f);
-	lights[1] = new Light(Vector3(-630, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f);
-	lights[2] = new Light(Vector3(500, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f);
-	lights[3] = new Light(Vector3(-630, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f);
-	lights[4] = new Light(Vector3(500, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f);
+	defaultLights[0] = new Light(Vector3(0, 1800, 200), Vector4(0.9, 0.7, 0.4, 1), 30000.0f, 0.5f);
+	defaultLights[1] = new Light(Vector3(-630, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f);
+	defaultLights[2] = new Light(Vector3(500, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f);
+	defaultLights[3] = new Light(Vector3(-630, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f);
+	defaultLights[4] = new Light(Vector3(500, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f);
 
 	for (int i = 5; i < 10; i++)
 	{
-		lights[i] = new Light(Vector3(-3500 + (500 * i), 500, 450), Vector4(1, 0, 0, 1), 270.0f, 1.0f);
+		defaultLights[i] = new Light(Vector3(-3500 + (500 * i), 500, 450), Vector4(1, 0, 0, 1), 270.0f, 1.0f);
 	}
 
 	for (int i = 10; i < 15; i++)
 	{
-		lights[i] = new Light(Vector3(-3500 + (500 * (i - 5)), 500, -450), Vector4(0, 1, 0, 1), 270.0f, 1.0f);
+		defaultLights[i] = new Light(Vector3(-3500 + (500 * (i - 5)), 500, -450), Vector4(0, 1, 0, 1), 270.0f, 1.0f);
 	}
 
 	for (int i = 15; i < 20; i++)
 	{
-		lights[i] = new Light(Vector3(-3500 + (500 * (i - 10)), 100, 450), Vector4(0, 0, 1, 1), 270.0f, 1.0f);
+		defaultLights[i] = new Light(Vector3(-3500 + (500 * (i - 10)), 100, 450), Vector4(0, 0, 1, 1), 270.0f, 1.0f);
 	}
 
 	for (int i = 20; i < 25; i++)
 	{
-		lights[i] = new Light(Vector3(-3500 + (500 * (i - 15)), 100, -450), Vector4(1, 1, 0, 1), 270.0f, 1.0f);
+		defaultLights[i] = new Light(Vector3(-3500 + (500 * (i - 15)), 100, -450), Vector4(1, 1, 0, 1), 270.0f, 1.0f);
 	}
 
 	for (int i = 25; i < 50; i++)
 	{
-		lights[i] = new Light(Vector3(-1300 + (75 * (i - 20)), 1000, 150), Vector4(1, 0, 1, 1), 75.0f, 1.0f);
+		defaultLights[i] = new Light(Vector3(-1300 + (75 * (i - 20)), 1000, 150), Vector4(1, 0, 1, 1), 75.0f, 1.0f);
 	}
 
 	for (int i = 50; i < 75; i++)
 	{
-		lights[i] = new Light(Vector3(-1300 + (75 * (i - 45)), 1000, -200), Vector4(0, 1, 1, 1), 75.0f, 1.0f);
+		defaultLights[i] = new Light(Vector3(-1300 + (75 * (i - 45)), 1000, -200), Vector4(0, 1, 1, 1), 75.0f, 1.0f);
 	}
 
 	for (int i = 75; i < 100; i++)
 	{
-		lights[i] = new Light(Vector3(-1300 + (75 * (i - 70)), 50, 150), Vector4(1, 0.5, 0, 1), 100.0f, 0.5f);
+		defaultLights[i] = new Light(Vector3(-1300 + (75 * (i - 70)), 50, 150), Vector4(1, 0.5, 0, 1), 100.0f, 0.5f);
 	}
 
 	//lights[99] = new Light(Vector3(100, 150, 100), Vector4(1, 0, 0, 1), 500, 0.5f);
@@ -61,16 +61,10 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	basicFont = new Font(SOIL_load_OGL_texture(TEXTUREDIR"tahoma.tga",
 		SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_COMPRESS_TO_DXT), 16, 16);
 
-	InitDebugLights();
+	//InitDebugLights();
 
 	SetAsDebugDrawingRenderer(); //For light debugging
 	SetCurrentShader(textShader);
-
-	for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
-	{
-		lightData[i] = lights[i]->GetData();
-		spotLightData[i] = lights[i]->GetSpotData();
-	}
 
 	tiles = new TileRenderer(lights, GLConfig::NUM_LIGHTS,
 		GLConfig::NUM_X_AXIS_TILES, GLConfig::NUM_Y_AXIS_TILES, GLConfig::NUM_Z_AXIS_TILES,
@@ -78,6 +72,7 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 
 	screenTiles = tiles->GetScreenTiles();
 	tileData = tiles->GetTileData();
+	tiles->dataPrepWorkGroups = &currentScenesDataPrepWorkGroups;
 
 	InitLightSSBO();
 
@@ -90,13 +85,16 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	glEnable(GL_MULTISAMPLE);
 	GLUtil::CheckGLError("Renderer Initialisation");
 	init = true;
+	sceneIndex = 0;
+
+	debugSpheres = vector<Model*>(GLConfig::NUM_LIGHTS);//.reserve(GLConfig::NUM_LIGHTS);
 }
 
 Renderer::~Renderer()
 {
 	delete camera;
 
-	for each (Light* light in lights)
+	for each (Light* light in defaultLights)
 	{
 		delete light;
 	}
@@ -112,8 +110,9 @@ Renderer::~Renderer()
 
 void Renderer::InitDebugLights()
 {
-	for (int i = 1; i < GLConfig::NUM_LIGHTS; ++i)
+	for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
 	{
+		delete debugSpheres[i];
 		//Create new sphere.
 		Model* sphere = new Model("../sphere/sphere.obj");
 
@@ -124,7 +123,7 @@ void Renderer::InitDebugLights()
 		sphere->Scale(Vector3(radius, radius, radius));
 
 		//Add it to a seperate list.
-		debugSpheres.push_back(sphere);
+		debugSpheres[i] = sphere;
 	}
 }
 
@@ -209,18 +208,61 @@ void Renderer::RenderScene()
 	ClearMeshLists();
 }
 
+void Renderer::ChangeScene()
+{
+	++sceneIndex;
+
+	if (sceneIndex == scenes.size())
+	{
+		sceneIndex = 0;
+	}
+
+	models = scenes[sceneIndex]->GetModels();
+
+	//for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
+	//{
+	//	spotLightData[i].direction = Vector4(0, 0, 0, 0);
+	//}
+
+	for (int i = 0; i < GLConfig::NUM_LIGHTS; i++)
+	{
+		lights[i] = defaultLights[i];
+	}
+
+	for each (pair<Light*, int> newLight in scenes[sceneIndex]->GetSceneLights())
+	{
+		lights[newLight.second] = newLight.first;
+		//lightData[newLight.second] = lights[newLight.second]->GetData();
+		//spotLightData[newLight.second] = lights[newLight.second]->GetSpotData();
+	}
+
+	for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
+	{
+		lightData[i] = lights[i]->GetData();
+		spotLightData[i] = lights[i]->GetSpotData();
+	}
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(LightData) * GLConfig::NUM_LIGHTS, 
+		&lightData, GL_STATIC_COPY);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, spotlightssbo);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(SpotLightData) * GLConfig::NUM_LIGHTS,
+		&spotLightData, GL_STATIC_COPY);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, spotlightssbo);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	currentScenesDataPrepWorkGroups = scenes[sceneIndex]->GetLightWorkGroups();
+	InitDebugLights();
+}
+
 void Renderer::UpdateScene(const float& msec)
 {
 	if (wparent->GetKeyboard()->KeyTriggered(KEYBOARD_T))
 	{
-		++sceneIndex;
-
-		if (sceneIndex == scenes.size())
-		{
-			sceneIndex = 0;
-		}
-
-		models = scenes[sceneIndex]->GetModels();
+		ChangeScene();
 	}
 
 	camera->UpdateCamera(msec);

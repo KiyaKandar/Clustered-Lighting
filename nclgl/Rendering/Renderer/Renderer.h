@@ -44,7 +44,7 @@ public:
 	void AddScene(Scene* scene) noexcept
 	{
 		scenes.push_back(scene);
-		models = scene->GetModels();
+		ChangeScene();
 	}
 
 	std::vector<ModelMesh*>* GetModelsInFrustum() noexcept
@@ -110,7 +110,7 @@ public:
 		textRenderer->textbuffer.push_back(text);
 	}
 
-	void AddLight(std::pair<Light*, int>){}
+	void ChangeScene();
 
 	//vector<Text> textbuffer;
 	Font* basicFont;
@@ -118,6 +118,7 @@ public:
 	Matrix4 inverseViewProj;
 	Matrix4 previousViewProj;
 	Matrix4 currentViewProj;
+	Vector3 currentScenesDataPrepWorkGroups;
 
 protected:
 	std::vector<GSetting*> GComponents;
@@ -140,6 +141,7 @@ protected:
 	void InitLightSSBO();
 
 	Light* lights[GLConfig::NUM_LIGHTS];
+	Light* defaultLights[GLConfig::NUM_LIGHTS];
 	LightData lightData[GLConfig::NUM_LIGHTS];
 	SpotLightData spotLightData[GLConfig::NUM_LIGHTS];
 
@@ -163,5 +165,5 @@ protected:
 	Frustum frameFrustum;
 
 	Window* wparent;
-	int sceneIndex = 0;
+	int sceneIndex;
 };

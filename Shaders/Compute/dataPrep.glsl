@@ -6,7 +6,7 @@ uniform mat4 projectionMatrix;
 uniform mat4 projView;
 uniform vec4 cameraPos;
 
-layout(local_size_x = 50, local_size_y = 1, local_size_z = 1) in;
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
 struct Tile
 {

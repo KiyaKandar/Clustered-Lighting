@@ -2,10 +2,11 @@
 
 #include "../../nclgl/ASSIMP/Model.h"
 
-Scene::Scene(vector<pair<string, int>> modelsToLoad)
+Scene::Scene(vector<pair<string, int>> modelsToLoad, Vector3 lightWorkGroups)
 {
 	modelIDCount = 0;
 	this->modelsToLoad = modelsToLoad;
+	this->lightWorkGroups = lightWorkGroups;
 }
 
 Scene::~Scene()
@@ -25,6 +26,11 @@ void Scene::LoadModels()
 			AddModel(file.first);
 		}
 	}
+}
+
+void Scene::AddLight(Light* light, int defaultIndexToReplace)
+{
+	sceneLights.push_back(make_pair(light, defaultIndexToReplace));
 }
 
 Model* Scene::GetModel(const string& fileName, int duplicateNum)
@@ -52,4 +58,19 @@ void Scene::AddModel(const string& fileName)
 {
 	models.push_back(new Model(fileName));
 	modelIDCount++;
+}
+
+vector<Model*>* Scene::GetModels()
+{
+	return &models;
+}
+
+const std::vector<std::pair<Light*, int>>& Scene::GetSceneLights() const
+{
+	return sceneLights;
+}
+
+const Vector3 Scene::GetLightWorkGroups() const
+{
+	return lightWorkGroups;
 }

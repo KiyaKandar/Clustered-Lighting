@@ -68,6 +68,7 @@ public:
 	
 	ComputeShader* dataPrep;
 	ComputeShader* compute;
+	Vector3* dataPrepWorkGroups;
 
 private:
 	void PrepareDataGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, const Vector3& cameraPos) const;
