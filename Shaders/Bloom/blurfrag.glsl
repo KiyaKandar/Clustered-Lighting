@@ -29,5 +29,5 @@ void main(void){
 		}
 	}
 
-	gl_FragColor = vec4(result, 1.0);
+	gl_FragColor = vec4(result, texture(image, TexCoords).a);
 }

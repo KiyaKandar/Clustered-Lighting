@@ -4,6 +4,8 @@
 #include <sstream>
 #include <iterator>
 
+const int SHADER_MAX = 3;
+
 Shader::Shader(string vFile, string fFile, 
 	string gFile, bool isVerbose)
 {
@@ -21,11 +23,15 @@ Shader::Shader(string vFile, string fFile,
 
 	if (!gFile.empty()) {
 		objects[SHADER_GEOMETRY] = GenerateShader(gFile, GL_GEOMETRY_SHADER);
-		glAttachShader(program, objects[SHADER_GEOMETRY]);
 	}
 
-	glAttachShader(program, objects[SHADER_VERTEX]);
-	glAttachShader(program, objects[SHADER_FRAGMENT]);
+	for (int i = 0; i < SHADER_MAX; ++i)
+	{
+		if (objects[i]) 
+		{
+			glAttachShader(program, objects[i]);
+		}
+	}
 
 	SetDefaultAttributes();
 }
@@ -33,7 +39,8 @@ Shader::Shader(string vFile, string fFile,
 
 Shader::~Shader(void)
 {
-	for (int i = 0; i < 3; ++i) {
+	for (int i = 0; i < 3; ++i) 
+	{
 		glDetachShader(program, objects[i]);
 		glDeleteShader(objects[i]);
 	}
@@ -48,11 +55,15 @@ void Shader::Regenerate() {
 
 	if (!gFile.empty()) {
 		objects[SHADER_GEOMETRY] = GenerateShader(gFile, GL_GEOMETRY_SHADER);
-		glAttachShader(program, objects[SHADER_GEOMETRY]);
 	}
 
-	glAttachShader(program, objects[SHADER_VERTEX]);
-	glAttachShader(program, objects[SHADER_FRAGMENT]);
+	for (int i = 0; i < SHADER_MAX; ++i)
+	{
+		if (objects[i])
+		{
+			glAttachShader(program, objects[i]);
+		}
+	}
 
 	SetDefaultAttributes();
 }
@@ -133,11 +144,11 @@ string Shader::IncludeShader(string includeLine)
 }
 
 void Shader::SetDefaultAttributes() {
-	glBindAttribLocation(program, VERTEX_BUFFER, "position");
-	glBindAttribLocation(program, COLOUR_BUFFER, "colour");
-	glBindAttribLocation(program, NORMAL_BUFFER, "normal");
-	glBindAttribLocation(program, TANGENT_BUFFER, "tangent");
-	glBindAttribLocation(program, TEXTURE_BUFFER, "texCoord");
+	glBindAttribLocation(program, 0, "position");
+	//glBindAttribLocation(program, COLOUR_BUFFER, "colour");
+	//glBindAttribLocation(program, NORMAL_BUFFER, "normal");
+	//glBindAttribLocation(program, TANGENT_BUFFER, "tangent");
+	glBindAttribLocation(program, 1, "texCoord");
 }
 
 bool Shader::LinkProgram() {

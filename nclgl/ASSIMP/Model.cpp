@@ -16,8 +16,7 @@ void Model::LoadModel(std::string path)
 {
 	scene = import.ReadFile(path,
 		aiProcess_Triangulate | aiProcess_FlipUVs |
-		aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace |
-		aiProcess_SplitLargeMeshes | aiProcess_OptimizeMeshes | aiProcess_OptimizeMeshes);
+		aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_OptimizeMeshes);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -35,7 +34,9 @@ void Model::ProcessNode(aiNode *node, const aiScene *scene)
 	for (unsigned int i = 0; i < node->mNumMeshes; i++)
 	{
 		aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-		meshes.push_back(ProcessMesh(mesh, scene));
+		ModelMesh* model = ProcessMesh(mesh, scene);
+		meshes.push_back(model);
+		meshesByName.insert({ static_cast<string>(mesh->mName.C_Str()), model });
 	}
 
 	//Then do the same for each of its children
@@ -144,15 +145,15 @@ ModelMesh* Model::ProcessMesh(aiMesh *mesh, const aiScene *scene)
 		heights.insert(heights.end(), heightMaps.begin(), heightMaps.end());
 	}
 
-	ModelMesh* modelMesh = new ModelMesh(vertices, indices, textures, heights, AABB);
+	ModelMesh* modelMesh = new ModelMesh(vertices, indices, textures, heights, AABB, numModels);
 
 	if (textures.size() == 0)
 	{
-		modelMesh->hasTexture = false;
+		modelMesh->hasTexture = 0;
 	}
 	else
 	{
-		modelMesh->hasTexture = true;
+		modelMesh->hasTexture = 1;
 	}
 
 	return modelMesh;
@@ -250,26 +251,43 @@ unsigned int Model::TextureFromFile(const char *path, const string &directory)
 	return textureID;
 }
 
-void Model::Translate(Vector3 translation) const
+void Model::Translate(Vector3 translation, int matrixNum) const
 {
 	for each (ModelMesh* mesh in meshes)
 	{
-		mesh->SetPosition(translation);
+		mesh->SetPosition(translation, matrixNum);
 	}
 }
 
-void Model::Scale(Vector3 scale) const
+void Model::Scale(Vector3 scale, int matrixNum) const
 {
 	for each (ModelMesh* mesh in meshes)
 	{
-		mesh->SetScale(scale);
+		mesh->SetScale(scale, matrixNum);
 	}
 }
 
-void Model::Rotate(Vector3 axis, float degrees) const
+void Model::Rotate(Vector3 axis, float degrees, int matrixNum) const
 {
 	for each (ModelMesh* mesh in meshes)
 	{
-		mesh->Rotate(axis, degrees);
+		mesh->Rotate(axis, degrees, matrixNum);
+	}
+}
+
+void Model::SetReflectionAttributesForAllSubMeshes(int isReflective, float strength)
+{
+	for each (ModelMesh* mesh in meshes)
+	{
+		mesh->isReflective = isReflective;
+		mesh->reflectionStrength = strength;
+	}
+}
+
+void Model::SetbackupColourAttributeForAllSubMeshes(Vector4 colour)
+{
+	for each (ModelMesh* mesh in meshes)
+	{
+		mesh->baseColour = colour;
 	}
 }

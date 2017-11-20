@@ -157,16 +157,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="CameraControl\CameraController.h" />
+    <ClInclude Include="CameraControl\CameraControllerType.h" />
+    <ClInclude Include="CameraControl\SimpleCameraController.h" />
     <ClInclude Include="GraphicsConfiguration\GLConfig.h" />
     <ClInclude Include="GraphicsConfiguration\GLUtil.h" />
+    <ClInclude Include="CameraControl\MechCameraController.h" />
+    <ClInclude Include="Scenes\HorrorScene.h" />
+    <ClInclude Include="Scenes\RobotScene.h" />
     <ClInclude Include="SceneManagement\Scene.h" />
+    <ClInclude Include="Scenes\SponzaScene.h" />
     <ClInclude Include="Subsystems\Subsystem.h" />
     <ClInclude Include="Utility\Util.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CameraControl\CameraController.cpp" />
+    <ClCompile Include="CameraControl\SimpleCameraController.cpp" />
     <ClCompile Include="GraphicsConfiguration\GLConfig.cpp" />
+    <ClCompile Include="CameraControl\MechCameraController.cpp" />
     <ClCompile Include="Run.cpp" />
     <ClCompile Include="SceneManagement\Scene.cpp" />
   </ItemGroup>

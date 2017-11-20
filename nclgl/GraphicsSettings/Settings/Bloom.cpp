@@ -12,7 +12,7 @@ Bloom::Bloom(int strength)
 	blurStrength = strength;
 
 	blurShader = new Shader(SHADERDIR"/Bloom/blurvert.glsl", SHADERDIR"/Bloom/blurfrag.glsl");
-	combineShader = new Shader(SHADERDIR"/Bloom/combinevert.glsl", SHADERDIR"/Bloom/combinefrag.glsl", "", true);
+	combineShader = new Shader(SHADERDIR"/Bloom/combinevert.glsl", SHADERDIR"/Bloom/combinefrag.glsl");
 }
 
 Bloom::~Bloom()

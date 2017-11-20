@@ -19,8 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Assets\Skybox.cpp" />
     <ClCompile Include="GraphicsSettings\Settings\Bloom.cpp" />
     <ClCompile Include="GraphicsSettings\Settings\MotionBlur.cpp" />
+    <ClCompile Include="MD5\MD5Anim.cpp" />
+    <ClCompile Include="MD5\MD5FileData.cpp" />
+    <ClCompile Include="MD5\MD5Mesh.cpp" />
+    <ClCompile Include="MD5\MD5Node.cpp" />
+    <ClCompile Include="Assets\ParticleSystem.cpp" />
     <ClCompile Include="Rendering\ClusteredRendering\ClusterMaths\BoxCollider.cpp" />
     <ClCompile Include="GraphicsSettings\Settings\BPLighting.cpp" />
     <ClCompile Include="Rendering\View\Camera.cpp" />
@@ -53,8 +59,14 @@
     <ClCompile Include="Rendering\View\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Assets\Skybox.h" />
     <ClInclude Include="GraphicsSettings\Settings\Bloom.h" />
     <ClInclude Include="GraphicsSettings\Settings\MotionBlur.h" />
+    <ClInclude Include="MD5\MD5Anim.h" />
+    <ClInclude Include="MD5\MD5FileData.h" />
+    <ClInclude Include="MD5\MD5Mesh.h" />
+    <ClInclude Include="MD5\MD5Node.h" />
+    <ClInclude Include="Assets\ParticleSystem.h" />
     <ClInclude Include="Rendering\ClusteredRendering\ClusterMaths\BoxCollider.h" />
     <ClInclude Include="GraphicsSettings\Settings\BPLighting.h" />
     <ClInclude Include="Rendering\View\Camera.h" />

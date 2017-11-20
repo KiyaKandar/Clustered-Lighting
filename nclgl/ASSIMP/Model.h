@@ -17,13 +17,15 @@ class Model
 {
 public:
 
-	Model(char *path)
+	Model(char *path, int numModels)
 	{
+		this->numModels = numModels;
 		LoadModel(path);
 	}
 
-	Model(const string path)
+	Model(const string path, int numModels)
 	{
+		this->numModels = numModels;
 		LoadModel(path);
 	}
 
@@ -43,19 +45,24 @@ public:
 	std::vector<Texture> LoadMaterialTextures(aiMaterial *mat, aiTextureType type,
 		string typeName);
 
-	unsigned int TextureFromFile(const char *path, const string &directory);
+	static unsigned int TextureFromFile(const char *path, const string &directory);
 
 	//Modifiers
-	void Translate(Vector3 translation) const;
-	void Scale(Vector3 scale) const;
-	void Rotate(Vector3 axis, float degrees) const;
+	void Translate(Vector3 translation, int matrixNum = 0) const;
+	void Scale(Vector3 scale, int matrixNum = 0) const;
+	void Rotate(Vector3 axis, float degrees, int matrixNum = 0) const;
+	void SetReflectionAttributesForAllSubMeshes(int isReflective, float strength);
+	void SetbackupColourAttributeForAllSubMeshes(Vector4 colour);
 
 	//Model Data 
 	std::vector<ModelMesh*> meshes;
+	unordered_map<string, ModelMesh*> meshesByName;
 	std::string directory;
 	std::vector<Texture> loadedTextures;
 
 	Assimp::Importer import;
 	const aiScene* scene;
+
+	int numModels;
 };
 

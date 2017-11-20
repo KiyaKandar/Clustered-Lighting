@@ -4,15 +4,16 @@
 #include "../Game/GraphicsConfiguration/GLUtil.h"
 
 GBuffer::GBuffer(Window* window, Camera* camera, std::vector<ModelMesh*>* modelsInFrame,
-	std::vector<Model*>** models)
+	vector<ModelMesh*>* transparentModelsInFrame, std::vector<Model*>** models)
 {
 	this->modelsInFrame = modelsInFrame;
+	this->transparentModelsInFrame = transparentModelsInFrame;
 	this->models = models;
 	this->camera = camera;
 	this->window = window;
 
 	geometryPass = new Shader(SHADERDIR"/SSAO/ssao_geometryvert.glsl",
-		SHADERDIR"/SSAO/ssao_geometryfrag.glsl", "", true);
+		SHADERDIR"/SSAO/ssao_geometryfrag.glsl");
 
 	SGBuffer = new GBufferData();
 	SGBuffer->gAlbedo = &gAlbedo;
@@ -39,6 +40,7 @@ void GBuffer::Initialise()
 {
 	InitGBuffer();
 	InitAttachments();
+	LocateUniforms();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -46,7 +48,34 @@ void GBuffer::Initialise()
 void GBuffer::Apply()
 {
 	//Render any geometry to GBuffer
-	FillGBuffer();
+	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	RenderGeometry(modelsInFrame);
+
+	skybox->Apply();
+
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	RenderGeometry(transparentModelsInFrame);
+
+	glDisable(GL_BLEND);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void GBuffer::LocateUniforms()
+{
+	SetCurrentShader(geometryPass);
+
+	loc_skybox = glGetUniformLocation(geometryPass->GetProgram(), "skybox");
+	loc_cameraPos = glGetUniformLocation(geometryPass->GetProgram(), "cameraPos");
+	loc_hasTexture = glGetUniformLocation(geometryPass->GetProgram(), "hasTexture");
+	loc_isReflective = glGetUniformLocation(geometryPass->GetProgram(), "isReflective");
+	loc_reflectionStrength = glGetUniformLocation(geometryPass->GetProgram(), "reflectionStrength");
+	loc_baseColour = glGetUniformLocation(geometryPass->GetProgram(), "baseColour");
 }
 
 void GBuffer::InitGBuffer()
@@ -88,21 +117,24 @@ void GBuffer::InitAttachments()
 	GLUtil::VerifyBuffer("RBO Depth GBuffer", false);
 }
 
-void GBuffer::FillGBuffer()
+void GBuffer::RenderGeometry(vector<ModelMesh*>* meshes)
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	SetCurrentShader(geometryPass);
-
 	viewMatrix = camera->BuildViewMatrix();
 	UpdateShaderMatrices();
 
-	const int numModels = modelsInFrame->size();
-	for (int i = 0; i < numModels; ++i)
-	{
-		glUniform1i(glGetUniformLocation(geometryPass->GetProgram(), "hasTexture"), modelsInFrame->at(i)->hasTexture);
-		modelsInFrame->at(i)->Draw(*currentShader);
-	}
+	glActiveTexture(GL_TEXTURE0);
+	glUniform1i(loc_skybox, 0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+	glUniform3fv(loc_cameraPos, 1, (float*)&camera->GetPosition());
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	for (int i = 0; i < meshes->size(); ++i)
+	{
+		glUniform1i(loc_hasTexture, meshes->at(i)->hasTexture);
+		glUniform1i(loc_isReflective, meshes->at(i)->isReflective);
+		glUniform1f(loc_reflectionStrength, meshes->at(i)->reflectionStrength);
+		glUniform4fv(loc_baseColour, 1, (float*)&meshes->at(i)->baseColour);
+
+		meshes->at(i)->Draw(*currentShader);
+	}
 }

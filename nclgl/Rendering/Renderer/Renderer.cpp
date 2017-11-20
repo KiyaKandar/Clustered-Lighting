@@ -12,9 +12,8 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	projMatrix = GLConfig::SHARED_PROJ_MATRIX;// Matrix4::Perspective(1.0f, 15000.0f, static_cast<float>(width) / static_cast<float>(height), 45.0f);
 
 	//Shadow casting lights must be declared first
-	//lights[0] = new Light(Vector3(0, 700, -10), Vector4(1, 1, 1, 1), 2000.0f, 10.5f, Vector4(0, -1, 0, 1));
-	defaultLights[0] = new Light(Vector3(0, 1800, 200), Vector4(0.9, 0.7, 0.4, 1), 30000.0f, 0.5f);
-	defaultLights[1] = new Light(Vector3(-630, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f);
+	defaultLights[0] = new Light(Vector3(0, 1800, -2000), Vector4(0.9, 0.7, 0.4, 1), 1000000.0f, 0.5f);
+	defaultLights[1] = new Light(Vector3(0, 1800, 2000), Vector4(0.9, 0.7, 0.4, 1), 1000000.0f, 0.5f);
 	defaultLights[2] = new Light(Vector3(500, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f);
 	defaultLights[3] = new Light(Vector3(-630, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f);
 	defaultLights[4] = new Light(Vector3(500, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f);
@@ -76,18 +75,18 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 
 	InitLightSSBO();
 
-	glClearColor(0.f, 0.0f, 0.0f, 1.0f);
-	glEnable(GL_MULTISAMPLE);
+	glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
 	textRenderer = new TextRenderer(this);
-	glEnable(GL_MULTISAMPLE);
 	GLUtil::CheckGLError("Renderer Initialisation");
 	init = true;
 	sceneIndex = 0;
 
-	debugSpheres = vector<Model*>(GLConfig::NUM_LIGHTS);//.reserve(GLConfig::NUM_LIGHTS);
+	debugSpheres = vector<Model*>(GLConfig::NUM_LIGHTS);
+
+	glDepthFunc(GL_LESS);
 }
 
 Renderer::~Renderer()
@@ -114,7 +113,7 @@ void Renderer::InitDebugLights()
 	{
 		delete debugSpheres[i];
 		//Create new sphere.
-		Model* sphere = new Model("../sphere/sphere.obj");
+		Model* sphere = new Model("../sphere/sphere.obj", 1);
 
 		//Set size and position to match light.
 		sphere->Translate(lights[i]->GetPosition());
@@ -182,8 +181,7 @@ void Renderer::RenderScene()
 
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-	const int numComponents = GComponents.size();
-	for (int i = 0; i < numComponents; ++i)
+	for (int i = 0; i < GComponents.size(); ++i)
 	{
 		GComponents[i]->Apply();
 	}
@@ -218,11 +216,8 @@ void Renderer::ChangeScene()
 	}
 
 	models = scenes[sceneIndex]->GetModels();
-
-	//for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
-	//{
-	//	spotLightData[i].direction = Vector4(0, 0, 0, 0);
-	//}
+	skybox->SetSkyboxTexture(scenes[sceneIndex]->GetSkyboxTextureID());
+	gBuffer->SetReflectionTextureID(scenes[sceneIndex]->GetReflectionCubeMapTextureID());
 
 	for (int i = 0; i < GLConfig::NUM_LIGHTS; i++)
 	{
@@ -232,8 +227,6 @@ void Renderer::ChangeScene()
 	for each (pair<Light*, int> newLight in scenes[sceneIndex]->GetSceneLights())
 	{
 		lights[newLight.second] = newLight.first;
-		//lightData[newLight.second] = lights[newLight.second]->GetData();
-		//spotLightData[newLight.second] = lights[newLight.second]->GetSpotData();
 	}
 
 	for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
@@ -254,8 +247,9 @@ void Renderer::ChangeScene()
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, spotlightssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-	currentScenesDataPrepWorkGroups = scenes[sceneIndex]->GetLightWorkGroups();
 	InitDebugLights();
+	lighting->UpdateShadowData(scenes[sceneIndex]->GetShadowData());
+	particleSystem->particles = &scenes[sceneIndex]->particles;
 }
 
 void Renderer::UpdateScene(const float& msec)
@@ -265,10 +259,13 @@ void Renderer::UpdateScene(const float& msec)
 		ChangeScene();
 	}
 
+	currentScenesDataPrepWorkGroups = scenes[sceneIndex]->lightWorkGroups;
+	scenes[sceneIndex]->UpdateScene(msec);
+
 	camera->UpdateCamera(msec);
 	viewMatrix = camera->BuildViewMatrix();
 
-	frameFrustum.FromMatrix(projMatrix * viewMatrix);
+	frameFrustum.FromMatrix(GLConfig::SHARED_PROJ_MATRIX * viewMatrix);
 }
 
 void Renderer::DrawDebugLights()
@@ -302,6 +299,8 @@ void Renderer::RelinkShaders() const
 		component->LinkShaders();
 	}
 
+	skybox->RegenerateShaders();
+
 	tiles->dataPrep->Regenerate();
 	tiles->dataPrep->LinkProgram();
 
@@ -317,28 +316,37 @@ void Renderer::DrawAllText() const
 
 	glUseProgram(currentShader->GetProgram());
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDisable(GL_BLEND);
+	glEnable(GL_BLEND);
 }
 
 void Renderer::BuildMeshLists()
 {
-	const int numModels = models->size();
-
-	for (int mod = 0; mod < numModels; ++mod)
+	for (int model = 0; model < models->size(); ++model)
 	{
-		const int numMeshes = (*models)[mod]->meshes.size();
-
-		for (int mes = 0; mes < numMeshes; ++mes)
+		for (int subMesh = 0; subMesh < (*models)[model]->meshes.size(); ++subMesh)
 		{
-			//if (frameFrustum.InsideFrustum(models[mod]->meshes[mes]->box))
-			//if(frameFrustum.InsideFrustum(models[mod]->meshes[mes]->GetTransform()->GetPositionVector(), models[mod]->meshes[mes]->GetBoundingRadius()))
-			//{
-				const Vector3 dir = (*models)[mod]->meshes[mes]->GetTransform()->GetPositionVector() -
-					camera->GetPosition();
-				(*models)[mod]->meshes[mes]->SetCameraDistance(Vector3::Dot(dir, dir));
+			for (int i = 0; i < (*models)[model]->numModels; ++i)
+			{
+				const Vector3 position = (*models)[model]->meshes[subMesh]->GetTransform(i)->GetPositionVector();
+				const float radius = (*models)[model]->meshes[subMesh]->GetBoundingRadius();
 
-				modelsInFrame.push_back((*models)[mod]->meshes[mes]);
-			//}
+				//if (frameFrustum.InsideFrustum(position, radius))
+				//if (frameFrustum.InsideFrustum((*models)[model]->meshes[subMesh]->box))
+				//{
+					const Vector3 dir = (*models)[model]->meshes[subMesh]->GetTransform(i)->GetPositionVector() -
+						camera->GetPosition();
+					(*models)[model]->meshes[subMesh]->SetCameraDistance(Vector3::Dot(dir, dir));
+
+					if ((*models)[model]->meshes[subMesh]->baseColour.w < 1.0f)
+					{
+						transparentModelsInFrame.push_back((*models)[model]->meshes[subMesh]);
+					}
+					else
+					{
+						modelsInFrame.push_back((*models)[model]->meshes[subMesh]);
+					}
+				//}
+			}
 		}
 	}
 }
@@ -348,9 +356,14 @@ void Renderer::SortMeshLists()
 	std::sort(modelsInFrame.begin(),
 		modelsInFrame.end(),
 		ModelMesh::CompareByCameraDistance);
+
+	std::sort(transparentModelsInFrame.begin(),
+		transparentModelsInFrame.end(),
+		ModelMesh::CompareByCameraDistance);
 }
 
 void Renderer::ClearMeshLists()
 {
 	modelsInFrame.clear();
+	transparentModelsInFrame.clear();
 }

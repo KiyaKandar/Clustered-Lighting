@@ -62,11 +62,13 @@ void SSAO::LocateUniforms()
 
 void SSAO::Apply()
 {
+	glDepthMask(GL_FALSE);
 	//Generate the SSAO texture
 	GenerateSSAOTex();
 
 	//Blur the texture
 	SSAOBlurTex();
+	glDepthMask(GL_TRUE);
 }
 
 void SSAO::RegenerateShaders()

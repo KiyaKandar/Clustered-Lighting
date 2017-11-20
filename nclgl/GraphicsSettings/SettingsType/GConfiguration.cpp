@@ -15,12 +15,13 @@ GConfiguration::GConfiguration(Window* window, Renderer* renderer, Camera* camer
 GConfiguration::~GConfiguration()
 {
 	delete ambTex;
-	delete shadows;
 	delete SGBuffer;
 	delete ssao;
 	delete lighting;
 	delete bloom;
 	delete motionBlur;
+	delete skybox;
+	delete particles;
 }
 
 void GConfiguration::InitialiseSettings()
@@ -30,11 +31,7 @@ void GConfiguration::InitialiseSettings()
 	ambTex->textures = new GLuint*[1];
 	ambTex->texUnits = new int[1];
 
-	shadows = new Shadows(GLConfig::SHADOW_LIGHTS, renderer->GetAllLights(), renderer->GetModels());
-	shadows->LinkShaders();
-	shadows->Initialise();
-
-	SGBuffer = new GBuffer(window, camera, renderer->GetModelsInFrustum(), renderer->GetModels());
+	SGBuffer = new GBuffer(window, camera, renderer->GetModelsInFrustum(), renderer->GetTransparentModelsInFrustum(), renderer->GetModels());
 	SGBuffer->LinkShaders();
 	SGBuffer->Initialise();
 
@@ -42,11 +39,9 @@ void GConfiguration::InitialiseSettings()
 	ssao->LinkShaders();
 	ssao->Initialise();
 
-	lighting = new BPLighting(camera, SGBuffer->GetGBuffer(),
-		shadows->GetShadowData(), ambTex, 1);
+	lighting = new BPLighting(camera, SGBuffer->GetGBuffer(), ambTex, 1);
 	lighting->LinkShaders();
 	lighting->Initialise();
-
 
 	bloom = new Bloom(GLConfig::BLOOM_STRENGTH);
 	bloom->LinkShaders();
@@ -56,18 +51,34 @@ void GConfiguration::InitialiseSettings()
 		&renderer->currentViewProj, &profiler->GetFPSCounter()->fps);
 	motionBlur->LinkShaders();
 	motionBlur->Initialise();
-	//motionBlur->FBO = &bloom->FBO;
+
+	skybox = new Skybox(&camera->viewMatrix);
+	skybox->LinkShaders();
+	skybox->Initialise();
+	skybox->GBufferFBO = &SGBuffer->gBuffer;
+
+	particles = new ParticleSystem(&camera->viewMatrix);
+	particles->LinkShaders();
+	particles->Initialise();
+	particles->motionBlurFBO = &motionBlur->screenTexFBO;
+
+	renderer->gBuffer = SGBuffer;
+	renderer->skybox = skybox;
 
 	lighting->FBO = &bloom->FBO;
 	bloom->motionBlurFBO = &motionBlur->screenTexFBO;
+
+	SGBuffer->skybox = skybox;
+	renderer->lighting = lighting;
+	renderer->particleSystem = particles;
 }
 
 void GConfiguration::LinkToRenderer()
 {
-	renderer->AddGSetting(shadows);
 	renderer->AddGSetting(SGBuffer);
 	renderer->AddGSetting(ssao);
 	renderer->AddGSetting(lighting);
 	renderer->AddGSetting(bloom);
+	renderer->AddGSetting(particles);
 	renderer->AddGSetting(motionBlur);
 }

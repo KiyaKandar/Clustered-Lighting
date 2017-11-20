@@ -33,12 +33,12 @@ Plane::Plane(const Vector3 &normal, Vector3 pos, bool normalise)
 }
 
 bool Plane::SphereInPlane(const Vector3 &position, float radius) const {
-	if (Vector3::Dot(position, normal) + distance <= -radius) {
-		return false;
-	}
-	return true;
+	//if (Vector3::Dot(position, normal) + distance <= -radius) {
+	//	return false;
+	//}
+	//return true;
 
-	//return -(Vector3::Dot(normal, position) + distance) > radius;
+	return -(Vector3::Dot(normal, position) + distance) > radius;
 }
 
 bool Plane::SphereOutsidePlane(const Vector3 &position, float radius) const {

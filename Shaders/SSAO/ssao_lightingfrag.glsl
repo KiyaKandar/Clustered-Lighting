@@ -21,7 +21,6 @@ uniform mat4 viewMatrix;
 
 uniform sampler2D ambientTextures[1];
 
-uniform int numberOfLights;
 uniform int numXTiles;
 uniform int numYTiles;
 
@@ -30,6 +29,8 @@ in mat4 textureMat;
 in vec2 screenPos;
 
 const int HALF_NUM_PCF_SAMPLES = 2;
+
+//out vec4 FragColor;
 
 struct LightData
 {
@@ -103,8 +104,8 @@ void AddBPLighting(vec3 position, vec3 normal, vec4 albedoCol, int lightIndex, i
 
 		float theta = dot(spotLightDir, normalize(spotLightPosView));
 
-
-		if (theta > 0.923599)
+		float coneAngle = radians(spotLightData[lightIndex].direction.w);
+		if (theta > cos(coneAngle))
 		{
 			attenuation = 1.0 - clamp(dist / lightData[lightIndex].lightRadius, 0.0, 1.0);
 			attenuation *= lightData[lightIndex].intensity;
@@ -130,17 +131,19 @@ void AddBPLighting(vec3 position, vec3 normal, vec4 albedoCol, int lightIndex, i
 
 		if (shadowProj.w > 0.0)
 		{
-			for (int x = -HALF_NUM_PCF_SAMPLES; x <= HALF_NUM_PCF_SAMPLES; ++x)
+			//vec2 texelSize = 1.0 / textureSize(shadows[lightIndex], 0);
+
+			for (int x = 0; x <= HALF_NUM_PCF_SAMPLES; ++x)
 			{
-				for (int y = -HALF_NUM_PCF_SAMPLES; y <= HALF_NUM_PCF_SAMPLES; ++y)
+				for (int y = 0; y <= HALF_NUM_PCF_SAMPLES; ++y)
 				{
-					vec2 texelSize = 1.0f / textureSize(shadows[lightIndex], 0);
-					vec2 sampleCoord = vec2(x, y);
-					shadow += textureProj(shadows[lightIndex], shadowProj + vec4(sampleCoord, 1.0f, 1.0f));
+					vec2 sampleCoord = vec2(x, y);// *texelSize;
+					shadow += textureProj(shadows[lightIndex], shadowProj + vec4(sampleCoord, 0.0f, 0.0f));
 				}
 			}
 
-			shadow /= pow(HALF_NUM_PCF_SAMPLES * 2, 2);//16.0f;
+			shadow /= pow((HALF_NUM_PCF_SAMPLES + 1) * 2, 2);
+			//shadow += textureProj(shadows[lightIndex], shadowProj);
 		}
 
 		lambert *= shadow;
@@ -153,59 +156,67 @@ void AddBPLighting(vec3 position, vec3 normal, vec4 albedoCol, int lightIndex, i
 	colour += (diffuse + specular);
 
 	lightResult.rgb += colour;
-	lightResult.a = albedoCol.a;
+	//lightResult.a = albedoCol.a;
 }
 
 void main(void){
     //Retrieve data from gbuffer
     vec3 position	= texture(gPosition, TexCoords).rgb;
     vec3 normal		= normalize(texture(gNormal, TexCoords).rgb);
-
 	vec4 albedoCol = texture(gAlbedo, TexCoords); //vec3(0.75f, 0.75f, 0.75f);// vec3(0.1, 0.1, 0.1);//
 
-	//Transform screenspace coordinates into a tile index
-	float xCoord = gl_FragCoord.x / 1280;
-	float yCoord = gl_FragCoord.y / 720;
-	float zCoord = gl_FragCoord.z;
-
-	zCoord = (position.z - 1.0f) / (15000.0f - 1.0f);
-	zCoord = abs(zCoord);
-
-	int xIndex = int(xCoord * tilesOnAxes.x);
-	int yIndex = int(yCoord * tilesOnAxes.y);
-	int zIndex = int(zCoord * tilesOnAxes.z);
-
-	int tile = xIndex + (yIndex * int(tilesOnAxes.y)) + (zIndex * (int(tilesOnAxes.x * tilesOnAxes.z)));
-
-	//Default value
-	vec4 lightResult = vec4(0.0, 0.0, 0.0, 1.0);
-
-	for(int j = 0; j < lightIndexes[tile]; j++)
+	if (position.z > 0.0f) 
 	{
-		int lightIndex = tileLights[tile][j];
+		FragColor = albedoCol;
+	}
+	else 
+	{
+		//Transform screenspace coordinates into a tile index
+		float xCoord = gl_FragCoord.x / 1280;
+		float yCoord = gl_FragCoord.y / 720;
+		float zCoord = gl_FragCoord.z;
 
-		AddBPLighting(position, normal, albedoCol, lightIndex, lightResult);
+		zCoord = (position.z - 1.0f) / (15000.0f - 1.0f);
+		zCoord = abs(zCoord);
+
+		int xIndex = int(xCoord * tilesOnAxes.x);
+		int yIndex = int(yCoord * tilesOnAxes.y);
+		int zIndex = int(zCoord * tilesOnAxes.z);
+
+		int tile = 0;// xIndex + (yIndex * int(tilesOnAxes.y)) + (zIndex * (int(tilesOnAxes.x * tilesOnAxes.z)));
+
+		//Default value
+		vec4 lightResult = vec4(0.0, 0.0, 0.0, 1.0);
+
+		for(int j = 0; j < lightIndexes[tile]; j++)
+		{
+			int lightIndex = tileLights[tile][j];
+
+			AddBPLighting(position, normal, albedoCol, lightIndex, lightResult);
+		}
+
+		//Ambient
+		float ambientFX = 0.5;
+
+		for (int j = 0; j < 1; j++) 
+		{
+			ambientFX *= texture(ambientTextures[j], TexCoords).r;
+		}
+
+		vec3 newCol = albedoCol.rgb * ambientFX; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		vec3 ambient = newCol;// albedoCol.a);
+		lightResult.rgb += ambient;
+		lightResult.a = albedoCol.a;
+
+		FragColor = lightResult;//vec4(lightResult, 1.0);
 	}
 
-	//Ambient
-	float ambientFX = 0.5;
-
-	for (int j = 0; j < 1; j++) 
-	{
-		ambientFX *= texture(ambientTextures[j], TexCoords).r;
-	}
-
-	vec3 newCol = albedoCol.rgb * ambientFX;
-	vec3 ambient = newCol;// albedoCol.a);
-	lightResult.rgb += ambient;
-	lightResult.a = albedoCol.a;
-
-	FragColor = lightResult;//vec4(lightResult, 1.0);
+	//FragColor = vec4(position.xyz, 1.0f);
 
 	vec3 greyscale = vec3(0.2126, 0.7152, 0.0722);
 	float brightness = dot(FragColor.rgb, greyscale);
-	if (brightness > 0.9) {
-		BrightnessCol = vec4(FragColor.rgb * vec3(1, 0.6, 0.6), 1.0);
+	if (brightness > 0.8) {
+		BrightnessCol = vec4(FragColor.rgb * vec3(1, 0.6, 0.6), 1.0f/*albedoCol.a*/);
 	}
-	else BrightnessCol = vec4(0.0, 0.0, 0.0, 1.0);
+	else BrightnessCol = vec4(0.0, 0.0, 0.0, 1.0f/*albedoCol.a*/);
 }

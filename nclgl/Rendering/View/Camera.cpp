@@ -16,6 +16,9 @@ void Camera::UpdateCamera(float msec)	{
 	if(yaw > 360.0f) {
 		yaw -= 360.0f;
 	}
+
+	//std::cout << "yaw   : " << yaw << std::endl;
+	//std::cout << "pitch : " << pitch << std::endl;
 }
 
 /*

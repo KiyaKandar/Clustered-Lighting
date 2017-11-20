@@ -100,7 +100,7 @@ void Shadows::DrawShadowScene()
 		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
 		viewMatrix = Matrix4::BuildViewMatrix(lights[i]->GetPosition(), Vector3(0, 0, 0));
-		shadowData->textureMatrices[i] = biasMatrix * (projMatrix * viewMatrix);
+		shadowData->textureMatrices[i] = biasMatrix * (GLConfig::SHARED_PROJ_MATRIX * viewMatrix);
 
 		UpdateShaderMatrices();
 

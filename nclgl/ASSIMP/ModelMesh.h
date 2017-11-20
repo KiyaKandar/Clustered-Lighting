@@ -38,35 +38,36 @@ class ModelMesh
 public:
 	ModelMesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices,
 		std::vector<Texture> textures, std::vector<Texture> heights, 
-		BoundingBox AABB);
+		BoundingBox AABB, int numTransforms);
 	~ModelMesh()
 	{}
 
 	void Draw(Shader& shader);
 	void DrawShadow(Shader& shader); //Dont bother binding textures.
 
-	void SetScale(const Vector3& scale)
+	void SetScale(const Vector3& scale, int matrixNum)
 	{
-		transform.SetScalingVector(scale);
+		transforms[matrixNum].SetScalingVector(scale);
 
-		box.max = box.max * scale;
+		box.max = box.max * (scale / 2);
+		box.min = box.min * (scale / 2);
 		CalculateBoundingRadius();
 		//box.min = box.min * scale;
 	}
 
-	void SetPosition(const Vector3& position)
+	void SetPosition(const Vector3& position, int matrixNum)
 	{
-		transform.SetPositionVector(position);
+		transforms[matrixNum].SetPositionVector(position);
 	}
 
-	void Rotate(const Vector3& axis, const float& degrees)
+	void Rotate(const Vector3& axis, const float& degrees, int matrixNum)
 	{
-		transform = transform * Matrix4::Rotation(degrees, axis);
+		transforms[matrixNum] = transforms[matrixNum] * Matrix4::Rotation(degrees, axis);
 	}
 
-	Matrix4* GetTransform()
+	Matrix4* GetTransform(int matrixNum)
 	{
-		return &transform;
+		return &transforms[matrixNum];
 	}
 
 	float GetBoundingRadius() const
@@ -92,6 +93,10 @@ public:
 
 	void CalculateBoundingRadius()
 	{
+		//float firstMax = max(box.max.x, box.max.y);
+		//float finalMax = max(firstMax, box.max.z);
+		//boundingRadius = finalMax;
+		
 		boundingRadius = (box.max - box.min).Length() / 2;
 	}
 
@@ -103,13 +108,17 @@ public:
 
 	BoundingBox box;
 
-	bool hasTexture;
+	int hasTexture = 0;
+	int isReflective = 0;
+	float reflectionStrength = 1.0f;
+	Vector4 baseColour;
+
 private:
 	void SetupMesh();
 
 	unsigned int VAO, VBO, EBO; //Render data
 
-	Matrix4 transform;
+	vector<Matrix4> transforms;
 
 	float boundingRadius;
 	float distanceFromCamera;

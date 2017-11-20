@@ -16,6 +16,12 @@
 #include <random>
 #include <functional>
 #include "../../../Game/SceneManagement/Scene.h"
+#include "../../MD5/MD5FileData.h"
+#include "../../MD5/MD5Node.h"
+#include "../../Assets/Skybox.h"
+#include "../../Assets/ParticleSystem.h"
+#include "../../GraphicsSettings/Settings/GBuffer.h"
+#include "../../GraphicsSettings/Settings/BPLighting.h"
 
 #define DEBUG_LIGHTS
 
@@ -36,11 +42,6 @@ public:
 	void UpdateScene(const float& msec) override;
 	void RenderScene() override;
 
-	//void AddModel(Model* model) noexcept
-	//{
-	//	models.push_back(model);
-	//}
-
 	void AddScene(Scene* scene) noexcept
 	{
 		scenes.push_back(scene);
@@ -50,6 +51,11 @@ public:
 	std::vector<ModelMesh*>* GetModelsInFrustum() noexcept
 	{
 		return &modelsInFrame;
+	}
+
+	vector<ModelMesh*>* GetTransparentModelsInFrustum()
+	{
+		return &transparentModelsInFrame;
 	}
 
 	std::vector<Model*>** GetModels() noexcept
@@ -112,19 +118,24 @@ public:
 
 	void ChangeScene();
 
-	//vector<Text> textbuffer;
 	Font* basicFont;
 	Matrix4 previousViewMatrix;
 	Matrix4 inverseViewProj;
 	Matrix4 previousViewProj;
 	Matrix4 currentViewProj;
-	Vector3 currentScenesDataPrepWorkGroups;
+	Vector3* currentScenesDataPrepWorkGroups;
+
+	Skybox* skybox;
+	GBuffer* gBuffer;
+	BPLighting* lighting;
+	ParticleSystem* particleSystem;
 
 protected:
 	std::vector<GSetting*> GComponents;
 	std::vector<Scene*> scenes;
 	vector<Model*>* models;
 	std::vector<ModelMesh*> modelsInFrame;
+	std::vector<ModelMesh*> transparentModelsInFrame;
 
 	TileData* tileData;
 	Tile* screenTiles;

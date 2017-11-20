@@ -6,15 +6,25 @@ uniform sampler2D scene;
 uniform sampler2D bloomBlur;
 
 in vec2 TexCoords;
-//out vec4 FragColor;
 
 void main(void){
 	const float gamma = 1;
 
-	vec3 finalColour = texture2D(scene, TexCoords).rgb;
-	vec3 bloomColour = texture2D(bloomBlur, TexCoords).rgb;
+	vec4 finalColour = texture2D(scene, TexCoords);
+	vec4 bloomColour = texture2D(bloomBlur, TexCoords);
 
-	finalColour += bloomColour;
+	finalColour.rgb += bloomColour.rgb;
 
-	FragColor = vec4(finalColour, 1.0f);
+	float alpha = 0.0f;
+
+	if (finalColour.a < bloomColour.a)
+	{
+		alpha = finalColour.a;
+	}
+	else
+	{
+		alpha = bloomColour.a;
+	}
+
+	FragColor = vec4(finalColour.rgb, alpha);
 }

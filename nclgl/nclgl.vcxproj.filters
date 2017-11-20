@@ -95,6 +95,12 @@
       <Filter>Utilities</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsSettings\Settings\MotionBlur.cpp" />
+    <ClCompile Include="Assets\Skybox.cpp" />
+    <ClCompile Include="MD5\MD5Anim.cpp" />
+    <ClCompile Include="MD5\MD5FileData.cpp" />
+    <ClCompile Include="MD5\MD5Mesh.cpp" />
+    <ClCompile Include="MD5\MD5Node.cpp" />
+    <ClCompile Include="Assets\ParticleSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphicsSettings\Settings\Bloom.h">
@@ -215,6 +221,12 @@
       <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsSettings\Settings\MotionBlur.h" />
+    <ClInclude Include="Assets\Skybox.h" />
+    <ClInclude Include="MD5\MD5Anim.h" />
+    <ClInclude Include="MD5\MD5FileData.h" />
+    <ClInclude Include="MD5\MD5Mesh.h" />
+    <ClInclude Include="MD5\MD5Node.h" />
+    <ClInclude Include="Assets\ParticleSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Text">

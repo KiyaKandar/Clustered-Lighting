@@ -7,13 +7,15 @@
 #include "../../ASSIMP/Model.h"
 
 #include <vector>
+#include "../../Assets/Skybox.h"
+#include "../../Assets/ParticleSystem.h"
 
 class GBuffer :
 	public GSetting
 {
 public:
 	GBuffer(Window* window, Camera* camera, std::vector<ModelMesh*>* modelsInFrame,
-		std::vector<Model*>** models);
+		vector<ModelMesh*>* transparentModelsInFrame, std::vector<Model*>** models);
 	virtual ~GBuffer();
 
 	void LinkShaders() override;
@@ -27,21 +29,28 @@ public:
 		return SGBuffer;
 	}
 
+	void SetReflectionTextureID(unsigned int newTextureID)
+	{
+		textureID = newTextureID;
+	}
+
+	GLuint rboDepth;
+	GLuint gBuffer;
+
+	Skybox* skybox;
+
 private:
-	void LocateUniforms() override
-	{}
+	void LocateUniforms() override;
 	void InitGBuffer();
 	void InitAttachments();
 
-	void FillGBuffer();
+	void RenderGeometry(vector<ModelMesh*>* meshes);
 
-	GLuint gBuffer;
 	GLuint gPosition;
 	GLuint gNormal;
 	GLuint gAlbedo;
 	GLuint attachments[3] =
 	{ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-	GLuint rboDepth;
 
 	Shader* geometryPass;
 
@@ -49,7 +58,17 @@ private:
 	Window* window;
 
 	std::vector<ModelMesh*>* modelsInFrame;
+	std::vector<ModelMesh*>* transparentModelsInFrame;
 	std::vector<Model*>** models;
 	GBufferData* SGBuffer;
+
+	unsigned int textureID;
+
+	GLint loc_skybox;
+	GLint loc_cameraPos;
+	GLint loc_hasTexture;
+	GLint loc_isReflective;
+	GLint loc_reflectionStrength;
+	GLint loc_baseColour;
 };
 

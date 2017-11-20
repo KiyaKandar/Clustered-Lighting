@@ -12,9 +12,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CameraControl\CameraController.h">
-      <Filter>Camera Control</Filter>
-    </ClInclude>
     <ClInclude Include="GraphicsConfiguration\GLConfig.h">
       <Filter>Utilities</Filter>
     </ClInclude>
@@ -28,15 +25,24 @@
       <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="SceneManagement\Scene.h" />
+    <ClInclude Include="CameraControl\SimpleCameraController.h">
+      <Filter>Camera Control</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraControl\CameraControllerType.h" />
+    <ClInclude Include="CameraControl\MechCameraController.h" />
+    <ClInclude Include="Scenes\RobotScene.h" />
+    <ClInclude Include="Scenes\HorrorScene.h" />
+    <ClInclude Include="Scenes\SponzaScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Run.cpp" />
-    <ClCompile Include="CameraControl\CameraController.cpp">
-      <Filter>Camera Control</Filter>
-    </ClCompile>
     <ClCompile Include="GraphicsConfiguration\GLConfig.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
     <ClCompile Include="SceneManagement\Scene.cpp" />
+    <ClCompile Include="CameraControl\SimpleCameraController.cpp">
+      <Filter>Camera Control</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraControl\MechCameraController.cpp" />
   </ItemGroup>
 </Project>

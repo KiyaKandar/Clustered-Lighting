@@ -21,5 +21,5 @@ void main(void){
 	gl_FragColor.xyz += normal; 
 	gl_FragColor.xyz += albedo;
 	gl_FragColor.xyz += ssao;
-	gl_FragColor.a = 1.0;
+	gl_FragColor.a = 1.0f;// texture(gAlbedo, IN.texCoord).w;
 }

@@ -2,7 +2,7 @@
 
 ModelMesh::ModelMesh(vector<Vertex> vertices, vector<unsigned int> indices,
 	vector<Texture> textures, vector<Texture> heights,
-	BoundingBox AABB)
+	BoundingBox AABB, int numTransforms)
 {
 	this->vertices = vertices;
 	this->indices = indices;
@@ -12,11 +12,18 @@ ModelMesh::ModelMesh(vector<Vertex> vertices, vector<unsigned int> indices,
 	box = AABB;
 	boundingRadius = 1.0f;
 	distanceFromCamera = 0.0f;
+	baseColour = Vector4(0.6f, 0.6f, 0.6f, 1.0f);
 
 	SetupMesh();
 
-	transform.SetPositionVector(Vector3(0, 0, 0));
-	transform.SetScalingVector(Vector3(1, 1, 1));
+	transforms = vector<Matrix4>(numTransforms);
+
+	for each (Matrix4 transform in transforms)
+	{
+		transform.SetPositionVector(Vector3(0, 0, 0));
+		transform.SetScalingVector(Vector3(1, 1, 1));
+	}
+
 	CalculateBoundingRadius();
 }
 
@@ -30,7 +37,6 @@ void ModelMesh::SetupMesh()
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices.at(0), GL_STATIC_DRAW);
-
 
 	//Vertex positions
 	glEnableVertexAttribArray(0);
@@ -62,34 +68,40 @@ void ModelMesh::SetupMesh()
 
 void ModelMesh::Draw(Shader& shader)
 {
-	//Bind all textures of the mesh
-	for (unsigned int i = 0; i < textures.size(); i++)
+	for each (Matrix4 transform in transforms)
 	{
-		//Activate proper texture unit before binding
-		glActiveTexture(GL_TEXTURE0 + i);
-		glUniform1i(glGetUniformLocation(shader.GetProgram(), textures[i].type.c_str()), i);
+		//Bind all textures of the mesh
+		for (unsigned int i = 1; i <= textures.size(); i++)
+		{
+			//Activate proper texture unit before binding
+			glActiveTexture(GL_TEXTURE0 + i);
+			glUniform1i(glGetUniformLocation(shader.GetProgram(), textures[i - 1].type.c_str()), i);
 
-		glBindTexture(GL_TEXTURE_2D, textures[i].id);
+			glBindTexture(GL_TEXTURE_2D, textures[i - 1].id);
+		}
+
+		glUniformMatrix4fv(glGetUniformLocation(shader.GetProgram(),
+			"modelMatrix"), 1, false, (float*)&transform);
+
+		//Draw mesh
+		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, indices.size()/* + bones.size()*/, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+
+		glActiveTexture(GL_TEXTURE0);
 	}
-
-	glUniformMatrix4fv(glGetUniformLocation(shader.GetProgram(),
-		"modelMatrix"), 1, false, (float*)&transform);
-
-	//Draw mesh
-	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, indices.size()/* + bones.size()*/, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
-
-	glActiveTexture(GL_TEXTURE0);
 }
 
 void ModelMesh::DrawShadow(Shader& shader)
 {
-	glUniformMatrix4fv(glGetUniformLocation(shader.GetProgram(),
-		"modelMatrix"), 1, false, (float*)&transform);
+	for each (Matrix4 transform in transforms)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(shader.GetProgram(),
+			"modelMatrix"), 1, false, (float*)&transform);
 
-	//Draw mesh
-	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, indices.size()/* + bones.size()*/, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
+		//Draw mesh
+		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, indices.size()/* + bones.size()*/, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+	}
 }

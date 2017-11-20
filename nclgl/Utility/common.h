@@ -15,6 +15,9 @@ _-_-_-_-_-_-_-""  ""
 #define WEEK_2_CODE
 #define USE_MD5MESH
 #define WEEK_3_CODE
+#define MD5_USE_HARDWARE_SKINNING
+#define MD5_USE_TANGENTS_BUMPMAPS
+#define MD5_USE_NORMALS
 
 #define POST_PASSES 100
 

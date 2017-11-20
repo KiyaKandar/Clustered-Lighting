@@ -123,6 +123,6 @@ void TileRenderer::PrepareDataGPU(const Matrix4& projectionMatrix, const Matrix4
 	float vec4[4] = { camPos.x, camPos.y, camPos.z, 0 };
 	glUniform4fv(loc_cameraPos, 1, vec4);
 
-	dataPrep->Compute(*dataPrepWorkGroups);
+	dataPrep->Compute(**dataPrepWorkGroups);
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT);
 }

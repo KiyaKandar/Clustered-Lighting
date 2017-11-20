@@ -8,6 +8,8 @@
 #include "../Settings/MotionBlur.h"
 #include "../../Maths/Vector2.h"
 #include "../Profiler/Profiler.h"
+#include "../../Assets/Skybox.h"
+#include "../../Assets/ParticleSystem.h"
 
 #include <vector>
 
@@ -32,12 +34,13 @@ private:
 	Window* window;
 
 	//Settings
-	Shadows* shadows;
 	GBuffer* SGBuffer;
 	SSAO* ssao;
 	BPLighting* lighting;
 	Bloom* bloom;
 	AmbientTextures* ambTex;
 	MotionBlur* motionBlur;
+	Skybox* skybox;
+	ParticleSystem* particles;
 };
 
