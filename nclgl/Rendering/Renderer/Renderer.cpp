@@ -60,7 +60,8 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	basicFont = new Font(SOIL_load_OGL_texture(TEXTUREDIR"tahoma.tga",
 		SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_COMPRESS_TO_DXT), 16, 16);
 
-	//InitDebugLights();
+	debugSpheres = vector<Model*>(GLConfig::NUM_LIGHTS);
+	InitDebugLights();
 
 	SetAsDebugDrawingRenderer(); //For light debugging
 	SetCurrentShader(textShader);
@@ -84,7 +85,6 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	init = true;
 	sceneIndex = 0;
 
-	debugSpheres = vector<Model*>(GLConfig::NUM_LIGHTS);
 
 	glDepthFunc(GL_LESS);
 }
@@ -111,18 +111,59 @@ void Renderer::InitDebugLights()
 {
 	for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
 	{
-		delete debugSpheres[i];
+		//delete debugSpheres[i];
 		//Create new sphere.
 		Model* sphere = new Model("../sphere/sphere.obj", 1);
 
 		//Set size and position to match light.
-		sphere->Translate(lights[i]->GetPosition());
+		sphere->Translate(defaultLights[i]->GetPosition());
 
-		const float radius = lights[i]->GetRadius();
+		const float radius = defaultLights[i]->GetRadius();
 		sphere->Scale(Vector3(radius, radius, radius));
 
 		//Add it to a seperate list.
 		debugSpheres[i] = sphere;
+	}
+
+	//LoadDebugLightMeshes();
+	//RepositionDebugLights();
+}
+
+void Renderer::LoadDebugLightMeshes()
+{
+	//for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
+	//{
+	//	delete debugSpheres[i];
+	//	//Create new sphere.
+	//	Model* sphere = new Model("../sphere/sphere.obj", 1);
+
+	//	////Set size and position to match light.
+	//	//sphere->Translate(lights[i]->GetPosition());
+
+	//	//const float radius = lights[i]->GetRadius();
+	//	//sphere->Scale(Vector3(radius, radius, radius));
+
+	//	//Add it to a seperate list.
+	//	debugSpheres[i] = sphere;
+	//}
+}
+
+void Renderer::RepositionDebugLights()
+{
+	for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
+	{
+		//delete debugSpheres[i];
+		//Create new sphere.
+		//Model* sphere = new Model("../sphere/sphere.obj", 1);
+
+		//Set size and position to match light.
+		debugSpheres[i]->Translate(lights[i]->GetPosition());
+
+		const float radius = lights[i]->GetRadius();
+		debugSpheres[i]->Scale(Vector3(radius, radius, radius));
+
+		//Add it to a seperate list.
+		//debugSpheres[i] = sphere;
 	}
 }
 
@@ -247,7 +288,7 @@ void Renderer::ChangeScene()
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, spotlightssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-	InitDebugLights();
+	RepositionDebugLights();
 	lighting->UpdateShadowData(scenes[sceneIndex]->GetShadowData());
 	particleSystem->particles = &scenes[sceneIndex]->particles;
 }

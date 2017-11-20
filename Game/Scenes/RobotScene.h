@@ -151,11 +151,11 @@ public:
 		//*camControl = new MechCameraController(robot, cockpit, camera, window);
 		//(*camControl)->ApplyCustomRotation(-10, 270, 0);
 
-		Particle a(Vector3(0, -400, 0), Vector3(0.1, 0, 0), 100, 0.0005);
-		Particle b(Vector3(120, -400, 0), Vector3(0.1, 0, 0), 100, 0.0005);
+		//Particle a(Vector3(0, -400, 0), Vector3(0.1, 0, 0), 100, 0.0005);
+		//Particle b(Vector3(120, -400, 0), Vector3(0.1, 0, 0), 100, 0.0005);
 
-		vector<Particle> particles = { a, b };
-		scene->particles = particles;
+		//vector<Particle> particles = { a, b };
+		//scene->particles = particles;
 
 		*camControl = new SimpleCameraController(camera, window);
 		(*camControl)->ApplyCustomRotation(-10, 270, 0);

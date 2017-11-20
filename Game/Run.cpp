@@ -40,7 +40,7 @@ int main()
 	config.InitialiseSettings();
 
 	CameraControllerType* camControl = nullptr;
-	//RobotScene::CreateShowroomScene(renderer, window, camera, &camControl);
+	RobotScene::CreateShowroomScene(renderer, window, camera, &camControl);
 	//SponzaScene::CreateSponzaScene(renderer, window, camera, &camControl);
 	HorrorScene::CreateScaryScene(renderer, window, camera, &camControl);
 
