@@ -111,7 +111,6 @@ void Renderer::InitDebugLights()
 {
 	for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
 	{
-		//delete debugSpheres[i];
 		//Create new sphere.
 		Model* sphere = new Model("../sphere/sphere.obj", 1);
 
@@ -124,46 +123,17 @@ void Renderer::InitDebugLights()
 		//Add it to a seperate list.
 		debugSpheres[i] = sphere;
 	}
-
-	//LoadDebugLightMeshes();
-	//RepositionDebugLights();
-}
-
-void Renderer::LoadDebugLightMeshes()
-{
-	//for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
-	//{
-	//	delete debugSpheres[i];
-	//	//Create new sphere.
-	//	Model* sphere = new Model("../sphere/sphere.obj", 1);
-
-	//	////Set size and position to match light.
-	//	//sphere->Translate(lights[i]->GetPosition());
-
-	//	//const float radius = lights[i]->GetRadius();
-	//	//sphere->Scale(Vector3(radius, radius, radius));
-
-	//	//Add it to a seperate list.
-	//	debugSpheres[i] = sphere;
-	//}
 }
 
 void Renderer::RepositionDebugLights()
 {
 	for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
 	{
-		//delete debugSpheres[i];
-		//Create new sphere.
-		//Model* sphere = new Model("../sphere/sphere.obj", 1);
-
 		//Set size and position to match light.
 		debugSpheres[i]->Translate(lights[i]->GetPosition());
 
 		const float radius = lights[i]->GetRadius();
 		debugSpheres[i]->Scale(Vector3(radius, radius, radius));
-
-		//Add it to a seperate list.
-		//debugSpheres[i] = sphere;
 	}
 }
 

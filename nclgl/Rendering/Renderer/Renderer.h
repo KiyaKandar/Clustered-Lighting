@@ -143,7 +143,6 @@ protected:
 
 	bool debugMode = false;
 	void InitDebugLights();
-	void LoadDebugLightMeshes();
 	void RepositionDebugLights();
 
 	//Light SSBO
