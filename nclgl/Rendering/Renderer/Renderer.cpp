@@ -76,7 +76,7 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	profilerTextRenderer = new TextRenderer(this);
 	GLUtil::CheckGLError("Renderer Initialisation");
 	init = true;
-	sceneIndex = 0;
+	sceneIndex = -1;
 }
 
 Renderer::~Renderer()

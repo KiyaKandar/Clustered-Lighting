@@ -45,6 +45,8 @@ public:
 	void AddScene(Scene* scene) noexcept
 	{
 		scenes.push_back(scene);
+
+		++sceneIndex;
 		ChangeScene();
 	}
 
