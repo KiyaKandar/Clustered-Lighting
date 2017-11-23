@@ -53,6 +53,9 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 		defaultLights[i] = new Light(Vector3(-1300 + (75 * (i - 70)), 50, 150), Vector4(1, 0.5, 0, 1), 100.0f, 0.5f);
 	}
 
+	textShader = new Shader(SHADERDIR"TexturedVertex.glsl", SHADERDIR"TexturedFragment.glsl");
+	SetCurrentShader(textShader);
+
 	debugSpheres = vector<Model*>(GLConfig::NUM_LIGHTS);
 	InitDebugLights();
 

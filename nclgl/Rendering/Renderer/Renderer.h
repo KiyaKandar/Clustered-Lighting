@@ -175,6 +175,7 @@ protected:
 	//Other Stuff
 	Camera*	camera;
 	Frustum frameFrustum;
+	Shader* textShader;
 
 	Window* wparent;
 	int sceneIndex;
