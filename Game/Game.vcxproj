@@ -177,6 +177,7 @@
     <ClCompile Include="SceneManagement\Scene.cpp" />
     <ClCompile Include="Scenes\HorrorScene.cpp" />
     <ClCompile Include="Scenes\RobotScene.cpp" />
+    <ClCompile Include="Scenes\SponzaScene.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -46,5 +46,6 @@
     <ClCompile Include="CameraControl\MechCameraController.cpp" />
     <ClCompile Include="Scenes\RobotScene.cpp" />
     <ClCompile Include="Scenes\HorrorScene.cpp" />
+    <ClCompile Include="Scenes\SponzaScene.cpp" />
   </ItemGroup>
 </Project>

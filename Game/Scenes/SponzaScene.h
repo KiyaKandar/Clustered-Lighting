@@ -7,8 +7,10 @@
 class SponzaScene
 {
 public:
+	static int currentPositionIndex;
+	static bool manual;
 
-	static void CreateSponzaScene(Renderer* renderer)
+	static void CreateSponzaScene(Renderer* renderer, Camera* camera, Window* window)
 	{
 		vector<pair<string, int>> files;
 		files.push_back(make_pair("../sponza/sponza.obj", 1));
@@ -23,24 +25,62 @@ public:
 			"../Skyboxes/Nice/front.jpg",
 		};
 
-		vector<string> reflections =
-		{
-			"../sponza/textures/spnza_bricks_a_diff.tga",
-			"../sponza/textures/spnza_bricks_a_diff.tga",
-			"../sponza/textures/spnza_bricks_a_diff.tga",
-			"../sponza/textures/spnza_bricks_a_diff.tga",
-			"../sponza/textures/spnza_bricks_a_diff.tga",
-			"../sponza/textures/spnza_bricks_a_diff.tga",
-		};
-
-		Scene* scene = new Scene(skybox, reflections, files, Vector3(100, 1, 1), 0.5f);
+		Scene* scene = new Scene(skybox, skybox, files, Vector3(100, 1, 1), 0.5f);
 		scene->InitialiseShadows(1, renderer);
 		scene->LoadModels();
+
 		scene->AddLight(new Light(Vector3(0, 1800, 200), Vector4(0.9, 0.7, 0.4, 1), 30000.0f, 4.5f), 0);
 		scene->AddLight(new Light(Vector3(-630, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f), 1);
 		scene->AddLight(new Light(Vector3(500, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f), 2);
 		scene->AddLight(new Light(Vector3(-630, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f), 3);
 		scene->AddLight(new Light(Vector3(500, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f), 4);
+
+
+		scene->AddUpdateProcess([camera = camera](float msec) 
+		{
+			std::cout << camera->GetPosition() << std::endl;
+		});
+
+		vector<Vector3> positions =
+		{
+			Vector3(-1300, 640, -550),
+			Vector3(1300, 640, -550),
+			Vector3(1300, 640, 550),
+			Vector3(-1300, 640, 550)
+		};
+
+		scene->AddUpdateProcess([window = window](float msec)
+		{
+			if (window->GetKeyboard()->KeyTriggered(KEYBOARD_M))
+			{
+				manual = !manual;
+			}
+		});
+
+		scene->AddUpdateProcess([positions = positions, camera = camera](float msec)
+		{
+			if (!manual)
+			{
+				if (currentPositionIndex == positions.size())
+				{
+					currentPositionIndex = 0;
+				}
+
+				const Vector3 currentPosition = camera->GetPosition();
+				const Vector3 nextPosition = (positions[currentPositionIndex] - currentPosition);
+				const Vector3 newPosition = currentPosition + (nextPosition  * (msec / 9000));
+
+				camera->SetPosition(newPosition);
+
+				const Vector3 distanceToNextPos = newPosition - positions[currentPositionIndex];
+
+				if (distanceToNextPos.Length() < 50.0f)
+				{
+					++currentPositionIndex;
+				}
+			}
+
+		});
 
 		renderer->AddScene(scene);
 	}

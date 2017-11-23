@@ -31,6 +31,11 @@ void SimpleCameraController::ApplyCustomRotation(const float& pitch, const float
 	ApplyRotation(msec);
 }
 
+void SimpleCameraController::Translate(Vector3 translation)
+{
+	camera->SetPosition(camera->GetPosition() + translation);
+}
+
 void SimpleCameraController::ApplyMovement(const float& msec)
 {
 	const float speed = msec * MOVEMENT_DAMPING;

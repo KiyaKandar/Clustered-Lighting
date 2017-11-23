@@ -11,6 +11,7 @@ public:
 	void ApplyInputs(const float& msec) override;
 
 	void ApplyCustomRotation(const float& pitch, const float& yaw, const float& msec) override;
+	void Translate(Vector3 translation);
 
 private:
 	void ApplyMovement(const float& msec) override;

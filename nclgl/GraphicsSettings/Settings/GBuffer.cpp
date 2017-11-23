@@ -24,6 +24,9 @@ GBuffer::GBuffer(Window* window, Camera* camera, std::vector<ModelMesh*>* models
 GBuffer::~GBuffer()
 {
 	delete geometryPass;
+	glDeleteTextures(1, &gPosition);
+	glDeleteTextures(1, &gNormal);
+	glDeleteTextures(1, &gAlbedo);
 }
 
 void GBuffer::LinkShaders()

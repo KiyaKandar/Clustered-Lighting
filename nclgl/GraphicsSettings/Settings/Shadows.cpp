@@ -89,6 +89,7 @@ void Shadows::InitShadowBuffer()
 
 void Shadows::DrawShadowScene()
 {
+	glCullFace(GL_FRONT);
 	SetCurrentShader(shadowShader);
 
 	glViewport(0, 0, SHADOWSIZE, SHADOWSIZE);
@@ -119,4 +120,5 @@ void Shadows::DrawShadowScene()
 	glViewport(0, 0, GLConfig::RESOLUTION.x, GLConfig::RESOLUTION.y);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glCullFace(GL_BACK);
 }

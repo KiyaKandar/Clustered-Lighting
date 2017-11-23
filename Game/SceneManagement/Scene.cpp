@@ -36,6 +36,9 @@ Scene::~Scene()
 	}
 
 	delete lightWorkGroups;
+
+	glDeleteTextures(1, &skyBoxTextureID);
+	glDeleteTextures(1, &reflectionTextureID);
 }
 
 void Scene::LoadModels()

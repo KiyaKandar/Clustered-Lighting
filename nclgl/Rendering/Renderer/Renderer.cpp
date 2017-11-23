@@ -53,18 +53,10 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 		defaultLights[i] = new Light(Vector3(-1300 + (75 * (i - 70)), 50, 150), Vector4(1, 0.5, 0, 1), 100.0f, 0.5f);
 	}
 
-	//lights[99] = new Light(Vector3(100, 150, 100), Vector4(1, 0, 0, 1), 500, 0.5f);
-
-	//Initialise text for the profiler
-	textShader = new Shader(SHADERDIR"TexturedVertex.glsl", SHADERDIR"TexturedFragment.glsl");
-	basicFont = new Font(SOIL_load_OGL_texture(TEXTUREDIR"tahoma.tga",
-		SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_COMPRESS_TO_DXT), 16, 16);
-
 	debugSpheres = vector<Model*>(GLConfig::NUM_LIGHTS);
 	InitDebugLights();
 
 	SetAsDebugDrawingRenderer(); //For light debugging
-	SetCurrentShader(textShader);
 
 	tiles = new TileRenderer(lights, GLConfig::NUM_LIGHTS,
 		GLConfig::NUM_X_AXIS_TILES, GLConfig::NUM_Y_AXIS_TILES, GLConfig::NUM_Z_AXIS_TILES,
@@ -77,16 +69,11 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	InitLightSSBO();
 
 	glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
-	//glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_CULL_FACE);
 
 	profilerTextRenderer = new TextRenderer(this);
 	GLUtil::CheckGLError("Renderer Initialisation");
 	init = true;
 	sceneIndex = 0;
-
-
-	//glDepthFunc(GL_LESS);
 }
 
 Renderer::~Renderer()
@@ -236,13 +223,6 @@ void Renderer::RenderScene()
 
 void Renderer::ChangeScene()
 {
-	//++sceneIndex;
-
-	//if (sceneIndex == scenes.size())
-	//{
-	//	sceneIndex = 0;
-	//}
-
 	models = scenes[sceneIndex]->GetModels();
 
 	for each (Model* model in *models)

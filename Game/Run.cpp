@@ -16,6 +16,10 @@
 #include "Scenes/HorrorScene.h"
 #include "Scenes/SponzaScene.h"
 
+/*
+	CREDITS:
+*/
+
 const bool FULLSCREEN = false;
 
 int main()
@@ -38,11 +42,11 @@ int main()
 	GConfiguration config(window, renderer, camera, GLConfig::RESOLUTION, profiler);
 	config.InitialiseSettings();
 
-	CameraControllerType* camControl = new SimpleCameraController(camera, window);
+	SimpleCameraController* camControl = new SimpleCameraController(camera, window);
 	camControl->ApplyCustomRotation(-10, 270, 0);
-	RobotScene::CreateShowroomScene(renderer, window);
+	RobotScene::CreateShowroomScene(renderer, window, &camControl, camera);
 	HorrorScene::CreateScaryScene(renderer);
-	SponzaScene::CreateSponzaScene(renderer);
+	SponzaScene::CreateSponzaScene(renderer, camera, window);
 
 	config.LinkToRenderer();
 	window->UpdateWindow();

@@ -19,6 +19,8 @@ public:
 		delete shadowShader;
 		delete shadowData;
 		delete shadowFBOs;
+
+		glDeleteTextures(shadowData->NUM_LIGHTS, &shadowData->shadows[0]);
 	}
 
 	void LinkShaders() override;

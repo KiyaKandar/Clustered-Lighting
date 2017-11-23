@@ -18,6 +18,7 @@ MotionBlur::MotionBlur(GBufferData* gBuffer,
 MotionBlur::~MotionBlur()
 {
 	delete blurShader;
+	glDeleteTextures(1, &colourBuffer[0]);
 }
 
 void MotionBlur::LinkShaders()

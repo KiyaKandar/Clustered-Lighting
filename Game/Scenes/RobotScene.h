@@ -2,6 +2,7 @@
 
 #include "../nclgl/Rendering/Renderer/Renderer.h"
 #include "../CameraControl/CameraControllerType.h"
+#include "../CameraControl/SimpleCameraController.h"
 
 class RobotScene
 {
@@ -9,8 +10,10 @@ public:
 
 	static float counter;
 	static float waveCounter;
+	static bool manual;
+	static float cameraRotationDegrees;
 
-	static void CreateShowroomScene(Renderer* renderer, Window* window)
+	static void CreateShowroomScene(Renderer* renderer, Window* window, SimpleCameraController** camControl, Camera* camera)
 	{
 		vector<pair<string, int>> files;
 		files.push_back(make_pair("../Models/glass.obj", 3));
@@ -31,7 +34,7 @@ public:
 
 		Scene* scene = new Scene(faces, faces, files, Vector3(1, 1, 1), 0.6f);
 		scene->InitialiseShadows(1, renderer);
-		scene->AddLight(new Light(Vector3(2500, 1500, -2500), Vector4(0.9, 0.7, 0.4, 1), 700000.0f, 0.8f), 0);
+		scene->AddLight(new Light(Vector3(0, 1500, -2500), Vector4(0.9, 0.7, 0.4, 1), 700000.0f, 0.9f), 0);
 
 		scene->LoadModels();
 
@@ -83,6 +86,29 @@ public:
 			}
 
 			waveCounter += msec / 100000.0f;
+		});
+
+		scene->AddUpdateProcess([window = window, camControl = camControl, camera = camera](float msec)
+		{
+			if (window->GetKeyboard()->KeyTriggered(KEYBOARD_M))
+			{
+				manual = !manual;
+			}
+
+			if ((camera->GetPosition() - Vector3(2500, 1075, 0)).Length() > 1.0f && !manual)
+			{
+				const Vector3 currentPosition = camera->GetPosition();
+				const Vector3 nextPosition = (Vector3(2500, 1075, 0) - currentPosition) * (msec / 550);
+				const Vector3 newPosition = currentPosition + nextPosition;
+
+				camera->SetPosition(newPosition);
+			}
+
+			if (!manual) 
+			{
+				cameraRotationDegrees = cameraRotationDegrees + (2 * (msec / 100));
+				(*camControl)->ApplyCustomRotation(camera->GetPitch(), cameraRotationDegrees, msec);
+			}
 		});
 
 		renderer->AddScene(scene);

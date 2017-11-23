@@ -118,7 +118,6 @@ public:
 
 	void ChangeScene();
 
-	Font* basicFont;
 	Matrix4 previousViewMatrix;
 	Matrix4 inverseViewProj;
 	Matrix4 previousViewProj;
@@ -170,7 +169,6 @@ protected:
 	std::vector<Model*> debugSpheres;
 
 	//Text Stuff - Mainly for profiler
-	Shader* textShader;
 	void DrawProfilerText() const;
 	TextRenderer* profilerTextRenderer;
 

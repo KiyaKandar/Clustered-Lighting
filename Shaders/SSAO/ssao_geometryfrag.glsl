@@ -31,7 +31,6 @@ void main(void) {
 	if (hasTexture == 1) 
 	{
 		col = texture2D(texture_diffuse, TexCoords);
-		//alpha = col.a;
 	}
 	
 	if (isReflective == 1) 
@@ -41,7 +40,6 @@ void main(void) {
 		vec4 reflectionColour = vec4(texture(skybox, R).rgb, 1.0);
 		col += reflectionColour * reflectionStrength;
 		col /= 2;
-		//col = mix(col, reflectionColour. reflectionStrength)
 	}
 
 	gAlbedo.rgba = vec4(col.rgb, alpha);

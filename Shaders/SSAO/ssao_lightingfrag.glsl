@@ -28,10 +28,6 @@ in vec2 TexCoords;
 in mat4 textureMat;
 in vec2 screenPos;
 
-const int HALF_NUM_PCF_SAMPLES = 2;
-
-//out vec4 FragColor;
-
 struct LightData
 {
 	vec4 pos4;
@@ -129,20 +125,18 @@ void AddBPLighting(vec3 position, vec3 normal, vec4 albedoCol, int lightIndex, i
 
 			if (shadowProj.w > 0.0)
 			{
-				vec2 texelSize = 10.0 / textureSize(shadows[lightIndex], 0);
+				vec2 texelSize = 1.0f / textureSize(shadows[lightIndex], 0);
 
-				for (int x = -HALF_NUM_PCF_SAMPLES; x < HALF_NUM_PCF_SAMPLES; ++x)
+				for (int x = -2; x <= 2; ++x)
 				{
-					for (int y = -HALF_NUM_PCF_SAMPLES; y < HALF_NUM_PCF_SAMPLES; ++y)
+					for (int y = -2; y <= 2; ++y)
 					{
 						vec2 sampleCoord = vec2(x, y) *texelSize;
 						shadow += textureProj(shadows[lightIndex], shadowProj + vec4(sampleCoord, 0.0f, 0.0f));
 					}
 				}
 
-				shadow /= 16;// pow((HALF_NUM_PCF_SAMPLES) * 2, 2);
-				//shadow /= 16;
-				//shadow += textureProj(shadows[lightIndex], shadowProj);
+				shadow /= 25;// pow((HALF_NUM_PCF_SAMPLES) * 2, 2);
 			}
 
 			lambert *= shadow;
@@ -169,6 +163,7 @@ void main(void){
 
 	if (position.z > 0.0f) 
 	{
+		//Its the skybox, dont touch it...
 		FragColor = albedoCol;
 	}
 	else 
@@ -211,8 +206,6 @@ void main(void){
 
 		FragColor = lightResult;//vec4(lightResult, 1.0);
 	}
-
-	//FragColor = vec4(position.xyz, 1.0f);
 
 	vec3 greyscale = vec3(0.2126, 0.7152, 0.0722);
 	float brightness = dot(FragColor.rgb, greyscale);

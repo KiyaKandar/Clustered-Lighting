@@ -16,17 +16,7 @@ void main(void){
 
 	finalColour.rgb += bloomColour.rgb;
 
-	//float alpha = 0.0f;
-
-	//if (finalColour.a < bloomColour.a)
-	//{
-	//	alpha = finalColour.a;
-	//}
-	//else
-	//{
-	//	alpha = bloomColour.a;
-	//}
-
+	//Gamma correction
 	vec3 result = vec3(1.0f) - exp(-finalColour.rgb * exposure);
 	result = pow(result, vec3(1.0f / gamma));
 

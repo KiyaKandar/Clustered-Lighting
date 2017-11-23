@@ -27,6 +27,13 @@ ModelMesh::ModelMesh(vector<Vertex> vertices, vector<unsigned int> indices,
 	CalculateBoundingRadius();
 }
 
+ModelMesh::~ModelMesh()
+{
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
+}
+
 void ModelMesh::SetupMesh()
 {
 	glGenVertexArrays(1, &VAO);

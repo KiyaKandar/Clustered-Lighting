@@ -22,6 +22,9 @@ public:
 		delete SSAOCol;
 		delete SSAOBlur;
 		delete SGBuffer;
+
+		glDeleteTextures(1, &ssaoColorBuffer);
+		glDeleteTextures(1, &ssaoColorBufferBlur);
 	}
 
 	void LinkShaders() override;
