@@ -111,9 +111,9 @@ public:
 		return camera;
 	}
 
-	void AddText(const Text& text) const
+	void AddProfilerText(const Text& text) const
 	{
-		textRenderer->textbuffer.push_back(text);
+		profilerTextRenderer->textbuffer.push_back(text);
 	}
 
 	void ChangeScene();
@@ -142,6 +142,7 @@ protected:
 	TileRenderer* tiles;
 
 	bool debugMode = false;
+	bool profilerEnabled = false;
 	void InitDebugLights();
 	void RepositionDebugLights();
 
@@ -150,6 +151,7 @@ protected:
 	GLuint spotlightssbo;
 	GLuint tilesssbo;
 	GLuint tilelightssssbo;
+	GLuint modelMatricesSSBO;
 	void InitLightSSBO();
 
 	Light* lights[GLConfig::NUM_LIGHTS];
@@ -169,8 +171,8 @@ protected:
 
 	//Text Stuff - Mainly for profiler
 	Shader* textShader;
-	void DrawAllText() const;
-	TextRenderer* textRenderer;
+	void DrawProfilerText() const;
+	TextRenderer* profilerTextRenderer;
 
 	//Other Stuff
 	Camera*	camera;

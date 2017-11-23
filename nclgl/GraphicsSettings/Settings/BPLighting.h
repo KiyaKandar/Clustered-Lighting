@@ -28,6 +28,8 @@ public:
 	void Apply() override;
 
 	GLuint* FBO;
+	float ambientLighting;
+
 private:
 	void LocateUniforms() override;
 	void LightingPass();

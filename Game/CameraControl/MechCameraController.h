@@ -5,7 +5,7 @@
 class Model;
 class ModelMesh;
 
-const int NUM_DIRECTIONS = 4;
+const int NUM_DIRECTIONS = 2;
 
 class MechCameraController : public CameraControllerType
 {
@@ -23,7 +23,6 @@ private:
 	void ApplyRotation(const float& msec) override;
 
 	void Move(Vector3 direction, float speed, int directionIndex);
-	void Rotate(Vector3 axis, float speed, int directionIndex);
 
 	void ShakeCamera(float msec);
 	void GenerateCameraShakePositions();

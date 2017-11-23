@@ -19,9 +19,10 @@ TextRenderer::~TextRenderer()
 
 void TextRenderer::DrawTextBuffer()
 {
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	textShader->LinkProgram();
-
 	glUseProgram(textShader->GetProgram());
+
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	glEnable(GL_BLEND);
 
@@ -29,6 +30,8 @@ void TextRenderer::DrawTextBuffer()
 	{
 		DrawTextOBJ(textobj);
 	}
+
+	glDisable(GL_BLEND);
 }
 
 void TextRenderer::DrawTextOBJ(const Text& textobj)

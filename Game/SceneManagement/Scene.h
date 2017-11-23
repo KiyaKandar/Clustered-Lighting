@@ -18,7 +18,8 @@ class Renderer;
 class Scene
 {
 public:
-	Scene(std::vector<std::string> skyBoxTextures, std::vector<std::string> reflectionTextures, std::vector<std::pair<std::string, int>> modelsToLoad, Vector3 lightWorkGroups);
+	Scene(std::vector<std::string> skyBoxTextures, std::vector<std::string> reflectionTextures, 
+		std::vector<std::pair<std::string, int>> modelsToLoad, Vector3 lightWorkGroups, float ambient);
 	~Scene();
 
 	void LoadModels();
@@ -47,8 +48,28 @@ public:
 		return shadows->GetShadowData();
 	}
 
+	void SetLightColour(int index, Vector4 colour)
+	{
+		sceneLights[index].first->SetColour(colour);
+		modifiedLights.push_back(index);
+	}
+
+	void SetLightDirection(int index, Vector4 direction)
+	{
+		sceneLights[index].first->SetDirection(direction);
+		modifiedLights.push_back(index);
+	}
+
+	void SetLightPosition(int index, Vector3 position)
+	{
+		sceneLights[index].first->SetPosition(position);
+		modifiedLights.push_back(index);
+	}
+
 	Vector3* lightWorkGroups;
 	vector<Particle> particles;
+	vector<int> modifiedLights;
+	float ambient;
 
 private:
 	void AddModel(const std::string& fileName, int numDuplicates);

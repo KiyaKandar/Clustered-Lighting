@@ -6,7 +6,7 @@ layout(location = 1) out vec4 BrightnessCol;
 #include ../Shaders/compute/configuration.glsl
 
 uniform int numShadowCastingLights;
-
+uniform float ambientLighting;
 uniform vec3  cameraPos;
 
 uniform sampler2D gPosition;
@@ -78,85 +78,87 @@ layout(std430, binding = 7) buffer SpotLightDataBuffer
 void AddBPLighting(vec3 position, vec3 normal, vec4 albedoCol, int lightIndex, inout vec4 lightResult)
 {
 	vec3 lightPosition = lightData[lightIndex].pos4.xyz;
-
 	vec3 colour = vec3(0.0, 0.0, 0.0);
-
 	vec3 lightPosView = vec3(camMatrix * vec4(lightPosition, 1.0));
-
-	//Diffuse
-	vec3 viewDir = normalize(-position);
-	vec3 lightDir = normalize(lightPosView - position);
-	vec3 diffuse = max(dot(normal, lightDir), 0.0) *
-		albedoCol.rgb * lightData[lightIndex].lightColour.rgb;
-
-	//Specular
-	vec3 halfDir = normalize(lightDir + viewDir);
-	float specPower = pow(max(dot(normal, halfDir), 0.0), 500.0);
-	vec3 specular = lightData[lightIndex].lightColour.rgb * specPower;
-
-	//Attenuation
 	float dist = length(lightPosView - position);
-	float attenuation = 0;
 
-	if (spotLightData[lightIndex].direction != vec4(0, 0, 0, 0)) {
-		vec3 spotLightPosView = ((mat3(camMatrix) * spotLightData[lightIndex].direction.xyz)).xyz;
-		vec3 spotLightDir = normalize(position - lightPosView);
+	if (dist <= lightData[lightIndex].lightRadius)
+	{
+		//Diffuse
+		vec3 viewDir = normalize(-position);
+		vec3 lightDir = normalize(lightPosView - position);
+		vec3 diffuse = max(dot(normal, lightDir), 0.0) *
+			albedoCol.rgb * lightData[lightIndex].lightColour.rgb;
 
-		float theta = dot(spotLightDir, normalize(spotLightPosView));
+		//Specular
+		vec3 halfDir = normalize(lightDir + viewDir);
+		float specPower = pow(max(dot(normal, halfDir), 0.0), 500.0);
+		vec3 specular = lightData[lightIndex].lightColour.rgb * specPower;
 
-		float coneAngle = radians(spotLightData[lightIndex].direction.w);
-		if (theta > cos(coneAngle))
+		//Attenuation
+		float attenuation = 0;
+
+		if (spotLightData[lightIndex].direction != vec4(0, 0, 0, 0)) {
+			vec3 spotLightPosView = ((mat3(camMatrix) * spotLightData[lightIndex].direction.xyz)).xyz;
+			vec3 spotLightDir = normalize(position - lightPosView);
+
+			float theta = dot(spotLightDir, normalize(spotLightPosView));
+
+			float coneAngle = radians(spotLightData[lightIndex].direction.w);
+			if (theta > cos(coneAngle))
+			{
+				attenuation = 1.0 - clamp(dist / lightData[lightIndex].lightRadius, 0.0, 1.0);
+				attenuation *= lightData[lightIndex].intensity;
+			}
+		}
+		else
 		{
 			attenuation = 1.0 - clamp(dist / lightData[lightIndex].lightRadius, 0.0, 1.0);
 			attenuation *= lightData[lightIndex].intensity;
 		}
-	}
-	else
-	{
-		attenuation = 1.0 - clamp(dist / lightData[lightIndex].lightRadius, 0.0, 1.0);
-		attenuation *= lightData[lightIndex].intensity;
-	}
 
-
-
-	if (lightIndex < numShadowCastingLights)
-	{
-		float lambert = max(0.0, dot(lightDir, normal));
-
-		//Shadow
-		vec4 shadowProj = (texMatrices[lightIndex] * inverse(camMatrix) *
-			vec4(position + (normal * 1.5), 1));
-
-		float shadow = 0.0;
-
-		if (shadowProj.w > 0.0)
+		if (lightIndex < numShadowCastingLights)
 		{
-			//vec2 texelSize = 1.0 / textureSize(shadows[lightIndex], 0);
+			float lambert = max(0.0, dot(lightDir, normal));
 
-			for (int x = 0; x <= HALF_NUM_PCF_SAMPLES; ++x)
+			//Shadow
+			vec4 shadowProj = (texMatrices[lightIndex] * inverse(camMatrix) *
+				vec4(position + (normal * 1.5), 1));
+
+			float shadow = 0.0;
+
+			if (shadowProj.w > 0.0)
 			{
-				for (int y = 0; y <= HALF_NUM_PCF_SAMPLES; ++y)
+				vec2 texelSize = 10.0 / textureSize(shadows[lightIndex], 0);
+
+				for (int x = -HALF_NUM_PCF_SAMPLES; x < HALF_NUM_PCF_SAMPLES; ++x)
 				{
-					vec2 sampleCoord = vec2(x, y);// *texelSize;
-					shadow += textureProj(shadows[lightIndex], shadowProj + vec4(sampleCoord, 0.0f, 0.0f));
+					for (int y = -HALF_NUM_PCF_SAMPLES; y < HALF_NUM_PCF_SAMPLES; ++y)
+					{
+						vec2 sampleCoord = vec2(x, y) *texelSize;
+						shadow += textureProj(shadows[lightIndex], shadowProj + vec4(sampleCoord, 0.0f, 0.0f));
+					}
 				}
+
+				shadow /= 16;// pow((HALF_NUM_PCF_SAMPLES) * 2, 2);
+				//shadow /= 16;
+				//shadow += textureProj(shadows[lightIndex], shadowProj);
 			}
 
-			shadow /= pow((HALF_NUM_PCF_SAMPLES + 1) * 2, 2);
-			//shadow += textureProj(shadows[lightIndex], shadowProj);
+			lambert *= shadow;
+			attenuation *= lambert;
 		}
 
-		lambert *= shadow;
-		attenuation *= lambert;
+		diffuse *= attenuation;
+		specular *= attenuation;
+
+		colour += (diffuse + specular);
+
+		lightResult.rgb += colour;
+		//lightResult.a = albedoCol.a;
 	}
 
-	diffuse *= attenuation;
-	specular *= attenuation;
-
-	colour += (diffuse + specular);
-
-	lightResult.rgb += colour;
-	//lightResult.a = albedoCol.a;
+	
 }
 
 void main(void){
@@ -176,7 +178,6 @@ void main(void){
 		float yCoord = gl_FragCoord.y / 720;
 		float zCoord = gl_FragCoord.z;
 
-		zCoord = (position.z - 1.0f) / (15000.0f - 1.0f);
 		zCoord = abs(zCoord);
 
 		int xIndex = int(xCoord * tilesOnAxes.x);
@@ -196,7 +197,7 @@ void main(void){
 		}
 
 		//Ambient
-		float ambientFX = 0.5;
+		float ambientFX = ambientLighting;//0.5f;
 
 		for (int j = 0; j < 1; j++) 
 		{
@@ -215,7 +216,8 @@ void main(void){
 
 	vec3 greyscale = vec3(0.2126, 0.7152, 0.0722);
 	float brightness = dot(FragColor.rgb, greyscale);
-	if (brightness > 0.8) {
+	if (brightness > 0.8) 
+	{
 		BrightnessCol = vec4(FragColor.rgb * vec3(1, 0.6, 0.6), 1.0f/*albedoCol.a*/);
 	}
 	else BrightnessCol = vec4(0.0, 0.0, 0.0, 1.0f/*albedoCol.a*/);

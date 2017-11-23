@@ -7,22 +7,40 @@
 class HorrorScene
 {
 public:
-	static void CreateScaryScene(Renderer* renderer, Window* window, Camera* camera, CameraControllerType** camControl)
+	static float xDirection;
+	static int counter;
+	static int framesWithLightOff;
+
+	static void CreateScaryScene(Renderer* renderer)
 	{
 		vector<pair<string, int>> files;
-		files.push_back(make_pair("../centeredcube.obj", 1));
+		files.push_back(make_pair("../Models/centeredcube.obj", 1));
 		files.push_back(make_pair("../models/Hellknight/hellknight.md5mesh", 1));
 
-		vector<string> faces;
+		vector<string> faces =
+		{
+			"../Skyboxes/Black/black.jpg",
+			"../Skyboxes/Black/black.jpg",
+			"../Skyboxes/Black/black.jpg",
+			"../Skyboxes/Black/black.jpg",
+			"../Skyboxes/Black/black.jpg",
+			"../Skyboxes/Black/black.jpg",
+		};
 
-		Scene* scene = new Scene(faces, faces, files, Vector3(1, 1, 1));
-		scene->InitialiseShadows(1, renderer);
+		Scene* scene = new Scene(faces, faces, files, Vector3(2, 1, 1), 0.5f);
+		scene->InitialiseShadows(2, renderer);
+
 		scene->AddLight(new Light(Vector3(0, 700, -10),
 			Vector4(1, 1, 1, 1), 2000.0f, 10.5f, Vector4(0, -1, 0, 15)), 0);
-		scene->LoadModels();
-		scene->particles = GenerateSmoke();
 
-		Model* cube = scene->GetModel("../centeredcube.obj");
+		scene->AddLight(new Light(Vector3(-300, 700, -10),
+			Vector4(1, 1, 1, 1), 2000.0f, 2.5f, Vector4(0.5, -1, 0, 15)), 1);
+
+
+		scene->LoadModels();
+		scene->particles = GenerateSmoke(150);
+
+		Model* cube = scene->GetModel("../Models/centeredcube.obj");
 		Model* hellknight = scene->GetModel("../models/Hellknight/hellknight.md5mesh");
 
 		cube->Scale(Vector3(1000, 100, 1000));
@@ -35,36 +53,56 @@ public:
 		hellknight->Rotate(Vector3(1, 0, 0), 90);
 		hellknight->Rotate(Vector3(0, 1, 0), 180);
 
-		int* counter = new int(0.0f);
-		//scene->
-
-		scene->AddUpdateProcess([scene = scene, counter = counter](float msec)
+		scene->AddUpdateProcess([scene = scene](float msec)
 		{
-			if ((*counter) % 20 == 0)
+			if (counter <= 0)
 			{
-				*scene->lightWorkGroups = Vector3(0, 0, 0);
+				std::random_device rd;
+				std::mt19937 rng(rd()); //(Mersenne-Twister)
+				std::uniform_int_distribution<int> uni(0, 150);
+
+				*scene->lightWorkGroups = Vector3(1, 0, 0);
+				counter = uni(rng);
 			}
 			else
 			{
-				*scene->lightWorkGroups = Vector3(1, 1, 1);
+				*scene->lightWorkGroups = Vector3(2, 1, 1);
+				counter = counter - msec;
 			}
 
-			*counter = *counter + 1;
 		});
 
-		*camControl = new SimpleCameraController(camera, window);
-		(*camControl)->ApplyCustomRotation(-10, 270, 0);
+		scene->AddUpdateProcess([scene = scene](float msec)
+		{
+			float direction = std::cosf(xDirection) * 0.45;
+			xDirection += 0.05f * (msec / 10);
+			scene->SetLightDirection(0, Vector4(direction, -1.0f, 0.0f, 20.0f));
+		});
 
 		renderer->AddScene(scene);
 	}
 
-	static vector<Particle> GenerateSmoke()
+	static vector<Particle> GenerateSmoke(int numParticles)
 	{
-		Particle a(Vector3(0, -400, 0), Vector3(0.1, 0, 0), 100, 0.0005);
-		Particle b(Vector3(120, -400, 0), Vector3(0.1, 0, 0), 100, 0.0005);
+		vector<Particle> particles;
 
-		vector<Particle> particles = { a, b };
+		for (int i = 0; i < numParticles; ++i)
+		{
+			const Vector3 start(RandomFloat(-450, 450), RandomFloat(-500, -300), RandomFloat(-300, 300));
+			const Vector3 translation(RandomFloat(-0.05, 0.1), RandomFloat(-0.05, 0.1), RandomFloat(-0.05, 0.1));
+			const float size = RandomFloat(100, 300);
+			const float decayRate = RandomFloat(0.005, 0.0015);
+			const float whiteness = RandomFloat(0.1, 0.3);
+
+			const Particle particle(start, translation, Vector4(whiteness, whiteness, whiteness, 1.0f), size, decayRate);
+			particles.push_back(particle);
+		}
+
 		return particles;
 	}
-};
 
+	static float RandomFloat(const float min, const float max)
+	{
+		return min + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (max - min)));
+	}
+};

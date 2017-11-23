@@ -35,7 +35,7 @@ bool Frustum::InsideFrustum(const Vector3& position, const float& radius)
 		}
 	}
 
-	return false;
+	return true;
 }
 
 void Frustum::FromMatrix(const Matrix4 &mat)

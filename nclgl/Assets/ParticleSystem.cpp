@@ -32,8 +32,6 @@ void ParticleSystem::RegenerateShaders()
 
 void ParticleSystem::Initialise()
 {
-	textureID = LoadTexture("../models/particles/smoke1.png");
-	textureID1 = LoadTexture("../models/particles/smoke2.png");
 	InitialiseMesh();
 }
 
@@ -50,18 +48,6 @@ void ParticleSystem::Apply()
 	glUniformMatrix4fv(glGetUniformLocation(particleShader->GetProgram(),
 		"projMatrix"), 1, false, (float*)&GLConfig::SHARED_PROJ_MATRIX);
 
-	glActiveTexture(GL_TEXTURE0);
-	glUniform1i(glGetUniformLocation(particleShader->GetProgram(),
-		"diffuseTex1"), 0);
-	glBindTexture(GL_TEXTURE_2D, textureID);
-
-	glActiveTexture(GL_TEXTURE1);
-	glUniform1i(glGetUniformLocation(particleShader->GetProgram(),
-		"diffuseTex2"), 1);
-	glBindTexture(GL_TEXTURE_2D, textureID1);
-
-	glUniform1f(glGetUniformLocation(particleShader->GetProgram(), "time"), (float)frameCount / 5);
-
 	for (int i = 0; i < particles->size(); ++i)
 	{
 		(*particles)[i].modelMatrix = (*particles)[i].modelMatrix * Matrix4::Translation((*particles)[i].frameTranslation);
@@ -71,6 +57,7 @@ void ParticleSystem::Apply()
 
 		glUniform1f(glGetUniformLocation(particleShader->GetProgram(), "particleSize"), (*particles)[i].particleSize);
 		glUniform1f(glGetUniformLocation(particleShader->GetProgram(), "alphaDecay"), (*particles)[i].alphaDecay);
+		glUniform4fv(glGetUniformLocation(particleShader->GetProgram(), "colour"), 1, (float*)&(*particles)[i].colour);
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_POINTS, 0, 1);
@@ -102,16 +89,4 @@ void ParticleSystem::InitialiseMesh()
 		&vertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
-}
-
-GLuint ParticleSystem::LoadTexture(string name) 
-{
-	GLuint tex = SOIL_load_OGL_texture(name.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
-	glBindTexture(GL_TEXTURE_2D, tex);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	return tex;
 }

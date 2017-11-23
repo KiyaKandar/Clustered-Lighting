@@ -1,12 +1,14 @@
-#version 150
+#version 330
 
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projMatrix;
 uniform mat4 textureMatrix;
 
-in vec3 position;
-in vec2 texCoord;
+layout(location = 0) in vec3 position;
+layout(location = 2) in vec2 texCoord;
+
+
 
 out Vertex {
 	vec2 texCoord;

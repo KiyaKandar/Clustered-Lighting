@@ -8,7 +8,6 @@
 #include "../NCLGL/Rendering/View/window.h"
 #include "../NCLGL/Rendering/Renderer/Renderer.h"
 #include "../NCLGL/ASSIMP/Model.h"
-#include "../NCLGL/Utility/Light.h"
 #include "../NCLGL/GraphicsSettings/SettingsType/GConfiguration.h"
 #include "GraphicsConfiguration/GLConfig.h"
 #include "CameraControl/MechCameraController.h"
@@ -39,10 +38,11 @@ int main()
 	GConfiguration config(window, renderer, camera, GLConfig::RESOLUTION, profiler);
 	config.InitialiseSettings();
 
-	CameraControllerType* camControl = nullptr;
-	RobotScene::CreateShowroomScene(renderer, window, camera, &camControl);
-	//SponzaScene::CreateSponzaScene(renderer, window, camera, &camControl);
-	HorrorScene::CreateScaryScene(renderer, window, camera, &camControl);
+	CameraControllerType* camControl = new SimpleCameraController(camera, window);
+	camControl->ApplyCustomRotation(-10, 270, 0);
+	RobotScene::CreateShowroomScene(renderer, window);
+	HorrorScene::CreateScaryScene(renderer);
+	SponzaScene::CreateSponzaScene(renderer);
 
 	config.LinkToRenderer();
 	window->UpdateWindow();

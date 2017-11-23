@@ -36,7 +36,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -175,6 +175,8 @@
     <ClCompile Include="CameraControl\MechCameraController.cpp" />
     <ClCompile Include="Run.cpp" />
     <ClCompile Include="SceneManagement\Scene.cpp" />
+    <ClCompile Include="Scenes\HorrorScene.cpp" />
+    <ClCompile Include="Scenes\RobotScene.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

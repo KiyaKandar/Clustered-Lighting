@@ -60,6 +60,7 @@ void BPLighting::LightingPass()
 	glUniform1i(loc_gPosition, GLConfig::GPOSITION);
 	glUniform1i(loc_gNormal, GLConfig::GNORMAL);
 	glUniform1i(loc_gAlbedo, GLConfig::GALBEDO);
+	glUniform1f(glGetUniformLocation(lightingPass->GetProgram(), "ambientLighting"), ambientLighting);
 
 	glUniform1i(loc_numXTiles, GLConfig::NUM_X_AXIS_TILES);
 	glUniform1i(loc_numYTiles, GLConfig::NUM_Y_AXIS_TILES);

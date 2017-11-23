@@ -20,8 +20,8 @@ SSAO::SSAO(Camera* cam, AmbientTextures* ambientTextures, GBufferData* SGBuffer)
 	ambientTextures->textures[GLConfig::SSAO_INDEX] = &ssaoColorBufferBlur;
 	ambientTextures->texUnits[GLConfig::SSAO_INDEX] = 3;
 
-	xSize = GLConfig::RESOLUTION.x / RESOLUTION_SCALE_X;
-	ySize = GLConfig::RESOLUTION.y / RESOLUTION_SCALE_Y;
+	xSize = 2;// GLConfig::RESOLUTION.x / RESOLUTION_SCALE_X;
+	ySize = 2;//GLConfig::RESOLUTION.y / RESOLUTION_SCALE_Y;
 }
 
 void SSAO::LinkShaders()
@@ -49,11 +49,7 @@ void SSAO::LocateUniforms()
 	loc_gNormal = glGetUniformLocation(SSAOCol->GetProgram(), "gNormal");
 	loc_texNoise = glGetUniformLocation(SSAOCol->GetProgram(), "texNoise");
 
-	for (unsigned int i = 0; i < KERNEL_SIZE; ++i)
-	{
-		std::string uniform = "samples[" + std::to_string(i) + "]";
-		loc_kernel[i] = glGetUniformLocation(SSAOCol->GetProgram(), uniform.c_str());
-	}
+	loc_kernel = glGetUniformLocation(SSAOCol->GetProgram(), "samples");
 
 	loc_ssaoInput = glGetUniformLocation(SSAOBlur->GetProgram(), "ssaoInput");
 	loc_xSize = glGetUniformLocation(SSAOBlur->GetProgram(), "xSize");
@@ -125,8 +121,8 @@ void SSAO::GenerateNoiseTexture()
 	const std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0);
 	std::default_random_engine generator;
 
-	const int xSize = GLConfig::RESOLUTION.x / 640;
-	const int ySize = GLConfig::RESOLUTION.y / 360;
+	const int xSize = 2;// GLConfig::RESOLUTION.x / 640;
+	const int ySize = 2;// 720;// GLConfig::RESOLUTION.y / 360;
 
 	const int noiseSize = (xSize * 2) * (ySize * 2);
 
@@ -157,10 +153,7 @@ void SSAO::GenerateSSAOTex()
 
 	SetCurrentShader(SSAOCol);
 
-	for (unsigned int i = 0; i < KERNEL_SIZE; ++i)
-	{
-		glUniform3fv(loc_kernel[i], 1, (float*)&ssaoKernel[i]);
-	}
+	glUniform3fv(loc_kernel, KERNEL_SIZE, (float*)&ssaoKernel[0]);
 
 	viewMatrix = camera->BuildViewMatrix();
 

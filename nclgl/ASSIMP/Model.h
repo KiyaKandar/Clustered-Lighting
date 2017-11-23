@@ -51,6 +51,12 @@ public:
 	void Translate(Vector3 translation, int matrixNum = 0) const;
 	void Scale(Vector3 scale, int matrixNum = 0) const;
 	void Rotate(Vector3 axis, float degrees, int matrixNum = 0) const;
+
+	Vector3 GetPosition(int matrixNum)
+	{
+		return meshes[0]->GetTransform(matrixNum)->GetPositionVector();
+	}
+
 	void SetReflectionAttributesForAllSubMeshes(int isReflective, float strength);
 	void SetbackupColourAttributeForAllSubMeshes(Vector4 colour);
 

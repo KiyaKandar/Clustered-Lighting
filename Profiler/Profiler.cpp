@@ -55,7 +55,7 @@ void Profiler::RenderToScreen()
 void Profiler::RenderFPSCounter()
 {
 	fpsCounter.CalculateFPS(window->GetTimer()->GetMS());
-	renderer->AddText(Text(
+	renderer->AddProfilerText(Text(
 		("FPS: " + to_string(fpsCounter.fps)),
 		Vector3(0, 50, 0), TEXT_SIZE));
 }
@@ -65,7 +65,7 @@ void Profiler::RenderTimers()
 	float offset = 70.0f;
 	for each(std::pair<string, SubsystemTimer*> timer in timers)
 	{
-		renderer->AddText(Text(
+		renderer->AddProfilerText(Text(
 			(timer.first + ":" + std::to_string(timer.second->timePassed)),
 			Vector3(0, offset, 0), TEXT_SIZE));
 		offset += 20.0f;
@@ -77,7 +77,7 @@ void Profiler::RenderTimers()
 	actually stopping the timer...
 	*/
 	updateTimer.StopTimer();
-	renderer->AddText(Text(
+	renderer->AddProfilerText(Text(
 		("Profiler:" + std::to_string(updateTimer.timePassed)),
 		Vector3(0, offset, 0), TEXT_SIZE));
 }

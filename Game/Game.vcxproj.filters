@@ -44,5 +44,7 @@
       <Filter>Camera Control</Filter>
     </ClCompile>
     <ClCompile Include="CameraControl\MechCameraController.cpp" />
+    <ClCompile Include="Scenes\RobotScene.cpp" />
+    <ClCompile Include="Scenes\HorrorScene.cpp" />
   </ItemGroup>
 </Project>

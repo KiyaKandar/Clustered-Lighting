@@ -11,8 +11,8 @@ uniform int fps;
 in vec2 TexCoords;
 out vec4 FragColor;
 
-const int NUM_SAMPLES = 100;
-const int TARGET_FPS = 60;
+const int NUM_SAMPLES = 200;
+const int TARGET_FPS = 59;
 
 void main(void)
 {
@@ -37,7 +37,7 @@ void main(void)
 		newSS.xyz = newSS.xyz / newSS.w;
 		oldSS.xyz = oldSS.xyz / oldSS.w;
 
-		vec2 velocity = ((oldSS - newSS) / (1.6f *  NUM_SAMPLES)).xy;
+		vec2 velocity = ((oldSS - newSS) / (1.8f *  NUM_SAMPLES)).xy;
 		velocity = velocity * (fps / TARGET_FPS);
 
 		float alpha = texture2D(scene, TexCoords).a;
@@ -53,6 +53,6 @@ void main(void)
 			velocityTexCoord += velocity;
 		}
 
-		FragColor = vec4(mix(origColour, initialColour / NUM_SAMPLES, 0.5), texture2D(scene, TexCoords).a);//vec4(origColour, 1.0f);//
+		FragColor = vec4(mix(origColour, initialColour / NUM_SAMPLES, 1), texture2D(scene, TexCoords).a);//vec4(origColour, 1.0f);//
 	}
 }

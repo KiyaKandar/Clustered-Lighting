@@ -7,11 +7,12 @@ struct Particle
 	Matrix4 modelMatrix;
 	Vector3 originalPosition;
 	Vector3 frameTranslation;
+	Vector4 colour;
 	float particleSize;
 	float alphaDecay;
 	float decayRate;
 
-	Particle(Vector3 startPosition, Vector3 translation,
+	Particle(Vector3 startPosition, Vector3 translation, Vector4 colour,
 		float size, float rate)
 	{
 		originalPosition = startPosition;
@@ -20,6 +21,7 @@ struct Particle
 		alphaDecay = 0.0f;
 		particleSize = size;
 		decayRate = rate;
+		this->colour = colour;
 	}
 };
 
@@ -40,11 +42,9 @@ public:
 	vector<Particle>* particles;
 private:
 	void InitialiseMesh();
-	GLuint LoadTexture(string name);
 	void LocateUniforms() override {}
 
 	Matrix4* viewMatrix;
-	//Matrix4 modelMatrix;
 
 	Shader* particleShader;
 

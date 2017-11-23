@@ -56,6 +56,7 @@ void main(void){
         float rangeCheck = smoothstep(0.0, 1.0, r / abs(fragPos.z - sampleDepth));
 		occlusion += (sampleDepth >= samplevec.z + b ? 1.0 : 0.0) * rangeCheck;
     }
+
     occlusion = 1.0 - (occlusion / kernelSize);
     
     gl_FragColor = pow(occlusion, 1.4);

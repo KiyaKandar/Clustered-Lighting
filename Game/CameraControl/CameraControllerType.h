@@ -23,14 +23,14 @@ public:
 	virtual void ApplyCustomRotation(const float& pitch, const float& yaw, 
 		const float& msec) = 0;
 
+	float pitch;
+	float yaw;
+
 protected:
 	virtual void ApplyMovement(const float& msec) = 0;
 	virtual void ApplyRotation(const float& msec) = 0;
 
 	Camera* camera;
 	Window* window;
-
-	float pitch;
-	float yaw;
 };
 

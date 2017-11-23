@@ -75,7 +75,7 @@ private:
 	GLint loc_xSize;
 	GLint loc_ySize;
 
-	GLuint loc_kernel[64];
+	GLuint loc_kernel;
 
 	std::vector<Vector3> ssaoKernel;
 	std::vector<Vector3> ssaoNoise;

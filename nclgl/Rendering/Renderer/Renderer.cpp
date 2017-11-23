@@ -77,16 +77,16 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	InitLightSSBO();
 
 	glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_CULL_FACE);
 
-	textRenderer = new TextRenderer(this);
+	profilerTextRenderer = new TextRenderer(this);
 	GLUtil::CheckGLError("Renderer Initialisation");
 	init = true;
 	sceneIndex = 0;
 
 
-	glDepthFunc(GL_LESS);
+	//glDepthFunc(GL_LESS);
 }
 
 Renderer::~Renderer()
@@ -104,7 +104,7 @@ Renderer::~Renderer()
 	}
 
 	delete tiles;
-	delete textRenderer;
+	delete profilerTextRenderer;
 }
 
 void Renderer::InitDebugLights()
@@ -149,6 +149,15 @@ void Renderer::InitLightSSBO()
 		sizeof(SpotLightData) * GLConfig::NUM_LIGHTS, &spotLightData, GL_STATIC_COPY);
 	GLUtil::CheckGLError("SpotLight Data SSBO");
 
+	spotlightssbo = GLUtil::InitSSBO(1, 8, spotlightssbo,
+		0, &spotLightData, GL_STATIC_COPY);
+	GLUtil::CheckGLError("SpotLight Data SSBO");
+
+	glGenBuffers(1, &modelMatricesSSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, modelMatricesSSBO);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 8, modelMatricesSSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
 	tilesssbo = GLUtil::InitSSBO(1, 2, tilesssbo,
 		sizeof(Tile) * tiles->GetNumTiles(), screenTiles, GL_STATIC_COPY);
 	GLUtil::CheckGLError("Screen Tiles SSBO");
@@ -164,6 +173,11 @@ void Renderer::Update(const float& deltatime)
 	updateTimer.StartTimer();
 
 	if (wparent->GetKeyboard()->KeyTriggered(KEYBOARD_P))
+	{
+		profilerEnabled = !profilerEnabled;
+	}
+
+	if (wparent->GetKeyboard()->KeyTriggered(KEYBOARD_O))
 	{
 		debugMode = !debugMode;
 	}
@@ -197,16 +211,19 @@ void Renderer::RenderScene()
 		GComponents[i]->Apply();
 	}
 
-	if (debugMode)
+	if (profilerEnabled)
 	{
-		if (!textRenderer->textbuffer.empty())
+		if (!profilerTextRenderer->textbuffer.empty())
 		{
 			glDisable(GL_DEPTH_TEST);
-			DrawAllText();
-			textRenderer->textbuffer.clear();
+			DrawProfilerText();
+			profilerTextRenderer->textbuffer.clear();
 		}
 
-		DrawDebugLights();
+		if (debugMode)
+		{
+			DrawDebugLights();
+		}
 
 		SwapBuffers();
 
@@ -227,6 +244,15 @@ void Renderer::ChangeScene()
 	}
 
 	models = scenes[sceneIndex]->GetModels();
+
+	for each (Model* model in *models)
+	{
+		for each (ModelMesh* mesh in model->meshes) 
+		{
+			mesh->modelMatricesSSBO = modelMatricesSSBO;
+		}
+	}
+
 	skybox->SetSkyboxTexture(scenes[sceneIndex]->GetSkyboxTextureID());
 	gBuffer->SetReflectionTextureID(scenes[sceneIndex]->GetReflectionCubeMapTextureID());
 
@@ -260,6 +286,7 @@ void Renderer::ChangeScene()
 
 	RepositionDebugLights();
 	lighting->UpdateShadowData(scenes[sceneIndex]->GetShadowData());
+	lighting->ambientLighting = scenes[sceneIndex]->ambient;
 	particleSystem->particles = &scenes[sceneIndex]->particles;
 }
 
@@ -273,6 +300,22 @@ void Renderer::UpdateScene(const float& msec)
 	currentScenesDataPrepWorkGroups = scenes[sceneIndex]->lightWorkGroups;
 	scenes[sceneIndex]->UpdateScene(msec);
 
+	for each (int modifiedLightIndex in scenes[sceneIndex]->modifiedLights)
+	{
+		lightData[modifiedLightIndex] = lights[modifiedLightIndex]->GetData();
+		spotLightData[modifiedLightIndex] = lights[modifiedLightIndex]->GetSpotData();
+
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+		glBufferSubData(GL_SHADER_STORAGE_BUFFER, sizeof(LightData) * modifiedLightIndex, sizeof(LightData), &lightData[modifiedLightIndex]);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, spotlightssbo);
+		glBufferSubData(GL_SHADER_STORAGE_BUFFER, sizeof(SpotLightData) * modifiedLightIndex, sizeof(SpotLightData), &spotLightData[modifiedLightIndex]);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	}
+
+	scenes[sceneIndex]->modifiedLights.clear();
+
 	camera->UpdateCamera(msec);
 	viewMatrix = camera->BuildViewMatrix();
 
@@ -281,20 +324,22 @@ void Renderer::UpdateScene(const float& msec)
 
 void Renderer::DrawDebugLights()
 {
-	for (int i = 0; i < GLConfig::NUM_LIGHTS - 1; ++i)
+	Vector3 workGroups = *scenes[sceneIndex]->lightWorkGroups;
+	int numLights = workGroups.x * workGroups.y * workGroups.z;
+
+	//Prepare everything to render transparent spheres + debug shapes
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	for (int i = 0; i < numLights; ++i)
 	{
-		//Prepare everything to render transparent spheres + debug shapes
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 		UpdateShaderMatrices();
-
 		DrawDebugSphere(debugSpheres[i]);
-
-		glDisable(GL_BLEND);
 	}
 
-	for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
+	glDisable(GL_BLEND);
+
+	for (int i = 0; i < numLights; ++i)
 	{
 		//Blue centre
 		DrawDebugCross(DEBUGDRAW_PERSPECTIVE, lights[i]->GetPosition(), Vector3(100, 100, 100), Vector3(0, 0, 1));
@@ -310,8 +355,6 @@ void Renderer::RelinkShaders() const
 		component->LinkShaders();
 	}
 
-	skybox->RegenerateShaders();
-
 	tiles->dataPrep->Regenerate();
 	tiles->dataPrep->LinkProgram();
 
@@ -319,15 +362,12 @@ void Renderer::RelinkShaders() const
 	tiles->compute->LinkProgram();
 }
 
-void Renderer::DrawAllText() const
+void Renderer::DrawProfilerText() const
 {
-	textRenderer->DrawTextBuffer();
+	profilerTextRenderer->DrawTextBuffer();
 
 	currentShader->LinkProgram();
-
 	glUseProgram(currentShader->GetProgram());
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_BLEND);
 }
 
 void Renderer::BuildMeshLists()
@@ -341,9 +381,8 @@ void Renderer::BuildMeshLists()
 				const Vector3 position = (*models)[model]->meshes[subMesh]->GetTransform(i)->GetPositionVector();
 				const float radius = (*models)[model]->meshes[subMesh]->GetBoundingRadius();
 
-				//if (frameFrustum.InsideFrustum(position, radius))
-				//if (frameFrustum.InsideFrustum((*models)[model]->meshes[subMesh]->box))
-				//{
+				if (frameFrustum.InsideFrustum(position, radius))
+				{
 					const Vector3 dir = (*models)[model]->meshes[subMesh]->GetTransform(i)->GetPositionVector() -
 						camera->GetPosition();
 					(*models)[model]->meshes[subMesh]->SetCameraDistance(Vector3::Dot(dir, dir));
@@ -356,7 +395,7 @@ void Renderer::BuildMeshLists()
 					{
 						modelsInFrame.push_back((*models)[model]->meshes[subMesh]);
 					}
-				//}
+				}
 			}
 		}
 	}

@@ -45,12 +45,13 @@ public:
 	void Draw(Shader& shader);
 	void DrawShadow(Shader& shader); //Dont bother binding textures.
 
+	float previousradius = 0;
 	void SetScale(const Vector3& scale, int matrixNum)
 	{
 		transforms[matrixNum].SetScalingVector(scale);
-
-		box.max = box.max * (scale / 2);
-		box.min = box.min * (scale / 2);
+		previousradius = boundingRadius;
+		box.max = box.max * (scale);
+		box.min = box.min * (scale);
 		CalculateBoundingRadius();
 		//box.min = box.min * scale;
 	}
@@ -97,8 +98,14 @@ public:
 		//float finalMax = max(firstMax, box.max.z);
 		//boundingRadius = finalMax;
 		
-		boundingRadius = (box.max - box.min).Length() / 2;
+		float minLength = abs(box.min.Length());
+		float maxLength = abs(box.max.Length());
+
+		boundingRadius = max(minLength, maxLength);//(box.max - box.min).Length() / 2;//
 	}
+
+	void BufferData();
+	void DrawOnly();
 
 	//Mesh Data
 	std::vector<Vertex> vertices;
@@ -112,6 +119,8 @@ public:
 	int isReflective = 0;
 	float reflectionStrength = 1.0f;
 	Vector4 baseColour;
+
+	GLuint modelMatricesSSBO;
 
 private:
 	void SetupMesh();

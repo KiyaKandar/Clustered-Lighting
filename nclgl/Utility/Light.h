@@ -69,13 +69,26 @@ public:
 	static void AddLightsToArray(Light** lights, int numberExistingLights, int numberOfLights, Light lightToCopy);
 
 	Vector3 GetPosition() const			{ return position; }
-	void	SetPosition(Vector3 val)	{ position = val; }
+	void	SetPosition(Vector3 val)
+	{
+		position = val;
+		data.lightPosition = Vector4(val.x, val.y, val.z, 1.0f);
+	}
 
 	float	GetRadius() const			{ return radius; }
 	void	SetRadius(float val)		{ radius = val; }
 
 	Vector4 GetColour() const			{ return colour; }
-	void	SetColour(Vector4 val)		{ colour = val; }
+	void	SetColour(Vector4 val)
+	{
+		colour = val;
+		data.lightColour = val;
+	}
+
+	void SetDirection(Vector4 val)
+	{
+		spotLightData.direction = val;
+	}
 
 	LightData GetData()
 	{

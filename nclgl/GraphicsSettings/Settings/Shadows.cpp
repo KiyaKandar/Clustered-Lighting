@@ -20,7 +20,7 @@ Shadows::Shadows(int numShadowCastingLights, Light** lights,
 		shadowData->shadowIndexes[i] = i + 4;
 	}
 
-	shadowShader = new Shader(SHADERDIR"shadowvert.glsl", SHADERDIR"shadowfrag.glsl");
+	shadowShader = new Shader(SHADERDIR"shadowvert.glsl", SHADERDIR"shadowfrag.glsl", "",true);
 
 	this->lights = lights;
 	this->models = models;
@@ -91,18 +91,20 @@ void Shadows::DrawShadowScene()
 {
 	SetCurrentShader(shadowShader);
 
+	glViewport(0, 0, SHADOWSIZE, SHADOWSIZE);
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+
+	glUniformMatrix4fv(glGetUniformLocation(currentShader->GetProgram(), "projMatrix"), 1, false, (float*)&projMatrix);
+
 	for (int i = 0; i < shadowData->NUM_LIGHTS; ++i)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowFBOs[i]);
-
 		glClear(GL_DEPTH_BUFFER_BIT);
-		glViewport(0, 0, SHADOWSIZE, SHADOWSIZE);
-		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
 		viewMatrix = Matrix4::BuildViewMatrix(lights[i]->GetPosition(), Vector3(0, 0, 0));
 		shadowData->textureMatrices[i] = biasMatrix * (GLConfig::SHARED_PROJ_MATRIX * viewMatrix);
 
-		UpdateShaderMatrices();
+		glUniformMatrix4fv(glGetUniformLocation(currentShader->GetProgram(), "viewMatrix"), 1, false, (float*)&viewMatrix);
 
 		for each (Model* m in **models)
 		{

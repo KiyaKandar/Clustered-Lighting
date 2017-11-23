@@ -3,7 +3,8 @@
 #include "../../nclgl/ASSIMP/Model.h"
 #include "../../nclgl/Rendering/Renderer/Renderer.h"
 
-Scene::Scene(std::vector<std::string> skyBoxTextures, std::vector<std::string> reflectionTextures, vector<pair<string, int>> modelsToLoad, Vector3 lightWorkGroups)
+Scene::Scene(std::vector<std::string> skyBoxTextures, std::vector<std::string> reflectionTextures, 
+	vector<pair<string, int>> modelsToLoad, Vector3 lightWorkGroups, float ambient)
 {
 	modelIDCount = 0;
 
@@ -14,6 +15,7 @@ Scene::Scene(std::vector<std::string> skyBoxTextures, std::vector<std::string> r
 	*this->lightWorkGroups = lightWorkGroups;
 	this->skyBoxTextures = skyBoxTextures;
 	this->reflectionTextures = reflectionTextures;
+	this->ambient = ambient;
 
 	LoadCubemap(&skyBoxTextureID, skyBoxTextures);
 	LoadCubemap(&reflectionTextureID, reflectionTextures);

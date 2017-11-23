@@ -12,9 +12,7 @@ const int NUM_SHAKE_POSITIONS = 1;
 enum MOVEMENT_TRIGGERS
 {
 	FORWARD,
-	BACK,
-	LEFT,
-	RIGHT
+	BACK
 };
 
 MechCameraController::MechCameraController(Model* robot, vector<Model*> cockpitGlass, Camera* camera, Window* window)
@@ -36,13 +34,9 @@ MechCameraController::MechCameraController(Model* robot, vector<Model*> cockpitG
 	shakeCamera = false;
 	movementTriggers[FORWARD] = false;
 	movementTriggers[BACK] = false;
-	movementTriggers[LEFT] = false;
-	movementTriggers[RIGHT] = false;
 
 	directions[FORWARD] = Vector3(0, 0, -1);
 	directions[BACK] = Vector3(0, 0, 1);
-	directions[LEFT] = Vector3(0, 1, 0);
-	directions[RIGHT] = Vector3(0, -1, 0);
 }
 
 void MechCameraController::ApplyInputs(const float& msec)
@@ -77,14 +71,6 @@ void MechCameraController::ApplyMovement(const float& msec)
 	{
 		movementTriggers[BACK] = true;
 	}
-	else if (window->GetKeyboard()->KeyDown(KEYBOARD_A)) 
-	{
-		movementTriggers[LEFT] = true;
-	}
-	else if (window->GetKeyboard()->KeyDown(KEYBOARD_D)) 
-	{
-		movementTriggers[RIGHT] = true;
-	}
 
 	if(shakeCamera)
 	{
@@ -96,15 +82,7 @@ void MechCameraController::ApplyMovement(const float& msec)
 		{
 			if (movementTriggers[i])
 			{
-				if (i > 1) 
-				{
-					Rotate(directions[i], speed, i);
-				}
-				else
-				{
-					Move(directions[i], speed, i);
-				}
-				
+				Move(directions[i], speed, i);
 			}
 		}
 	}
@@ -124,47 +102,22 @@ void MechCameraController::ApplyRotation(const float& msec)
 
 void MechCameraController::Move(Vector3 direction, float speed, int directionIndex)
 {
+	Vector3 initialCameraPosition = camera->GetPosition();
 	camera->SetPosition(camera->GetPosition() +
-		Matrix4::Rotation(yaw, Vector3(0, 1, 0)) *  direction * speed);
+		Matrix4::Rotation(-90, Vector3(0, 1, 0)) *  direction * speed);
 
-	Vector3 robotsNewPosition = camera->GetPosition() + Vector3(-200, -900, 0);
+	Vector3 robotsNewPosition = camera->GetPosition() + Vector3(-100, -950, 0);
 	const float multiplier = (std::sinf(frameCount) + 1);
 	robotsNewPosition = robotsNewPosition + ((Vector3(0, 20, 0) * multiplier));
 
 	robot->Translate(robotsNewPosition);
 
-	for each (Model* glass in cockpitGlass)
+	for (int i = 0; i < 3; ++i)
 	{
-		const Vector3 newGlassPosition = robotsNewPosition + Vector3(-100, 0, 0);
-		glass->Translate(newGlassPosition);
+		cockpitGlass[0]->Translate(cockpitGlass[0]->GetPosition(i) + (camera->GetPosition() - initialCameraPosition), i);
 	}
 
 	frameCount += 0.1;
-
-	if (multiplier < 0.001)
-	{
-		originalPosition = camera->GetPosition();
-		shakeCamera = true;
-		GenerateCameraShakePositions();
-		movementTriggers[directionIndex] = false;
-	}
-}
-
-void MechCameraController::Rotate(Vector3 axis, float speed, int directionIndex)
-{
-	//pitch -= 20.0f;// (Window::GetMouse()->GetRelativePosition().y);
-	yaw -= 0.1f;// (Window::GetMouse()->GetRelativePosition().x);
-	camera->SetYaw(yaw);
-	previousYaw = camera->GetYaw();
-
-	//turrets->Rotate(Vector3(0, 1, 0), (camera->GetYaw() - previousYaw)/* / 100*/, 0);
-	//previousYaw = camera->GetYaw();
-
-	const float multiplier = (std::sinf(rotationCount) + 1);
-
-	robot->Rotate(axis, 0.1f);
-	//robot->Translate(camera->GetPosition() + ((Vector3(0, 20, 0) * multiplier)));
-	rotationCount += 0.1;
 
 	if (multiplier < 0.001)
 	{
@@ -184,7 +137,6 @@ void MechCameraController::ShakeCamera(float msec)
 	}
 	else
 	{
-		//return a + f * (b - a);
 		const Vector3 currentPosition = camera->GetPosition();
 		const Vector3 nextPosition = (screenShakePositions[currentShakePosition] - currentPosition) * (msec / 25);
 		const Vector3 newPosition = currentPosition + nextPosition;
