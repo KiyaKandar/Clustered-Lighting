@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2006
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game", "Game\Game.vcxproj", "{252B2C7F-1A1C-4EE3-8D4C-A15EF788A7BF}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -20,15 +20,30 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		ASSIMP\lib\assimp-vc140-mt.lib = ASSIMP\lib\assimp-vc140-mt.lib
 		ASSIMP\lib\assimp-vc140-mt.pdb = ASSIMP\lib\assimp-vc140-mt.pdb
 		centeredcube.obj = centeredcube.obj
+		models\centeredcube.obj = models\centeredcube.obj
 		Shaders\Compute\compute.glsl = Shaders\Compute\compute.glsl
 		Shaders\Compute\dataPrep.glsl = Shaders\Compute\dataPrep.glsl
+		models\environmentcube.obj = models\environmentcube.obj
+		models\glass.obj = models\glass.obj
 		GLEW\lib\Debug\glew32.lib = GLEW\lib\Debug\glew32.lib
 		GLEW\lib\Release\glew32.lib = GLEW\lib\Release\glew32.lib
+		tank\abrams\Main_Def.tga = tank\abrams\Main_Def.tga
+		tank\abrams\Main_Nor.tga = tank\abrams\Main_Nor.tga
+		tank\abrams\Main_Spec.tga = tank\abrams\Main_Spec.tga
+		tank\abrams\Minigun_.tga = tank\abrams\Minigun_.tga
+		tank\abrams\Ministan.tga = tank\abrams\Ministan.tga
+		models\Robot1.obj = models\Robot1.obj
 		SOIL\Debug\SOIL.lib = SOIL\Debug\SOIL.lib
 		SOIL\Release\SOIL.lib = SOIL\Release\SOIL.lib
 		sphere\sphere.obj = sphere\sphere.obj
 		sponza\sponza.obj = sponza\sponza.obj
 		Shaders\SSAO\ssao_lightingfrag.glsl = Shaders\SSAO\ssao_lightingfrag.glsl
+		tank\abrams\tank.3DS = tank\abrams\tank.3DS
+		tank\abrams\tank.max = tank\abrams\tank.max
+		tank\abrams\Track_Alpha.tga = tank\abrams\Track_Alpha.tga
+		tank\abrams\Track_De.tga = tank\abrams\Track_De.tga
+		tank\abrams\Track_No.tga = tank\abrams\Track_No.tga
+		tank\abrams\Track_Spec.tga = tank\abrams\Track_Spec.tga
 		SOIL\Debug\vc120.pdb = SOIL\Debug\vc120.pdb
 		SOIL\Release\vc120.pdb = SOIL\Release\vc120.pdb
 	EndProjectSection

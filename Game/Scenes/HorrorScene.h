@@ -27,7 +27,7 @@ public:
 			"../Skyboxes/Black/black.jpg",
 		};
 
-		Scene* scene = new Scene(faces, faces, files, Vector3(2, 1, 1), 0.5f);
+		Scene* scene = new Scene(faces, faces, files, Vector3(2, 1, 1), 0.1f);
 		scene->InitialiseShadows(2, renderer);
 
 		scene->AddLight(new Light(Vector3(0, 700, -10),

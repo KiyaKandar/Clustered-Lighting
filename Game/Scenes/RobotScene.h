@@ -9,10 +9,6 @@ public:
 
 	static float counter;
 	static float waveCounter;
-	static int explosionCounter;
-	static bool triggered;
-	static bool destroyEnemy;
-	static Vector3 centre;
 
 	static void CreateShowroomScene(Renderer* renderer, Window* window)
 	{
