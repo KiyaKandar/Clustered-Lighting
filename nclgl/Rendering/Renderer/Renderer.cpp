@@ -236,12 +236,12 @@ void Renderer::RenderScene()
 
 void Renderer::ChangeScene()
 {
-	++sceneIndex;
+	//++sceneIndex;
 
-	if (sceneIndex == scenes.size())
-	{
-		sceneIndex = 0;
-	}
+	//if (sceneIndex == scenes.size())
+	//{
+	//	sceneIndex = 0;
+	//}
 
 	models = scenes[sceneIndex]->GetModels();
 
@@ -292,8 +292,43 @@ void Renderer::ChangeScene()
 
 void Renderer::UpdateScene(const float& msec)
 {
-	if (wparent->GetKeyboard()->KeyTriggered(KEYBOARD_T))
+	if (!pauseAuto)
 	{
+		msUntilSceneChange -= msec;
+	}
+
+	if (msUntilSceneChange <= 0)
+	{
+		autoChangeScene = true;
+	}
+
+	if (wparent->GetKeyboard()->KeyTriggered(KEYBOARD_UP))
+	{
+		pauseAuto = !pauseAuto;
+	}
+
+	if (wparent->GetKeyboard()->KeyTriggered(KEYBOARD_LEFT))
+	{
+		--sceneIndex;
+
+		if (sceneIndex < 0)
+		{
+			sceneIndex = scenes.size() - 1;
+		}
+
+		ChangeScene();
+	}
+	else if (wparent->GetKeyboard()->KeyTriggered(KEYBOARD_RIGHT) || autoChangeScene)
+	{
+		autoChangeScene = false;
+		msUntilSceneChange = MAX_MS_UNTIL_SCENE_CHANGE;
+		++sceneIndex;
+
+		if (sceneIndex == scenes.size())
+		{
+			sceneIndex = 0;
+		}
+
 		ChangeScene();
 	}
 

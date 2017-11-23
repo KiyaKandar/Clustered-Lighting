@@ -28,7 +28,7 @@
 const int SHADOW_SIZE = 4096;
 const int RESX = 1280;
 const int RESY = 720;
-
+const float MAX_MS_UNTIL_SCENE_CHANGE = 15000.0f;
 const int GLOBAL_LIGHT = 0;
 
 class Renderer : public OGLRenderer, public Subsystem
@@ -180,4 +180,7 @@ protected:
 
 	Window* wparent;
 	int sceneIndex;
+	bool autoChangeScene = false;
+	bool pauseAuto = false;
+	float msUntilSceneChange = MAX_MS_UNTIL_SCENE_CHANGE;
 };
