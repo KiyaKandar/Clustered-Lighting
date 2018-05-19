@@ -6,17 +6,45 @@ bool SphereInPlane(vec4 plane, vec4 light)
 	}
 
 	return true;
+
+	//float dotResult = -(dot(plane.xyz, plane.w));
+	//float lengthResult = dot(plane.w, light.xyz + plane.xyz);
+	//float distanceResult = dot(vec3(plane.w, 1, 1), light.xyz) + length(plane.xyz);
+
+	//if (distanceResult <= light.w)
+	//{
+	//	return true;
+	//}
+
+	//return false;
+
+	//vec3 distance = light.xyz - plane.xyz;
+	//float dist = dot(distance, vec3(plane.w, 1, 1));
+
+	//if (dist <= light.w)
+	//{
+	//	return true;
+	//}
+
+	//return false;
 }
 
 bool SphereInside(CubePlanes cube, vec4 light)
 {
+	//int outsideCount = 0;
 	for (int i = 0; i < 6; i++)
 	{
 		if (!SphereInPlane(cube.faces[i], light))
 		{
+			//outsideCount++;
 			return false;
 		}
 	}
+
+	//if (outsideCount > 2)
+	//{
+	//	return false;
+	//}
 
 	return true;
 }

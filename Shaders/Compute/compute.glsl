@@ -26,6 +26,22 @@ struct CubePlanes
 	vec4 positions[6];
 };
 
+struct LightData
+{
+	vec4 pos4;
+	vec4 lightColour;
+	float lightRadius;
+	float intensity;
+
+	float fpadding[2];
+};
+
+//Shared with lighting shader
+layout(std430, binding = 1) buffer LightDataBuffer
+{
+	LightData lightData[];
+};
+
 layout (std430, binding = 3) buffer TileLightsBuffer
 {
 	int lightIndexes[numTiles];
@@ -65,8 +81,11 @@ void main()
 	{
 		int lightIndex = int(indexes[i]);
 
-		tileLights[index][intersections] = lightIndex;
-		intersections++;
+		if (SphereColliding(cubePlanes[index], NDCCoords[i]))
+		{
+			tileLights[index][intersections] = lightIndex;
+			intersections++;
+		}
 	}
 
 	lightIndexes[index] = intersections;

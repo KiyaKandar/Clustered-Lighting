@@ -38,7 +38,6 @@ public:
 
 		scene->AddUpdateProcess([camera = camera](float msec) 
 		{
-			std::cout << camera->GetPosition() << std::endl;
 		});
 
 		vector<Vector3> positions =

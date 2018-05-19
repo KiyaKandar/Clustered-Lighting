@@ -99,7 +99,7 @@ void main()
 	{
 		uint currentLightCount = atomicCounterIncrement(count);
 
-		NDCCoords[currentLightCount] = ndcCoord;
+		NDCCoords[currentLightCount] =  ndcCoord; //vec4(worldLight.xyz, lightData[gl_GlobalInvocationID.x].lightRadius);//
 		indexes[currentLightCount] = gl_GlobalInvocationID.x;
 	}
 }

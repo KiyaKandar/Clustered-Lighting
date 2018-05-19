@@ -20,7 +20,7 @@ Shadows::Shadows(int numShadowCastingLights, Light** lights,
 		shadowData->shadowIndexes[i] = i + 4;
 	}
 
-	shadowShader = new Shader(SHADERDIR"shadowvert.glsl", SHADERDIR"shadowfrag.glsl", "",true);
+	shadowShader = new Shader(SHADERDIR"shadowvert.glsl", SHADERDIR"shadowfrag.glsl");
 
 	this->lights = lights;
 	this->models = models;

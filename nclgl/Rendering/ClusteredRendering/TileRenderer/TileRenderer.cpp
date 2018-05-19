@@ -29,11 +29,11 @@ TileRenderer::TileRenderer(Light** lights, int numLights, int numXTiles, int num
 
 	gridPlanes = new CubePlanes[numTiles];
 
-	compute = new ComputeShader(SHADERDIR"/Compute/compute.glsl");
+	compute = new ComputeShader(SHADERDIR"/Compute/compute.glsl", true);
 	compute->LinkProgram();
 	loc_numZTiles = glGetUniformLocation(compute->GetProgram(), "numZTiles");
 
-	dataPrep = new ComputeShader(SHADERDIR"/Compute/dataPrep.glsl");
+	dataPrep = new ComputeShader(SHADERDIR"/Compute/dataPrep.glsl", true);
 	dataPrep->LinkProgram();
 	loc_projMatrix = glGetUniformLocation(dataPrep->GetProgram(), "projectionMatrix");
 	loc_projView = glGetUniformLocation(dataPrep->GetProgram(), "projView");

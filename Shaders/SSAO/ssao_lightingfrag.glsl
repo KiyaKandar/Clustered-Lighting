@@ -119,24 +119,26 @@ void AddBPLighting(vec3 position, vec3 normal, vec4 albedoCol, int lightIndex, i
 
 			//Shadow
 			vec4 shadowProj = (texMatrices[lightIndex] * inverse(camMatrix) *
-				vec4(position + (normal * 1.5), 1));
+				vec4(position + (-normal * 1.5), 1));
 
 			float shadow = 0.0;
 
 			if (shadowProj.w > 0.0)
 			{
 				vec2 texelSize = 1.0f / textureSize(shadows[lightIndex], 0);
+				int sampleCount = 0;
 
-				for (int x = -2; x <= 2; ++x)
+				for (int x = -4; x <= 4; ++x)
 				{
-					for (int y = -2; y <= 2; ++y)
+					for (int y = -4; y <= 4; ++y)
 					{
-						vec2 sampleCoord = vec2(x, y) *texelSize;
+						vec2 sampleCoord = vec2(x, y) *texelSize * 100.0f;
 						shadow += textureProj(shadows[lightIndex], shadowProj + vec4(sampleCoord, 0.0f, 0.0f));
+						sampleCount++;
 					}
 				}
 
-				shadow /= 25;// pow((HALF_NUM_PCF_SAMPLES) * 2, 2);
+				shadow /= sampleCount;// pow((HALF_NUM_PCF_SAMPLES) * 2, 2);
 			}
 
 			lambert *= shadow;

@@ -13,7 +13,7 @@ GBuffer::GBuffer(Window* window, Camera* camera, std::vector<ModelMesh*>* models
 	this->window = window;
 
 	geometryPass = new Shader(SHADERDIR"/SSAO/ssao_geometryvert.glsl",
-		SHADERDIR"/SSAO/ssao_geometryfrag.glsl", "", true);
+		SHADERDIR"/SSAO/ssao_geometryfrag.glsl");
 
 	SGBuffer = new GBufferData();
 	SGBuffer->gAlbedo = &gAlbedo;

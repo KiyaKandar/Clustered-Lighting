@@ -11,7 +11,7 @@ BPLighting::BPLighting(Camera* cam, GBufferData* gBuffer,
 	this->ambientTextures = ambientTextures;
 	this->numAmbTex = numAmbTex;
 
-	lightingPass = new Shader(SHADERDIR"/SSAO/ssao_lightingvert.glsl", SHADERDIR"/SSAO/ssao_lightingfrag.glsl", "", true);
+	lightingPass = new Shader(SHADERDIR"/SSAO/ssao_lightingvert.glsl", SHADERDIR"/SSAO/ssao_lightingfrag.glsl");
 }
 
 void BPLighting::LinkShaders()
