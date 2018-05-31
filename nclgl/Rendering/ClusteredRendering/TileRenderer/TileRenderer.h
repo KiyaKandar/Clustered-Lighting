@@ -73,7 +73,7 @@ public:
 private:
 	void PrepareDataGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, const Vector3& cameraPos) const;
 
-	void FillTilesGPU() const;
+	void FillTilesGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix) const;
 
 	Light** lights;
 	Vector2 minCoord;
@@ -103,6 +103,7 @@ private:
 	GLuint modelMatricesSSBO;
 
 	GLuint countBuffer;
+	GLuint intersectionCountBuffer;
 	GLuint count;
 
 	//Uniform location

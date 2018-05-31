@@ -65,8 +65,8 @@ void GBuffer::Apply()
 	RenderGeometry(transparentModelsInFrame);
 
 	glDisable(GL_BLEND);
-
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 }
 
 void GBuffer::LocateUniforms()

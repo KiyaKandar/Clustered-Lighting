@@ -44,8 +44,8 @@ int main()
 
 	SimpleCameraController* camControl = new SimpleCameraController(camera, window);
 	camControl->ApplyCustomRotation(-10, 270, 0);
-	//RobotScene::CreateShowroomScene(renderer, window, &camControl, camera);
-	//HorrorScene::CreateScaryScene(renderer);
+	RobotScene::CreateShowroomScene(renderer, window, &camControl, camera);
+	HorrorScene::CreateScaryScene(renderer);
 	SponzaScene::CreateSponzaScene(renderer, camera, window);
 
 	config.LinkToRenderer();

@@ -390,9 +390,6 @@ void	OGLRenderer::DrawDebugCircle(DebugDrawMode mode, const Vector3 &at, const f
 
 void OGLRenderer::DrawDebugSphere(const Model* sphere)
 {
-	//Set a shader
-	SetCurrentShader(debugSphereShader);
-
 	//Draw submeshes
 	for each (ModelMesh* meshes in sphere->meshes) {
 		meshes->Draw(*currentShader);

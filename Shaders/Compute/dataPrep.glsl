@@ -4,7 +4,7 @@
 
 uniform mat4 projectionMatrix;
 uniform mat4 projView;
-uniform vec4 cameraPos;
+uniform mat4 viewMatrix;
 
 layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
@@ -67,39 +67,22 @@ layout(binding = 0) uniform atomic_uint count;
 #include ../Shaders/compute/collisionFunctions.glsl
 #include ../Shaders/compute/screenCube.glsl
 
-//CubePlanes screenCube = CubePlanes(splanesf, splanesp);
-
-
-
 void main()
 {
-	//move to screenspace.
-	vec4 worldLight = vec4(lightData[gl_GlobalInvocationID.x].pos4.xyz, 1);
-	vec4 viewPos = projView * worldLight;
+	vec4 worldLight = vec4(lightData[gl_GlobalInvocationID.x].pos4.xyz,
+		lightData[gl_GlobalInvocationID.x].lightRadius);
 
-	//Store reciprocal to avoid use of division below.
-	float w = 1.0f / viewPos.w;
-
-	//Final screenspace data.
-	vec4 ndcCoord = vec4(viewPos.x * w, viewPos.y * w, viewPos.z * w, lightData[gl_GlobalInvocationID.x].lightRadius * w);
-
-	
-	
-//PIERAN - CHANGED//
 	vec4 frustum[6];
 	FrustumFromMatrix(projView, frustum);
-	
-	
 	bool colliding = QuickSphereColliding(frustum, vec4(worldLight.xyz, lightData[gl_GlobalInvocationID.x].lightRadius));
-//EOF CHANGE//
 
 	//If light affects any clusters on screen, send to next shader for allocation, 
 	//else cull.
-	if (colliding) 
+	if (colliding)
 	{
 		uint currentLightCount = atomicCounterIncrement(count);
 
-		NDCCoords[currentLightCount] =  ndcCoord; //vec4(worldLight.xyz, lightData[gl_GlobalInvocationID.x].lightRadius);//
+		NDCCoords[currentLightCount] = worldLight;
 		indexes[currentLightCount] = gl_GlobalInvocationID.x;
 	}
 }

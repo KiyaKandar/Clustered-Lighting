@@ -12,6 +12,7 @@
 #include "../../Assets/ParticleSystem.h"
 
 #include <vector>
+#include "../Settings/DepthPass.h"
 
 class Renderer;
 class Camera;
@@ -34,6 +35,7 @@ private:
 	Window* window;
 
 	//Settings
+	DepthPass* depthPass;
 	GBuffer* SGBuffer;
 	SSAO* ssao;
 	BPLighting* lighting;

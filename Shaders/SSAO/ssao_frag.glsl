@@ -59,5 +59,5 @@ void main(void){
 
     occlusion = 1.0 - (occlusion / kernelSize);
     
-    gl_FragColor = pow(occlusion, 1.4);
+    gl_FragColor = pow(occlusion, 5.4);
 }

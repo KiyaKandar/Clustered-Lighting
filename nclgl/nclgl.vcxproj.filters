@@ -101,6 +101,7 @@
     <ClCompile Include="MD5\MD5Mesh.cpp" />
     <ClCompile Include="MD5\MD5Node.cpp" />
     <ClCompile Include="Assets\ParticleSystem.cpp" />
+    <ClCompile Include="GraphicsSettings\Settings\DepthPass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphicsSettings\Settings\Bloom.h">
@@ -227,6 +228,7 @@
     <ClInclude Include="MD5\MD5Mesh.h" />
     <ClInclude Include="MD5\MD5Node.h" />
     <ClInclude Include="Assets\ParticleSystem.h" />
+    <ClInclude Include="GraphicsSettings\Settings\DepthPass.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Text">

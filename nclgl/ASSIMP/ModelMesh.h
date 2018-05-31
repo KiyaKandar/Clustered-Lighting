@@ -85,6 +85,11 @@ public:
 		distanceFromCamera = dist;
 	}
 
+	const float GetDistanceFromCamera() const
+	{
+		return distanceFromCamera;
+	}
+
 	static bool CompareByCameraDistance(const ModelMesh* a, const ModelMesh* b)
 	{
 		return (a->distanceFromCamera < b->distanceFromCamera)

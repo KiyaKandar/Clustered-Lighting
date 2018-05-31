@@ -28,7 +28,7 @@ void GridUtility::Generate3DGrid(GridData gridData, Vector3 dimensions, Vector3 
 		}
 
 		//Create tile closest to screen.
-		const Vector3 startPosition((dimensions.x * xOffset) + gridData.minCoord.x, yOffset + gridData.minCoord.y, 1.0f);
+		const Vector3 startPosition((dimensions.x * xOffset) + gridData.minCoord.x, yOffset + gridData.minCoord.y, -1.0f);
 
 		gridData.grid[i] = Cube(startPosition, dimensions);
 		gridData.gridPlanes[i] = GenerateCubePlanes(startPosition, dimensions);
@@ -37,10 +37,10 @@ void GridUtility::Generate3DGrid(GridData gridData, Vector3 dimensions, Vector3 
 		//Fill along the z axis from the tile above.
 		for (int k = 1; k <= tilesOnAxes.z - 1; ++k)
 		{
-			const float newZCoord = (dimensions.z * k) + 1.0f;
+			const float newZCoord = (dimensions.z * k);
 			const int index = i + k;
 
-			const Vector3 positionExtendedInZAxis(startPosition.x, startPosition.y, newZCoord);
+			const Vector3 positionExtendedInZAxis(startPosition.x, startPosition.y, startPosition.z + newZCoord);
 
 			gridData.grid[index] = Cube(positionExtendedInZAxis, dimensions);
 			gridData.screenTiles[index] = GenerateTile(positionExtendedInZAxis, dimensions);

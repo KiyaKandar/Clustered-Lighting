@@ -20,37 +20,37 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 
 	for (int i = 5; i < 10; i++)
 	{
-		defaultLights[i] = new Light(Vector3(-3500 + (500 * i), 500, 450), Vector4(1, 0, 0, 1), 270.0f, 1.0f);
+		defaultLights[i] = new Light(Vector3(-3500 + (500 * i), 500, 450), Vector4(1, 0, 0, 1), 270.0f, 2.0f);
 	}
 
 	for (int i = 10; i < 15; i++)
 	{
-		defaultLights[i] = new Light(Vector3(-3500 + (500 * (i - 5)), 500, -450), Vector4(0, 1, 0, 1), 270.0f, 1.0f);
+		defaultLights[i] = new Light(Vector3(-3500 + (500 * (i - 5)), 500, -450), Vector4(0, 1, 0, 1), 270.0f, 2.0f);
 	}
 
 	for (int i = 15; i < 20; i++)
 	{
-		defaultLights[i] = new Light(Vector3(-3500 + (500 * (i - 10)), 100, 450), Vector4(0, 0, 1, 1), 270.0f, 1.0f);
+		defaultLights[i] = new Light(Vector3(-3500 + (500 * (i - 10)), 100, 450), Vector4(0, 0, 1, 1), 270.0f, 2.0f);
 	}
 
 	for (int i = 20; i < 25; i++)
 	{
-		defaultLights[i] = new Light(Vector3(-3500 + (500 * (i - 15)), 100, -450), Vector4(1, 1, 0, 1), 270.0f, 1.0f);
+		defaultLights[i] = new Light(Vector3(-3500 + (500 * (i - 15)), 100, -450), Vector4(1, 1, 0, 1), 270.0f, 2.0f);
 	}
 
 	for (int i = 25; i < 50; i++)
 	{
-		defaultLights[i] = new Light(Vector3(-1300 + (75 * (i - 20)), 1000, 150), Vector4(1, 0, 1, 1), 75.0f, 1.0f);
+		defaultLights[i] = new Light(Vector3(-1300 + (75 * (i - 20)), 1000, 150), Vector4(1, 0, 1, 1), 75.0f, 2.0f);
 	}
 
 	for (int i = 50; i < 75; i++)
 	{
-		defaultLights[i] = new Light(Vector3(-1300 + (75 * (i - 45)), 1000, -200), Vector4(0, 1, 1, 1), 75.0f, 1.0f);
+		defaultLights[i] = new Light(Vector3(-1300 + (75 * (i - 45)), 1000, -200), Vector4(0, 1, 1, 1), 75.0f, 2.0f);
 	}
 
 	for (int i = 75; i < 100; i++)
 	{
-		defaultLights[i] = new Light(Vector3(-1300 + (75 * (i - 70)), 50, 150), Vector4(1, 0.5, 0, 1), 100.0f, 0.5f);
+		defaultLights[i] = new Light(Vector3(-1300 + (75 * (i - 70)), 50, 150), Vector4(1, 0.5, 0, 1), 100.0f, 2.0f);
 	}
 
 	textShader = new Shader(SHADERDIR"TexturedVertex.glsl", SHADERDIR"TexturedFragment.glsl");
@@ -349,9 +349,13 @@ void Renderer::DrawDebugLights()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	//Set a shader
+	SetCurrentShader(debugSphereShader);
+
 	for (int i = 0; i < numLights; ++i)
 	{
 		UpdateShaderMatrices();
+		glUniformMatrix4fv(glGetUniformLocation(debugSphereShader->GetProgram(), "modelMatrix"), 1, false, (float*)debugSpheres[i]->meshes[0]->GetTransform(0));
 		DrawDebugSphere(debugSpheres[i]);
 	}
 
@@ -421,9 +425,11 @@ void Renderer::BuildMeshLists()
 
 void Renderer::SortMeshLists()
 {
-	std::sort(modelsInFrame.begin(),
-		modelsInFrame.end(),
-		ModelMesh::CompareByCameraDistance);
+	std::sort(modelsInFrame.begin(),modelsInFrame.end(), [](const ModelMesh* a, const ModelMesh* b)
+	{
+		return (a->GetDistanceFromCamera() > b->GetDistanceFromCamera())
+			? true : false;
+	});
 
 	std::sort(transparentModelsInFrame.begin(),
 		transparentModelsInFrame.end(),

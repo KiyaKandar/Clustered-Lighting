@@ -4,6 +4,8 @@
 
 uniform int numZTiles;
 uniform int numLightsInFrustum;
+uniform mat4 projMatrix;
+uniform mat4 viewMatrix;
 
 layout(local_size_x = 10, local_size_y = 10, local_size_z = 10) in;
 
@@ -62,6 +64,10 @@ layout(std430, binding = 5) buffer ScreenSpaceDataBuffer
 
 layout(binding = 0) uniform atomic_uint count;
 
+//TEMP
+layout(binding = 1) uniform atomic_uint intersectionCount;
+//
+
 #include ../Shaders/compute/collisionFunctions.glsl
 
 void main()
@@ -81,10 +87,14 @@ void main()
 	{
 		int lightIndex = int(indexes[i]);
 
-		if (SphereColliding(cubePlanes[index], NDCCoords[i]))
+		if (SphereColliding(cubePlanes[index], NDCCoords[i], projMatrix, viewMatrix))
 		{
 			tileLights[index][intersections] = lightIndex;
 			intersections++;
+
+			//TEMP
+			atomicCounterIncrement(intersectionCount);
+			//
 		}
 	}
 

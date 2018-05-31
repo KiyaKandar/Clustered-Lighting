@@ -7,7 +7,7 @@ layout(location = 1) out vec4 BrightnessCol;
 
 uniform int numShadowCastingLights;
 uniform float ambientLighting;
-uniform vec3  cameraPos;
+uniform vec4  cameraPos;
 
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
@@ -138,7 +138,7 @@ void AddBPLighting(vec3 position, vec3 normal, vec4 albedoCol, int lightIndex, i
 					}
 				}
 
-				shadow /= sampleCount;// pow((HALF_NUM_PCF_SAMPLES) * 2, 2);
+				shadow /= sampleCount;
 			}
 
 			lambert *= shadow;
@@ -161,7 +161,9 @@ void main(void){
     //Retrieve data from gbuffer
     vec3 position	= texture(gPosition, TexCoords).rgb;
     vec3 normal		= normalize(texture(gNormal, TexCoords).rgb);
-	vec4 albedoCol = texture(gAlbedo, TexCoords); //vec3(0.75f, 0.75f, 0.75f);// vec3(0.1, 0.1, 0.1);//
+	vec4 albedoCol = texture(gAlbedo, TexCoords);
+
+	vec3 worldPos = (inverse(camMatrix) * vec4(position, 1.0f)).xyz;
 
 	if (position.z > 0.0f) 
 	{
@@ -173,20 +175,22 @@ void main(void){
 		//Transform screenspace coordinates into a tile index
 		float xCoord = gl_FragCoord.x / 1280;
 		float yCoord = gl_FragCoord.y / 720;
-		float zCoord = gl_FragCoord.z;
+		float zCoord = position.z;
 
-		zCoord = abs(zCoord);
+		//zCoord = abs(zCoord);
 
 		int xIndex = int(xCoord * tilesOnAxes.x);
 		int yIndex = int(yCoord * tilesOnAxes.y);
 		int zIndex = int(zCoord * tilesOnAxes.z);
 
-		int tile = 0;// xIndex + (yIndex * int(tilesOnAxes.y)) + (zIndex * (int(tilesOnAxes.x * tilesOnAxes.z)));
+		int tile = xIndex + (yIndex * int(tilesOnAxes.x)) + (zIndex * (int(tilesOnAxes.x * tilesOnAxes.y)));
+
+		tile = 0;
 
 		//Default value
 		vec4 lightResult = vec4(0.0, 0.0, 0.0, 1.0);
 
-		for(int j = 0; j < lightIndexes[tile]; j++)
+		for (int j = 0; j < lightIndexes[tile]; j++)
 		{
 			int lightIndex = tileLights[tile][j];
 
@@ -194,26 +198,24 @@ void main(void){
 		}
 
 		//Ambient
-		float ambientFX = ambientLighting;//0.5f;
+		float ambientFX = ambientLighting;
 
-		for (int j = 0; j < 1; j++) 
+		for (int j = 0; j < 1; j++)
 		{
 			ambientFX *= texture(ambientTextures[j], TexCoords).r;
 		}
 
-		vec3 newCol = albedoCol.rgb * ambientFX; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		vec3 ambient = newCol;// albedoCol.a);
-		lightResult.rgb += ambient;
+		lightResult.rgb += albedoCol.rgb * ambientFX;
 		lightResult.a = albedoCol.a;
 
-		FragColor = lightResult;//vec4(lightResult, 1.0);
+		FragColor = lightResult;
 	}
 
 	vec3 greyscale = vec3(0.2126, 0.7152, 0.0722);
 	float brightness = dot(FragColor.rgb, greyscale);
 	if (brightness > 0.8) 
 	{
-		BrightnessCol = vec4(FragColor.rgb * vec3(1, 0.6, 0.6), 1.0f/*albedoCol.a*/);
+		BrightnessCol = vec4(FragColor.rgb * vec3(1, 0.6, 0.6), 1.0f);
 	}
-	else BrightnessCol = vec4(0.0, 0.0, 0.0, 1.0f/*albedoCol.a*/);
+	else BrightnessCol = vec4(0.0, 0.0, 0.0, 1.0f);
 }

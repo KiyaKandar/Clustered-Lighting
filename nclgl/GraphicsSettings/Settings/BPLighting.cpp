@@ -11,7 +11,7 @@ BPLighting::BPLighting(Camera* cam, GBufferData* gBuffer,
 	this->ambientTextures = ambientTextures;
 	this->numAmbTex = numAmbTex;
 
-	lightingPass = new Shader(SHADERDIR"/SSAO/ssao_lightingvert.glsl", SHADERDIR"/SSAO/ssao_lightingfrag.glsl");
+	lightingPass = new Shader(SHADERDIR"/SSAO/ssao_lightingvert.glsl", SHADERDIR"/SSAO/ssao_lightingfrag.glsl", "", true);
 }
 
 void BPLighting::LinkShaders()
@@ -73,6 +73,10 @@ void BPLighting::LightingPass()
 
 	viewMatrix = camera->BuildViewMatrix();
 	glUniformMatrix4fv(loc_camMatrix, 1, false, (float*)&viewMatrix);
+
+	Vector3 camPos = camera->GetPosition();
+	float vec4[4] = { camPos.x, camPos.y, camPos.z, 0 };
+	glUniform4fv(glGetUniformLocation(lightingPass->GetProgram(), "cameraPos"), 1, vec4);
 
 	UpdateShaderMatrices();
 
