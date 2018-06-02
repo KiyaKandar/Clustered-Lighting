@@ -78,7 +78,7 @@ void main()
 
 	//If light affects any clusters on screen, send to next shader for allocation, 
 	//else cull.
-	if (colliding)
+	if (true)
 	{
 		uint currentLightCount = atomicCounterIncrement(count);
 
