@@ -142,7 +142,7 @@ ModelMesh* Model::ProcessMesh(aiMesh *mesh, const aiScene *scene)
 
 		vector<Texture> heightMaps = LoadMaterialTextures(material,
 			aiTextureType_HEIGHT, "texture_height");
-		heights.insert(heights.end(), heightMaps.begin(), heightMaps.end());
+		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 	}
 
 	ModelMesh* modelMesh = new ModelMesh(vertices, indices, textures, heights, AABB, numModels);

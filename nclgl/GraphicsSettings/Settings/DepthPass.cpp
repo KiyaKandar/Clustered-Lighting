@@ -7,7 +7,7 @@ DepthPass::DepthPass(Camera* camera, std::vector<ModelMesh*>* modelsInFrame)
 	this->modelsInFrame = modelsInFrame;
 	this->camera = camera;
 
-	depthPassShader = new Shader(SHADERDIR"/depthPass_vert.glsl", SHADERDIR"/depthPass_frag.glsl", "", true);
+	depthPassShader = new Shader(SHADERDIR"/depthPass_vert.glsl", SHADERDIR"/depthPass_frag.glsl");
 }
 
 
