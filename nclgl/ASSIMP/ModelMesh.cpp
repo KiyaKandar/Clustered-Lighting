@@ -82,9 +82,18 @@ void ModelMesh::Draw(Shader& shader)
 		glActiveTexture(GL_TEXTURE0 + i);
 		glUniform1i(glGetUniformLocation(shader.GetProgram(), textures[i - 1].type.c_str()), i);
 
+		if (textures[i - 1].type == "texture_height")
+		{
+			glUniform1i(glGetUniformLocation(shader.GetProgram(), "hasBumpMap"), 1);
+		}
+		else
+		{
+			glUniform1i(glGetUniformLocation(shader.GetProgram(), "hasBumpMap"), 0);
+		}
+
 		glBindTexture(GL_TEXTURE_2D, textures[i - 1].id);
 	}
-	
+
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, modelMatricesSSBO);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Matrix4) * transforms.size(),
 		(float*)&transforms[0], GL_STATIC_COPY);
@@ -100,17 +109,6 @@ void ModelMesh::Draw(Shader& shader)
 
 void ModelMesh::DrawShadow(Shader& shader)
 {
-	//for each (Matrix4 transform in transforms)
-	//{
-	//	glUniformMatrix4fv(glGetUniformLocation(shader.GetProgram(),
-	//		"modelMatrix"), 1, false, (float*)&transform);
-
-	//	//Draw mesh
-	//	glBindVertexArray(VAO);
-	//	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-	//	glBindVertexArray(0);
-	//}
-
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, modelMatricesSSBO);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Matrix4) * transforms.size(),
 		(float*)&transforms[0], GL_STATIC_COPY);
