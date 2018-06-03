@@ -76,12 +76,12 @@ void MotionBlur::Apply()
 		1, false, (float*)&transformEyeSpace);
 
 	glUniform1i(glGetUniformLocation(blurShader->GetProgram(), "fps"), static_cast<int>(*fps));
+
 	glUniform1i(glGetUniformLocation(blurShader->GetProgram(), "gPosition"), GLConfig::GPOSITION);
+	glUniform1i(glGetUniformLocation(blurShader->GetProgram(), "scene"), 9);
 
 	currentShader->ApplyTexture(GLConfig::GPOSITION, *gBuffer->gPosition);
-	glUniform1i(glGetUniformLocation(blurShader->GetProgram(), "scene"), 5);
-	glActiveTexture(GL_TEXTURE5);
-	glBindTexture(GL_TEXTURE_2D, colourBuffer[0]);
+	currentShader->ApplyTexture(9, colourBuffer[0]);
 
 	RenderScreenQuad();
 	//glBindFramebuffer(GL_FRAMEBUFFER, 0);

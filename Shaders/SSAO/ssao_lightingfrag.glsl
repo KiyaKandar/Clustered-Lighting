@@ -14,6 +14,8 @@ uniform vec4  cameraPos;
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedo;
+uniform sampler2D gMetallic;
+
 uniform sampler2D ssao;
 
 uniform sampler2DShadow shadows[5];
@@ -132,8 +134,8 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 
 void AddPBRLighting(vec3 position, vec3 albedoCol, vec3 normal, int tileIndex, inout vec4 lightResult)
 {
-	float metallic = 0.0f;
-	float roughness = 0.6f;
+	float metallic = texture2D(gMetallic, TexCoords).r;// 0.0f;
+	float roughness = 0.5f;
 
 	vec3 worldPos = (/*inverse(camMatrix) **/ vec4(position, 1.0f)).xyz;
 	vec3 albedo = pow(albedoCol, vec3(2.2));
@@ -242,7 +244,7 @@ void AddPBRLighting(vec3 position, vec3 albedoCol, vec3 normal, int tileIndex, i
 	//color = color / (color + vec3(1.0));
 	color = pow(color, vec3(1.0 / 2.2));
 
-	lightResult = vec4(color, 1.0)  * texture(ambientTextures[0], TexCoords).r;
+	lightResult = vec4(color, 1.0)  *texture(ambientTextures[0], TexCoords).r;
 }
 
 void main(void){
@@ -284,7 +286,7 @@ void main(void){
 
 	vec3 greyscale = vec3(0.2126, 0.7152, 0.0722);
 	float brightness = dot(FragColor.rgb, greyscale);
-	if (brightness > 0.8) 
+	if (brightness > 0.99) 
 	{
 		BrightnessCol = vec4(FragColor.rgb * vec3(1, 0.6, 0.6), 1.0f);
 	}

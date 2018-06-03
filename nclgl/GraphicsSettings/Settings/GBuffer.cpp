@@ -13,12 +13,14 @@ GBuffer::GBuffer(Window* window, Camera* camera, std::vector<ModelMesh*>* models
 	this->window = window;
 
 	geometryPass = new Shader(SHADERDIR"/SSAO/ssao_geometryvert.glsl",
-		SHADERDIR"/SSAO/ssao_geometryfrag.glsl");
+		SHADERDIR"/SSAO/ssao_geometryfrag.glsl", "", true);
 
 	SGBuffer = new GBufferData();
 	SGBuffer->gAlbedo = &gAlbedo;
 	SGBuffer->gNormal = &gNormal;
 	SGBuffer->gPosition = &gPosition;
+	SGBuffer->gMetallic = &gMetallic;
+	SGBuffer->gRoughness = &gRoughness;
 }
 
 GBuffer::~GBuffer()
@@ -27,6 +29,8 @@ GBuffer::~GBuffer()
 	glDeleteTextures(1, &gPosition);
 	glDeleteTextures(1, &gNormal);
 	glDeleteTextures(1, &gAlbedo);
+	glDeleteTextures(1, &gMetallic);
+	glDeleteTextures(1, &gRoughness);
 }
 
 void GBuffer::LinkShaders()
@@ -103,13 +107,21 @@ void GBuffer::InitGBuffer()
 	GLUtil::CreateScreenTexture(gAlbedo, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_NEAREST, GLConfig::GALBEDO, false);
 	GLUtil::CheckGLError("GAlbedo");
 
+	glGenTextures(1, &gMetallic);
+	GLUtil::CreateScreenTexture(gMetallic, GL_RGB16F, GL_RGB, GL_FLOAT, GL_NEAREST, GLConfig::GMETALLIC, false);
+	GLUtil::CheckGLError("GMetallic");
+
+	//glGenTextures(1, &gRoughness);
+	//GLUtil::CreateScreenTexture(gRoughness, GL_RGB16F, GL_RGB, GL_FLOAT, GL_NEAREST, GLConfig::GROUGHNESS, false);
+	//GLUtil::CheckGLError("GRoughness");
+
 	GLUtil::VerifyBuffer("GBuffer", false);
 }
 
 void GBuffer::InitAttachments()
 {
 	//Tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
-	glDrawBuffers(3, attachments);
+	glDrawBuffers(4, attachments);
 
 	//Create and attach depth buffer (renderbuffer)
 	glGenRenderbuffers(1, &rboDepth);

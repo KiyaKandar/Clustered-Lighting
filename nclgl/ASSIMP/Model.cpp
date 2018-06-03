@@ -136,13 +136,17 @@ ModelMesh* Model::ProcessMesh(aiMesh *mesh, const aiScene *scene)
 			aiTextureType_DIFFUSE, "texture_diffuse");
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-		vector<Texture> specularMaps = LoadMaterialTextures(material,
-			aiTextureType_SPECULAR, "texture_specular");
-		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-
 		vector<Texture> heightMaps = LoadMaterialTextures(material,
-			aiTextureType_HEIGHT, "texture_height");
+			aiTextureType_NORMALS, "texture_height");
 		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+
+		vector<Texture> metallicMaps = LoadMaterialTextures(material,
+			aiTextureType_AMBIENT, "metallic");
+		textures.insert(textures.end(), metallicMaps.begin(), metallicMaps.end());
+
+		//vector<Texture> roughnessMaps = LoadMaterialTextures(material,
+		//	aiTextureType_SPECULAR, "roughness");
+		//textures.insert(textures.end(), roughnessMaps.begin(), roughnessMaps.end());
 	}
 
 	ModelMesh* modelMesh = new ModelMesh(vertices, indices, textures, heights, AABB, numModels);

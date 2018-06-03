@@ -11,7 +11,9 @@ public:
 	{
 		GPOSITION,
 		GNORMAL,
-		GALBEDO
+		GALBEDO,
+		GMETALLIC/*,
+		GROUGHNESS*/
 	};
 
 	enum AMBIENT_TEX

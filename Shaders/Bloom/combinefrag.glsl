@@ -6,7 +6,7 @@ uniform sampler2D scene;
 uniform sampler2D bloomBlur;
 
 const float exposure = 1.0f;
-const float gamma = 1.2;
+const float gamma = 1.0f;
 
 in vec2 TexCoords;
 

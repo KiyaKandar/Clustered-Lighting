@@ -129,7 +129,7 @@ void TileRenderer::FillTilesGPU(const Matrix4& projectionMatrix, const Matrix4& 
 
 	if (ptr)
 	{
-		std::cout << ptr[0] << std::endl;
+		//std::cout << ptr[0] << std::endl;
 	}
 
 	glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);

@@ -27,6 +27,8 @@ struct GBufferData {
 	GLuint* gPosition;
 	GLuint* gNormal;
 	GLuint* gAlbedo;
+	GLuint* gMetallic;
+	GLuint* gRoughness;
 };
 
 struct AmbientTextures {

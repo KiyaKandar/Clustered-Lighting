@@ -49,8 +49,11 @@ private:
 	GLuint gPosition;
 	GLuint gNormal;
 	GLuint gAlbedo;
-	GLuint attachments[3] =
-	{ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+	GLuint gMetallic;
+	GLuint gRoughness;
+	GLuint attachments[5] =
+	{ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, 
+		GL_COLOR_ATTACHMENT3/*, GL_COLOR_ATTACHMENT4 */};
 
 	Shader* geometryPass;
 

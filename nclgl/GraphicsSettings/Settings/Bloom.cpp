@@ -11,7 +11,7 @@ Bloom::Bloom(int strength)
 {
 	blurStrength = strength;
 
-	blurShader = new Shader(SHADERDIR"/Bloom/blurvert.glsl", SHADERDIR"/Bloom/blurfrag.glsl");
+	blurShader = new Shader(SHADERDIR"/Bloom/blurvert.glsl", SHADERDIR"/Bloom/blurfrag.glsl", "", true);
 	combineShader = new Shader(SHADERDIR"/Bloom/combinevert.glsl", SHADERDIR"/Bloom/combinefrag.glsl");
 }
 
@@ -108,7 +108,7 @@ void Bloom::ApplyBlur()
 {
 	SetCurrentShader(blurShader);
 
-	for (int i = 0; i < blurStrength; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
 		glUniform1i(loc_horizontal, horizontal);
