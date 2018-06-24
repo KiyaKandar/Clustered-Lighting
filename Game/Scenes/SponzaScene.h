@@ -9,6 +9,7 @@ class SponzaScene
 public:
 	static int currentPositionIndex;
 	static bool manual;
+	static Vector3 worldLightPosition;
 
 	static void CreateSponzaScene(Renderer* renderer, Camera* camera, Window* window)
 	{
@@ -29,7 +30,7 @@ public:
 		scene->InitialiseShadows(1, renderer);
 		scene->LoadModels();
 
-		scene->AddLight(new Light(Vector3(10, 1800, 200), Vector4(0.9, 0.7, 0.4, 1), 10000.0f, 4.5f), 0);
+		scene->AddLight(new Light(worldLightPosition, Vector4(0.9, 0.7, 0.4, 1), 10000.0f, 4.5f), 0);
 		scene->AddLight(new Light(Vector3(-630, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f), 1);
 		scene->AddLight(new Light(Vector3(500, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f), 2);
 		scene->AddLight(new Light(Vector3(-630, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f), 3);
@@ -56,7 +57,7 @@ public:
 			}
 		});
 
-		scene->AddUpdateProcess([positions = positions, camera = camera](float msec)
+		scene->AddUpdateProcess([scene = scene, positions = positions, camera = camera](float msec)
 		{
 			if (!manual)
 			{
@@ -79,6 +80,8 @@ public:
 				}
 			}
 
+			//worldLightPosition = worldLightPosition + Vector3(0, 0, 0.1);
+			//scene->SetLightPosition(0, worldLightPosition);
 		});
 
 		renderer->AddScene(scene);

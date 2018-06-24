@@ -39,6 +39,7 @@ private:
 	GLint loc_gNormal;
 	GLint loc_gAlbedo;
 	GLint loc_gMetallic;
+	GLint loc_gRoughness;
 	GLint loc_shadows;
 	GLint loc_ambientTextures;
 	GLint loc_texMatrices;

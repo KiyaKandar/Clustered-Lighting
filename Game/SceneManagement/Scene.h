@@ -74,6 +74,7 @@ public:
 private:
 	void AddModel(const std::string& fileName, int numDuplicates);
 	void LoadCubemap(unsigned int* textureID, std::vector<std::string> textures);
+	void LoadHDRTexture(unsigned int* textureID, const std::string& fileName);
 
 	std::vector<Model*>* modelsVec;
 	std::unordered_map<std::string, Model*> models;

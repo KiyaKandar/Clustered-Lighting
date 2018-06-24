@@ -33,6 +33,7 @@
     <ClInclude Include="Scenes\RobotScene.h" />
     <ClInclude Include="Scenes\HorrorScene.h" />
     <ClInclude Include="Scenes\SponzaScene.h" />
+    <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Run.cpp" />
@@ -47,5 +48,6 @@
     <ClCompile Include="Scenes\RobotScene.cpp" />
     <ClCompile Include="Scenes\HorrorScene.cpp" />
     <ClCompile Include="Scenes\SponzaScene.cpp" />
+    <ClCompile Include="STB_IMG_IMPL.cpp" />
   </ItemGroup>
 </Project>

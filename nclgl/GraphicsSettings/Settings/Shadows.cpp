@@ -17,7 +17,7 @@ Shadows::Shadows(int numShadowCastingLights, Light** lights,
 
 	for (int i = 0; i < numShadowCastingLights; i++)
 	{
-		shadowData->shadowIndexes[i] = i + 4;
+		shadowData->shadowIndexes[i] = i + 7;
 	}
 
 	shadowShader = new Shader(SHADERDIR"shadowvert.glsl", SHADERDIR"shadowfrag.glsl");

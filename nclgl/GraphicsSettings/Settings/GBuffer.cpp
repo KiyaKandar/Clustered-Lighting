@@ -111,9 +111,9 @@ void GBuffer::InitGBuffer()
 	GLUtil::CreateScreenTexture(gMetallic, GL_RGB16F, GL_RGB, GL_FLOAT, GL_NEAREST, GLConfig::GMETALLIC, false);
 	GLUtil::CheckGLError("GMetallic");
 
-	//glGenTextures(1, &gRoughness);
-	//GLUtil::CreateScreenTexture(gRoughness, GL_RGB16F, GL_RGB, GL_FLOAT, GL_NEAREST, GLConfig::GROUGHNESS, false);
-	//GLUtil::CheckGLError("GRoughness");
+	glGenTextures(1, &gRoughness);
+	GLUtil::CreateScreenTexture(gRoughness, GL_RGB16F, GL_RGB, GL_FLOAT, GL_NEAREST, GLConfig::GROUGHNESS, false);
+	GLUtil::CheckGLError("GRoughness");
 
 	GLUtil::VerifyBuffer("GBuffer", false);
 }
@@ -121,7 +121,7 @@ void GBuffer::InitGBuffer()
 void GBuffer::InitAttachments()
 {
 	//Tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
-	glDrawBuffers(4, attachments);
+	glDrawBuffers(5, attachments);
 
 	//Create and attach depth buffer (renderbuffer)
 	glGenRenderbuffers(1, &rboDepth);

@@ -2,6 +2,7 @@
 
 #include <limits>
 #include <algorithm>
+#include <Simple OpenGL Image Library/src/stb_image_aug.h>
 
 typedef ModelMesh* (*processmeshFunc)(aiMesh*, aiScene*);
 
@@ -137,16 +138,25 @@ ModelMesh* Model::ProcessMesh(aiMesh *mesh, const aiScene *scene)
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
 		vector<Texture> heightMaps = LoadMaterialTextures(material,
-			aiTextureType_NORMALS, "texture_height");
+			aiTextureType_HEIGHT, "texture_height");
 		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
 		vector<Texture> metallicMaps = LoadMaterialTextures(material,
 			aiTextureType_AMBIENT, "metallic");
 		textures.insert(textures.end(), metallicMaps.begin(), metallicMaps.end());
 
-		//vector<Texture> roughnessMaps = LoadMaterialTextures(material,
-		//	aiTextureType_SPECULAR, "roughness");
-		//textures.insert(textures.end(), roughnessMaps.begin(), roughnessMaps.end());
+		vector<Texture> roughnessMaps = LoadMaterialTextures(material,
+			aiTextureType_SHININESS, "roughness");
+		textures.insert(textures.end(), roughnessMaps.begin(), roughnessMaps.end());
+
+		//vector<Texture> a = LoadMaterialTextures(material,
+		//	aiTextureType_SPECULAR, "a");
+
+		//vector<Texture> b = LoadMaterialTextures(material,
+		//	aiTextureType_SHININESS, "b");
+
+		//vector<Texture> c = LoadMaterialTextures(material,
+		//	aiTextureType_EMISSIVE, "c");
 	}
 
 	ModelMesh* modelMesh = new ModelMesh(vertices, indices, textures, heights, AABB, numModels);

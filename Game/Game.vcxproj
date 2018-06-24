@@ -166,6 +166,7 @@
     <ClInclude Include="Scenes\RobotScene.h" />
     <ClInclude Include="SceneManagement\Scene.h" />
     <ClInclude Include="Scenes\SponzaScene.h" />
+    <ClInclude Include="stb_image.h" />
     <ClInclude Include="Subsystems\Subsystem.h" />
     <ClInclude Include="Utility\Util.h" />
   </ItemGroup>
@@ -178,6 +179,7 @@
     <ClCompile Include="Scenes\HorrorScene.cpp" />
     <ClCompile Include="Scenes\RobotScene.cpp" />
     <ClCompile Include="Scenes\SponzaScene.cpp" />
+    <ClCompile Include="STB_IMG_IMPL.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

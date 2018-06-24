@@ -123,16 +123,16 @@ void TileRenderer::FillTilesGPU(const Matrix4& projectionMatrix, const Matrix4& 
 
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT);
 
-	//TEMP
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, intersectionCountBuffer);
-	GLuint* ptr = (GLuint*)glMapBuffer(GL_ATOMIC_COUNTER_BUFFER, GL_READ_ONLY);
+	////TEMP
+	//glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, intersectionCountBuffer);
+	//GLuint* ptr = (GLuint*)glMapBuffer(GL_ATOMIC_COUNTER_BUFFER, GL_READ_ONLY);
 
-	if (ptr)
-	{
-		//std::cout << ptr[0] << std::endl;
-	}
+	//if (ptr)
+	//{
+	//	std::cout << ptr[0] << std::endl;
+	//}
 
-	glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
+	//glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
 }
 
 void TileRenderer::PrepareDataGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, 

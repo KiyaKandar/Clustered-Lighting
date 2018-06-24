@@ -91,6 +91,15 @@ void ModelMesh::Draw(Shader& shader)
 			glUniform1i(glGetUniformLocation(shader.GetProgram(), "hasBumpMap"), 0);
 		}
 
+		//if (textures[i - 1].type == "roughness")
+		//{
+		//	glUniform1i(glGetUniformLocation(shader.GetProgram(), "hasRoughness"), 1);
+		//}
+		//else
+		//{
+		//	glUniform1i(glGetUniformLocation(shader.GetProgram(), "hasRoughness"), 0);
+		//}
+
 		glBindTexture(GL_TEXTURE_2D, textures[i - 1].id);
 	}
 

@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include <Simple OpenGL Image Library\src\stb_image_aug.h>
+#include <Simple OpenGL Image Library/src/SOIL.h>
 
 class Model
 {

@@ -15,6 +15,7 @@ uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedo;
 uniform sampler2D gMetallic;
+uniform sampler2D gRoughness;
 
 uniform sampler2D ssao;
 
@@ -135,10 +136,10 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 void AddPBRLighting(vec3 position, vec3 albedoCol, vec3 normal, int tileIndex, inout vec4 lightResult)
 {
 	float metallic = texture2D(gMetallic, TexCoords).r;// 0.0f;
-	float roughness = 0.5f;
+	float roughness = texture2D(gRoughness, TexCoords).r;// 0.5f; //
 
 	vec3 worldPos = (/*inverse(camMatrix) **/ vec4(position, 1.0f)).xyz;
-	vec3 albedo = pow(albedoCol, vec3(2.2));
+	vec3 albedo = pow(albedoCol, vec3(1.3));
 
 	vec4 viewCameraPos = camMatrix * vec4(cameraPos.xyz, 1.0f);
 
@@ -183,7 +184,7 @@ void AddPBRLighting(vec3 position, vec3 albedoCol, vec3 normal, int tileIndex, i
 
 			//Shadow
 			vec4 shadowProj = (texMatrices[lightIndex] * inverse(camMatrix) *
-				vec4(position + (-normal * 1.5), 1));
+				vec4(position + (N * 1.5), 1));
 
 			float shadow = 0.0;
 
@@ -237,12 +238,12 @@ void AddPBRLighting(vec3 position, vec3 albedoCol, vec3 normal, int tileIndex, i
 	}
 
 	//Ambient lighting + SSAO
-	vec3 ambient = vec3(0.4) * albedo;
+	vec3 ambient = vec3(0.5) * albedo;
 
 	//Final colour
 	vec3 color = ambient + Lo;
 	//color = color / (color + vec3(1.0));
-	color = pow(color, vec3(1.0 / 2.2));
+	color = pow(color, vec3(1.0 / 1.3));
 
 	lightResult = vec4(color, 1.0)  *texture(ambientTextures[0], TexCoords).r;
 }

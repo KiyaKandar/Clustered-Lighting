@@ -18,7 +18,7 @@ SSAO::SSAO(Camera* cam, AmbientTextures* ambientTextures, GBufferData* SGBuffer)
 	SSAOBlur = new Shader(SHADERDIR"/SSAO/ssao_vert.glsl", SHADERDIR"/SSAO/ssao_blurfrag.glsl");
 
 	ambientTextures->textures[GLConfig::SSAO_INDEX] = &ssaoColorBufferBlur;
-	ambientTextures->texUnits[GLConfig::SSAO_INDEX] = 5;
+	ambientTextures->texUnits[GLConfig::SSAO_INDEX] = 6;
 
 	xSize = 2;// GLConfig::RESOLUTION.x / RESOLUTION_SCALE_X;
 	ySize = 2;//GLConfig::RESOLUTION.y / RESOLUTION_SCALE_Y;

@@ -35,6 +35,7 @@ void BPLighting::LocateUniforms()
 	loc_gNormal = glGetUniformLocation(lightingPass->GetProgram(), "gNormal");
 	loc_gAlbedo = glGetUniformLocation(lightingPass->GetProgram(), "gAlbedo");
 	loc_gMetallic = glGetUniformLocation(lightingPass->GetProgram(), "gMetallic");
+	loc_gRoughness = glGetUniformLocation(lightingPass->GetProgram(), "gRoughness");
 	loc_shadows = glGetUniformLocation(lightingPass->GetProgram(), "shadows");
 	loc_ambientTextures = glGetUniformLocation(lightingPass->GetProgram(), "ambientTextures");
 	loc_texMatrices = glGetUniformLocation(lightingPass->GetProgram(), "texMatrices");
@@ -62,6 +63,7 @@ void BPLighting::LightingPass()
 	glUniform1i(loc_gNormal, GLConfig::GNORMAL);
 	glUniform1i(loc_gAlbedo, GLConfig::GALBEDO);
 	glUniform1i(loc_gMetallic, GLConfig::GMETALLIC);
+	glUniform1i(loc_gRoughness, GLConfig::GROUGHNESS);
 	glUniform1f(glGetUniformLocation(lightingPass->GetProgram(), "ambientLighting"), ambientLighting);
 
 	glUniform1i(loc_numXTiles, GLConfig::NUM_X_AXIS_TILES);
@@ -86,16 +88,17 @@ void BPLighting::LightingPass()
 	currentShader->ApplyTexture(GLConfig::GNORMAL, *gBuffer->gNormal);
 	currentShader->ApplyTexture(GLConfig::GALBEDO, *gBuffer->gAlbedo);
 	currentShader->ApplyTexture(GLConfig::GMETALLIC, *gBuffer->gMetallic);
+	currentShader->ApplyTexture(GLConfig::GROUGHNESS, *gBuffer->gRoughness);
 
 	for (int a = 0; a < numAmbTex; ++a)
 	{
-		glActiveTexture(GL_TEXTURE5 + a);
+		glActiveTexture(GL_TEXTURE6 + a);
 		glBindTexture(GL_TEXTURE_2D, *ambientTextures->textures[a]);
 	}
 
 	for (int s = 0; s < shadowData->NUM_LIGHTS; ++s)
 	{
-		glActiveTexture(GL_TEXTURE6 + s + (numAmbTex - 1));
+		glActiveTexture(GL_TEXTURE7 + s + (numAmbTex - 1));
 		glBindTexture(GL_TEXTURE_2D, shadowData->shadows[s]);
 	}
 
