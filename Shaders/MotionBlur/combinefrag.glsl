@@ -12,7 +12,7 @@ in vec2 TexCoords;
 out vec4 FragColor;
 
 const int NUM_SAMPLES = 200;
-const int TARGET_FPS = 144;
+const int TARGET_FPS = 60;
 
 void main(void)
 {

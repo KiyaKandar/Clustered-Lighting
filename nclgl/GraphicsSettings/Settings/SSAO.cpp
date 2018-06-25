@@ -3,7 +3,7 @@
 #include "../Game/GraphicsConfiguration/GLConfig.h"
 #include "../Game/GraphicsConfiguration/GLUtil.h"
 
-const int KERNEL_SIZE = 32;
+const int KERNEL_SIZE = 64;
 const int RESOLUTION_SCALE_X = 640;
 const int RESOLUTION_SCALE_Y = 360;
 
@@ -20,8 +20,8 @@ SSAO::SSAO(Camera* cam, AmbientTextures* ambientTextures, GBufferData* SGBuffer)
 	ambientTextures->textures[GLConfig::SSAO_INDEX] = &ssaoColorBufferBlur;
 	ambientTextures->texUnits[GLConfig::SSAO_INDEX] = 3;
 
-	xSize = 2;// GLConfig::RESOLUTION.x / RESOLUTION_SCALE_X;
-	ySize = 2;//GLConfig::RESOLUTION.y / RESOLUTION_SCALE_Y;
+	xSize = GLConfig::RESOLUTION.x / RESOLUTION_SCALE_X;
+	ySize = GLConfig::RESOLUTION.y / RESOLUTION_SCALE_Y;
 }
 
 void SSAO::LinkShaders()
@@ -121,8 +121,8 @@ void SSAO::GenerateNoiseTexture()
 	const std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0);
 	std::default_random_engine generator;
 
-	const int xSize = 2;// GLConfig::RESOLUTION.x / 640;
-	const int ySize = 2;// 720;// GLConfig::RESOLUTION.y / 360;
+	//const int xSize = GLConfig::RESOLUTION.x / 640;
+	//const int ySize = GLConfig::RESOLUTION.y / 360;
 
 	const int noiseSize = (xSize * 2) * (ySize * 2);
 
@@ -167,6 +167,9 @@ void SSAO::GenerateSSAOTex()
 	glUniform1i(loc_gPosition, GLConfig::GPOSITION);
 	glUniform1i(loc_gNormal, GLConfig::GNORMAL);
 	glUniform1i(loc_texNoise, NOISE_TEX);
+
+	glUniform1i(glGetUniformLocation(SSAOCol->GetProgram(), "xSize"), xSize);
+	glUniform1i(glGetUniformLocation(SSAOCol->GetProgram(), "ySize"), ySize);
 
 	currentShader->ApplyTexture(GLConfig::GPOSITION, *SGBuffer->gPosition);
 	currentShader->ApplyTexture(GLConfig::GNORMAL, *SGBuffer->gNormal);
