@@ -287,9 +287,9 @@ void main(void){
 
 	vec3 greyscale = vec3(0.2126, 0.7152, 0.0722);
 	float brightness = dot(FragColor.rgb, greyscale);
-	if (brightness > 0.99) 
+	if (brightness > 0.999) 
 	{
-		BrightnessCol = vec4(FragColor.rgb * vec3(1, 0.6, 0.6), 1.0f);
+		BrightnessCol = vec4(FragColor.rgb * vec3(1, 0.5, 0.5), 1.0f);
 	}
 	else BrightnessCol = vec4(0.0, 0.0, 0.0, 1.0f);
 }

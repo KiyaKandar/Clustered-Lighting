@@ -17,7 +17,7 @@ void main(void){
     {
         for (int y = -ySize; y < ySize; ++y)
         {
-            vec2 offset = vec2(float(x), float(y)) * texelSize;
+			vec2 offset = vec2(float(x), float(y)) * texelSize;
             result += texture(ssaoInput, TexCoords + offset).r;
         }
     }
