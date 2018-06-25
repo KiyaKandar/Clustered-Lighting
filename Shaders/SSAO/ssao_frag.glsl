@@ -1,14 +1,14 @@
 #version 330 core
 
 uniform mat4 projMatrix;
-uniform vec3 samples[32];
+uniform vec3 samples[64];
 
-int kernelSize = 32;
+int kernelSize = 64;
 uniform float radius;
 uniform float bias;
 
-uniform float resolutionX;
-uniform float resolutionY;
+uniform float xSize;
+uniform float ySize;
 
 in vec2 TexCoords;
 
@@ -20,10 +20,10 @@ uniform sampler2D texNoise;
 
 void main(void){
 	//Generate noise scale based on screen resolution
-	vec2 noiseScale = vec2(1280 / 4.0, 720 / 4.0);
+	vec2 noiseScale = vec2(xSize / 4.0, ySize / 4.0);
 
-	float b = 0.01;
-	float r = 255.0;
+	float b = 0.1;
+	float r = 190.0;
 
 	//Get input for SSAO algorithm
     vec3 fragPos = texture(gPosition, TexCoords).xyz;
