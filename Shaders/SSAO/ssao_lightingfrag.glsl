@@ -175,17 +175,20 @@ void main(void){
 		//Transform screenspace coordinates into a tile index
 		float xCoord = gl_FragCoord.x / 1280;
 		float yCoord = gl_FragCoord.y / 720;
-		float zCoord = position.z;
+		//float zCoord = position.z;
 
-		//zCoord = abs(zCoord);
+		float zCoord = abs(worldPos.z) / 15000.0f;
 
 		int xIndex = int(xCoord * tilesOnAxes.x);
+		if (xIndex == 0)
+		{
+			++xIndex;
+		}
+
 		int yIndex = int(yCoord * tilesOnAxes.y);
 		int zIndex = int(zCoord * tilesOnAxes.z);
 
 		int tile = xIndex + (yIndex * int(tilesOnAxes.x)) + (zIndex * (int(tilesOnAxes.x * tilesOnAxes.y)));
-
-		tile = 0;
 
 		//Default value
 		vec4 lightResult = vec4(0.0, 0.0, 0.0, 1.0);

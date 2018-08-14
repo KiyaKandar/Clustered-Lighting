@@ -69,8 +69,14 @@ layout(binding = 0) uniform atomic_uint count;
 
 void main()
 {
-	vec4 worldLight = vec4(lightData[gl_GlobalInvocationID.x].pos4.xyz,
-		lightData[gl_GlobalInvocationID.x].lightRadius);
+	vec4 worldLight = vec4(lightData[gl_GlobalInvocationID.x].pos4.xyz, 1.0f);
+	vec4 viewPos = projView * worldLight;
+
+	//Store reciprocal to avoid use of division below.
+	float w = 1.0f / viewPos.w;
+
+	//Final screenspace data.
+	vec4 ndcCoord = vec4(viewPos.x * w, viewPos.y * w, viewPos.z * w, lightData[gl_GlobalInvocationID.x].lightRadius * w);
 
 	vec4 frustum[6];
 	FrustumFromMatrix(projView, frustum);
@@ -82,7 +88,7 @@ void main()
 	{
 		uint currentLightCount = atomicCounterIncrement(count);
 
-		NDCCoords[currentLightCount] = worldLight;
+		NDCCoords[currentLightCount] = ndcCoord;
 		indexes[currentLightCount] = gl_GlobalInvocationID.x;
 	}
 }

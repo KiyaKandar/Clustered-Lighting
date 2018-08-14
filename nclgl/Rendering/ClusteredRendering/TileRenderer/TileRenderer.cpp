@@ -23,7 +23,7 @@ TileRenderer::TileRenderer(Light** lights, int numLights, int numXTiles, int num
 	gridDimensions = Vector3(
 		std::abs(minScreenCoord.x - maxScreenCoord.x) / static_cast<float>(gridSize.x),
 		std::abs(minScreenCoord.y - maxScreenCoord.y) / static_cast<float>(gridSize.y),
-		2.0f / static_cast<float>(gridSize.z));
+		15000.0f / static_cast<float>(gridSize.z));
 
 	numTiles = gridSize.x * gridSize.y * gridSize.z;
 
