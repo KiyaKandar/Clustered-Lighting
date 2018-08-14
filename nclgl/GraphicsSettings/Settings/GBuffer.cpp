@@ -149,6 +149,8 @@ void GBuffer::RenderGeometry(vector<ModelMesh*>* meshes)
 		glUniform1i(loc_isReflective, meshes->at(i)->isReflective);
 		glUniform1f(loc_reflectionStrength, meshes->at(i)->reflectionStrength);
 		glUniform4fv(loc_baseColour, 1, (float*)&meshes->at(i)->baseColour);
+		//glUniform1f(glGetUniformLocation(geometryPass->GetProgram(), "customMetallic"), meshes->at(i)->metallic);
+		//glUniform1f(glGetUniformLocation(geometryPass->GetProgram(), "customRoughness"), meshes->at(i)->roughness);
 
 		meshes->at(i)->Draw(*currentShader);
 	}

@@ -18,7 +18,7 @@ public:
 		vector<pair<string, int>> files;
 		files.push_back(make_pair("../Models/glass.obj", 3));
 		files.push_back(make_pair("../Models/Robot1.obj", 1));
-		files.push_back(make_pair("../tank/abrams/tank.3ds", 1));
+		//files.push_back(make_pair("../tank/abrams/tank.3ds", 1));
 		files.push_back(make_pair("../Models/centeredcube.obj", 1));
 		files.push_back(make_pair("../Models/environmentcube.obj", 529));
 
@@ -34,7 +34,7 @@ public:
 
 		Scene* scene = new Scene(faces, faces, files, Vector3(1, 1, 1), 0.6f);
 		scene->InitialiseShadows(1, renderer);
-		scene->AddLight(new Light(Vector3(0, 1500, -2500), Vector4(0.9, 0.7, 0.4, 1), 700000.0f, 0.9f), 0);
+		scene->AddLight(new Light(Vector3(0, 1500, -2500), Vector4(0.9, 0.7, 0.4, 1), 70000000.0f, 7.9f), 0);
 
 		scene->LoadModels();
 
@@ -42,10 +42,15 @@ public:
 		Model* enemy = scene->GetModel("../Models/Robot1.obj");
 		Model* cube = scene->GetModel("../Models/centeredcube.obj");
 		Model* environmentCube = scene->GetModel("../Models/environmentcube.obj");
-		Model* tank = scene->GetModel("../tank/abrams/tank.3ds");
+		//Model* tank = scene->GetModel("../tank/abrams/tank.3ds");
+
+		environmentCube->SetMetallicAttributeForAllSubMeshes(0.2f);
+		environmentCube->SetRoughnessAttributeForAllSubMeshes(0.0f);
 
 		cube->Scale(Vector3(100, 1000, 100));
 		cube->Translate(Vector3(2500, 0, 0));
+		cube->SetMetallicAttributeForAllSubMeshes(0.1f);
+		cube->SetRoughnessAttributeForAllSubMeshes(0.5f);
 
 		glass->Scale(Vector3(100, 1000, 100));
 		glass->Translate(Vector3(4400, 0, 1000));
@@ -58,15 +63,19 @@ public:
 
 		glass->SetbackupColourAttributeForAllSubMeshes(Vector4(0.0f, 0.0f, 0.8f, 0.3f));
 
-		tank->Rotate(Vector3(1, 0, 0), -90);
-		tank->Rotate(Vector3(0, 0, 1), 200);
-		tank->Translate(Vector3(4400, 1000, 1000));
+		//tank->Rotate(Vector3(1, 0, 0), -90);
+		//tank->Rotate(Vector3(0, 0, 1), 200);
+		//tank->Translate(Vector3(4400, 1000, 1000));
+		//tank->SetMetallicAttributeForAllSubMeshes(0.6f);
+		//tank->SetRoughnessAttributeForAllSubMeshes(0.6f);
 
 		enemy->Scale(Vector3(80, 80, 80));
 		enemy->Translate(Vector3(400, 800, 1000));
-		enemy->SetReflectionAttributesForAllSubMeshes(1, 2.0f);
-		enemy->SetbackupColourAttributeForAllSubMeshes(Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+		//enemy->SetReflectionAttributesForAllSubMeshes(1, 2.0f);
+		enemy->SetbackupColourAttributeForAllSubMeshes(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 		enemy->meshesByName["pCylinder45"]->baseColour = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+		enemy->SetMetallicAttributeForAllSubMeshes(1.0f);
+		enemy->SetRoughnessAttributeForAllSubMeshes(0.0f);
 
 		GenerateEnvironment(environmentCube);
 

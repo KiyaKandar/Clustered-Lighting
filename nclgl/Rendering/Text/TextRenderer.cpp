@@ -58,7 +58,7 @@ void TextRenderer::AssignPerspectiveMatrices(const Text& textobj)
 		Matrix4::Scale(Vector3(textobj.size, textobj.size, 1));
 
 	textViewMatrix = renderer->GetCamera()->BuildViewMatrix();
-	textProjectionMatrix = Matrix4::Perspective(1.0f, 6000.0f, (float)renderer->GetWidth() / (float)renderer->GetHeight(), 45.0f);
+	textProjectionMatrix = Matrix4::Perspective(1.0f, 15000.0f, (float)renderer->GetWidth() / (float)renderer->GetHeight(), 45.0f);
 }
 
 void TextRenderer::AssignOrthographicMatrices(const Text& textobj)

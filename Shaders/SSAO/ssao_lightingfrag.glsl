@@ -255,6 +255,7 @@ void main(void){
 	vec4 albedoCol = texture(gAlbedo, TexCoords);
 
 	vec3 worldPos = (inverse(camMatrix) * vec4(position, 1.0f)).xyz;
+	vec3 n = (inverse(camMatrix) * vec4(normal, 1.0f)).xyz;
 
 	if (position.z > 0.0f) 
 	{
@@ -266,23 +267,26 @@ void main(void){
 		//Transform screenspace coordinates into a tile index
 		float xCoord = gl_FragCoord.x / 1280;
 		float yCoord = gl_FragCoord.y / 720;
-		float zCoord = position.z;
-
-		//zCoord = abs(zCoord);
+		float zCoord = abs(worldPos.z) / 15000.0f;
 
 		int xIndex = int(xCoord * tilesOnAxes.x);
+
+		if (xIndex == 0)
+		{
+			++xIndex;
+		}
+
 		int yIndex = int(yCoord * tilesOnAxes.y);
 		int zIndex = int(zCoord * tilesOnAxes.z);
 
 		int tile = xIndex + (yIndex * int(tilesOnAxes.x)) + (zIndex * (int(tilesOnAxes.x * tilesOnAxes.y)));
 
-		tile = 0;
 		vec4 lightResult = vec4(0.0, 0.0, 0.0, 1.0);
 
 		AddPBRLighting(position, albedoCol.rgb, normal, tile, lightResult);
 
 		lightResult.a = albedoCol.a;
-		FragColor = lightResult;
+		FragColor = lightResult;// 
 	}
 
 	vec3 greyscale = vec3(0.2126, 0.7152, 0.0722);

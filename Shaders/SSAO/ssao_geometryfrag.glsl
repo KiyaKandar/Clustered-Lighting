@@ -7,10 +7,13 @@ layout (location = 3) out vec3 gMetallic;
 layout (location = 4) out vec3 gRoughness;
 
 uniform sampler2D texture_diffuse;
-uniform sampler2D metallic;
-uniform sampler2D roughness;
 uniform int hasTexture;
 //uniform int hasRoughness;
+
+uniform sampler2D metallic;
+uniform sampler2D roughness;
+uniform float customMetallic;
+uniform float customRoughness;
 
 uniform vec3 cameraPos;
 uniform vec4 baseColour;
@@ -38,25 +41,17 @@ void main(void) {
 		col = texture2D(texture_diffuse, TexCoords);
 	}
 	
-	if (isReflective == 1) 
-	{
-		vec3 I = normalize(reflectionPos - cameraPos);
-		vec3 R = reflect(I, normalize(ReflectionNormal));
-		vec4 reflectionColour = vec4(texture(skybox, R).rgb, 1.0);
-		col += reflectionColour * reflectionStrength;
-		col /= 2;
-	}
+	//if (isReflective == 1) 
+	//{
+	//	vec3 I = normalize(reflectionPos - cameraPos);
+	//	vec3 R = reflect(I, normalize(ReflectionNormal));
+	//	vec4 reflectionColour = vec4(texture(skybox, R).rgb, 1.0);
+	//	col += reflectionColour * reflectionStrength;
+	//	col /= 2;
+	//}
 
 	gAlbedo.rgba = vec4(col.rgb, alpha);
-	gMetallic = vec3(texture2D(metallic, TexCoords).r, 0, 0);
 
-	//if (hasRoughness == 1)
-	//{
-		gRoughness = vec3(texture2D(roughness, TexCoords).r, 0, 0);
-	//}
-	//else
-	//{
-		//gRoughness = vec3(0, 0, 0);
-	//}
-	//gRoughness = vec3(texture2D(roughness, TexCoords).r, 0, 0);
+	gMetallic = vec3(texture2D(metallic, TexCoords).r, 0, 0);
+	gRoughness = vec3(texture2D(roughness, TexCoords).r, 0, 0);
 }

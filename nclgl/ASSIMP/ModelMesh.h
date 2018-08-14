@@ -123,6 +123,8 @@ public:
 	int isReflective = 0;
 	float reflectionStrength = 1.0f;
 	Vector4 baseColour;
+	float metallic = -1.0f;
+	float roughness = -1.0f;
 
 	GLuint modelMatricesSSBO;
 

@@ -59,6 +59,8 @@ public:
 
 	void SetReflectionAttributesForAllSubMeshes(int isReflective, float strength);
 	void SetbackupColourAttributeForAllSubMeshes(Vector4 colour);
+	void SetMetallicAttributeForAllSubMeshes(const float metallic);
+	void SetRoughnessAttributeForAllSubMeshes(const float roughness);
 
 	//Model Data 
 	std::vector<ModelMesh*> meshes;

@@ -305,3 +305,19 @@ void Model::SetbackupColourAttributeForAllSubMeshes(Vector4 colour)
 		mesh->baseColour = colour;
 	}
 }
+
+void Model::SetMetallicAttributeForAllSubMeshes(const float metallic)
+{
+	for each (ModelMesh* mesh in meshes)
+	{
+		mesh->metallic = metallic;
+	}
+}
+
+void Model::SetRoughnessAttributeForAllSubMeshes(const float roughness)
+{
+	for each (ModelMesh* mesh in meshes)
+	{
+		mesh->roughness = roughness;
+	}
+}

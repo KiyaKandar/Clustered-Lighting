@@ -87,15 +87,15 @@ void main()
 	{
 		int lightIndex = int(indexes[i]);
 
-		//if (SphereColliding(cubePlanes[index], NDCCoords[i], projMatrix, viewMatrix))
-		if (true)
+		if (SphereColliding(cubePlanes[index], NDCCoords[i], projMatrix, viewMatrix))
+		//if (true)
 		{
 			tileLights[index][intersections] = lightIndex;
 			intersections++;
 
-			//TEMP
-			atomicCounterIncrement(intersectionCount);
-			//
+			////TEMP
+			//atomicCounterIncrement(intersectionCount);
+			////
 		}
 	}
 
