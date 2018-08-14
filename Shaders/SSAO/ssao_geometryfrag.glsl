@@ -40,18 +40,21 @@ void main(void) {
 	{
 		col = texture2D(texture_diffuse, TexCoords);
 	}
-	
-	//if (isReflective == 1) 
-	//{
-	//	vec3 I = normalize(reflectionPos - cameraPos);
-	//	vec3 R = reflect(I, normalize(ReflectionNormal));
-	//	vec4 reflectionColour = vec4(texture(skybox, R).rgb, 1.0);
-	//	col += reflectionColour * reflectionStrength;
-	//	col /= 2;
-	//}
+
+	float metallicness = texture2D(metallic, TexCoords).r;
+	if (metallicness > 0.1f)
+	{
+		vec3 I = normalize(reflectionPos - cameraPos);
+		vec3 R = reflect(I, normalize(ReflectionNormal));
+		vec4 reflectionColour = vec4(texture(skybox, R).rgb, 1.0);
+		col += reflectionColour * metallicness;
+		col /= 2.0f;
+	}
 
 	gAlbedo.rgba = vec4(col.rgb, alpha);
 
-	gMetallic = vec3(texture2D(metallic, TexCoords).r, 0, 0);
+	gMetallic = vec3(metallicness, 0, 0);
 	gRoughness = vec3(texture2D(roughness, TexCoords).r, 0, 0);
+
+
 }
