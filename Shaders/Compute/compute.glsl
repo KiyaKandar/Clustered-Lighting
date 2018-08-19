@@ -76,7 +76,7 @@ void main()
 	int yIndex = int(gl_GlobalInvocationID.y);
 	int zIndex = int(gl_GlobalInvocationID.z);
 
-	int tile = xIndex + (yIndex * int(tilesOnAxes.x)) + (zIndex * (int(tilesOnAxes.x * tilesOnAxes.y)));
+	int tile = xIndex + int(tilesOnAxes.x) * (yIndex + int(tilesOnAxes.y) * zIndex);//xIndex + (yIndex * int(tilesOnAxes.x)) + (zIndex * (int(tilesOnAxes.x * tilesOnAxes.y)));
 
 	uint index = uint(tile);
 

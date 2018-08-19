@@ -6,4 +6,4 @@ const Vector2 GLConfig::MAX_NDC_COORDS = Vector2(1, 1);
 const Vector2 GLConfig::RESOLUTION = Vector2(1280, 720);
 
 const Matrix4 GLConfig::SHARED_PROJ_MATRIX = 
-	Matrix4::Perspective(1.0f, 15000.0f, RESOLUTION.x / RESOLUTION.y, 60.0f);
+	Matrix4::Perspective(1.0f, 4000.0f, RESOLUTION.x / RESOLUTION.y, 45.0f);

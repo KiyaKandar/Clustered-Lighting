@@ -23,7 +23,7 @@ TileRenderer::TileRenderer(Light** lights, int numLights, int numXTiles, int num
 	gridDimensions = Vector3(
 		std::abs(minScreenCoord.x - maxScreenCoord.x) / static_cast<float>(gridSize.x),
 		std::abs(minScreenCoord.y - maxScreenCoord.y) / static_cast<float>(gridSize.y),
-		15000.0f / static_cast<float>(gridSize.z));
+		4000.0f / static_cast<float>(gridSize.z));
 
 	numTiles = gridSize.x * gridSize.y * gridSize.z;
 
@@ -119,7 +119,7 @@ void TileRenderer::FillTilesGPU(const Matrix4& projectionMatrix, const Matrix4& 
 	glUniformMatrix4fv(glGetUniformLocation(compute->GetProgram(), "projMatrix"), 1, false, (float*)&projectionMatrix);
 	glUniformMatrix4fv(glGetUniformLocation(compute->GetProgram(), "viewMatrix"), 1, false, (float*)&viewMatrix);
 
-	compute->Compute(Vector3(1, 1, 1));
+	compute->Compute(Vector3(2, 2, 2));
 
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT);
 
