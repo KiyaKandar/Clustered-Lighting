@@ -4,8 +4,8 @@
 #include "../Game/GraphicsConfiguration/GLUtil.h"
 
 const int KERNEL_SIZE = 64;
-const int RESOLUTION_SCALE_X = 640;
-const int RESOLUTION_SCALE_Y = 360;
+const int RESOLUTION_SCALE_X = 320;
+const int RESOLUTION_SCALE_Y = 180;
 
 SSAO::SSAO(Camera* cam, AmbientTextures* ambientTextures, GBufferData* SGBuffer)
 {

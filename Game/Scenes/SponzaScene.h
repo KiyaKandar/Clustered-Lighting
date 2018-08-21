@@ -9,6 +9,7 @@ class SponzaScene
 public:
 	static int currentPositionIndex;
 	static bool manual;
+	static bool moveLight;
 	static Vector3 worldLightPosition;
 
 	static void CreateSponzaScene(Renderer* renderer, Camera* camera, Window* window)
@@ -57,6 +58,14 @@ public:
 			}
 		});
 
+		scene->AddUpdateProcess([window = window](float msec)
+		{
+			if (window->GetKeyboard()->KeyTriggered(KEYBOARD_J))
+			{
+				moveLight = !moveLight;
+			}
+		});
+
 		scene->AddUpdateProcess([scene = scene, positions = positions, camera = camera](float msec)
 		{
 			if (!manual)
@@ -78,6 +87,12 @@ public:
 				{
 					++currentPositionIndex;
 				}
+			}
+
+			if (moveLight)
+			{
+				Vector3 currentPosition = scene->GetLightPosition(0);
+				scene->SetLightPosition(0, currentPosition + Vector3(0, 0, 0.2));
 			}
 
 			//worldLightPosition = worldLightPosition + Vector3(0, 0, 0.1);

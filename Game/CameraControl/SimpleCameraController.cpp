@@ -1,6 +1,6 @@
 #include "SimpleCameraController.h"
 
-#define MOVEMENT_DAMPING 1.2f
+#define MOVEMENT_DAMPING 0.5f
 
 SimpleCameraController::SimpleCameraController(Camera* camera, Window* window) 
 	: CameraControllerType(camera, window)
@@ -61,11 +61,11 @@ void SimpleCameraController::ApplyMovement(const float& msec)
 	}
 
 	if (window->GetKeyboard()->KeyDown(KEYBOARD_SPACE)) {
-		camera->SetPosition(camera->GetPosition() + Vector3(0, 1, 0) * speed);
+		camera->SetPosition(camera->GetPosition() + Vector3(0, 0.4, 0) * speed);
 	}
 
 	if (window->GetKeyboard()->KeyDown(KEYBOARD_C)) {
-		camera->SetPosition(camera->GetPosition() + Vector3(0, -1, 0) * speed);
+		camera->SetPosition(camera->GetPosition() + Vector3(0, -0.4, 0) * speed);
 	}
 }
 

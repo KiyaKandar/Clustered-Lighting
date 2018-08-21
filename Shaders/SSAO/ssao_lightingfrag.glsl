@@ -238,14 +238,14 @@ void AddPBRLighting(vec3 position, vec3 albedoCol, vec3 normal, int tileIndex, i
 	}
 
 	//Ambient lighting + SSAO
-	vec3 ambient = vec3(0.5) * albedo;
+	vec3 ambient = vec3(0.4) * albedo;
 
 	//Final colour
-	vec3 color = ambient + Lo;
+	vec3 color =(ambient + Lo) * texture(ambientTextures[0], TexCoords).r;
 	//color = color / (color + vec3(1.0));
 	color = pow(color, vec3(1.0 / 1.3));
 
-	lightResult = vec4(color, 1.0)  *texture(ambientTextures[0], TexCoords).r;
+	lightResult = vec4(color, 1.0);//  ;
 }
 
 void main(void){
@@ -279,7 +279,7 @@ void main(void){
 		int yIndex = int(yCoord * tilesOnAxes.y);
 		int zIndex = int(zCoord * tilesOnAxes.z);
 
-		int tile = xIndex + (yIndex * int(tilesOnAxes.x)) + (zIndex * (int(tilesOnAxes.x * tilesOnAxes.y)));
+		int tile = 0;//xIndex + (yIndex * int(tilesOnAxes.x)) + (zIndex * (int(tilesOnAxes.x * tilesOnAxes.y)));
 
 		vec4 lightResult = vec4(0.0, 0.0, 0.0, 1.0);
 

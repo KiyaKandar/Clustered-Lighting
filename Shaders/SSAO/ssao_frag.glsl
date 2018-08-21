@@ -23,7 +23,7 @@ void main(void){
 	vec2 noiseScale = vec2(xSize / 4.0, ySize / 4.0);
 
 	float b = 0.1;
-	float r = 190.0;
+	float r = 140.0;
 
 	//Get input for SSAO algorithm
     vec3 fragPos = texture(gPosition, TexCoords).xyz;
@@ -59,5 +59,5 @@ void main(void){
 
     occlusion = 1.0 - (occlusion / kernelSize);
     
-    gl_FragColor = pow(occlusion, 2.4);
+    gl_FragColor = pow(occlusion, 2.5);
 }
