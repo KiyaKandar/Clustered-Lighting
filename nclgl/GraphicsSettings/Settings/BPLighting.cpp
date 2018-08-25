@@ -3,15 +3,16 @@
 #include "../Game/GraphicsConfiguration/GLConfig.h"
 
 BPLighting::BPLighting(Camera* cam, GBufferData* gBuffer,
-	AmbientTextures* ambientTextures, int numAmbTex)
+	AmbientTextures* ambientTextures, int numAmbTex, Window* window)
 {
 	camera = cam;
+	this->window = window;
 
 	this->gBuffer = gBuffer;
 	this->ambientTextures = ambientTextures;
 	this->numAmbTex = numAmbTex;
 
-	lightingPass = new Shader(SHADERDIR"/SSAO/ssao_lightingvert.glsl", SHADERDIR"/SSAO/ssao_lightingfrag.glsl", "", true);
+	lightingPass = new Shader(SHADERDIR"/SSAO/ssao_lightingvert.glsl", SHADERDIR"/SSAO/ssao_lightingfrag.glsl");
 }
 
 void BPLighting::LinkShaders()
@@ -47,6 +48,11 @@ void BPLighting::LocateUniforms()
 
 void BPLighting::Apply()
 {
+	if (window->GetKeyboard()->KeyTriggered(KEYBOARD_T))
+	{
+		renderTiles = !renderTiles;
+	}
+
 	LightingPass();
 }
 
@@ -57,6 +63,10 @@ void BPLighting::LightingPass()
 	
 	SetCurrentShader(lightingPass);
 
+	glUniform1i(glGetUniformLocation(lightingPass->GetProgram(), "renderTiles"), renderTiles);
+
+	glUniform1f(glGetUniformLocation(lightingPass->GetProgram(), "nearPlane"), GLConfig::NEAR_PLANE);
+	glUniform1f(glGetUniformLocation(lightingPass->GetProgram(), "farPlane"), GLConfig::FAR_PLANE);
 	glUniform1i(loc_gPosition, GLConfig::GPOSITION);
 	glUniform1i(loc_gNormal, GLConfig::GNORMAL);
 	glUniform1i(loc_gAlbedo, GLConfig::GALBEDO);

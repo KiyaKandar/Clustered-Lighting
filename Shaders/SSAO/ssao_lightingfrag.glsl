@@ -5,6 +5,10 @@ layout(location = 1) out vec4 BrightnessCol;
 
 #include ../Shaders/compute/configuration.glsl
 
+uniform int renderTiles;
+uniform float nearPlane;
+uniform float farPlane;
+
 uniform int numShadowCastingLights;
 uniform float ambientLighting;
 uniform vec4  cameraPos;
@@ -13,6 +17,7 @@ uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedo;
 uniform sampler2D ssao;
+uniform sampler2D depth;
 
 uniform sampler2DShadow shadows[5];
 uniform mat4 texMatrices[5];
@@ -70,6 +75,8 @@ layout(std430, binding = 7) buffer SpotLightDataBuffer
 {
 	SpotLightData spotLightData[];
 };
+
+layout(binding = 0) uniform atomic_uint count;
 
 void AddBPLighting(vec3 position, vec3 normal, vec4 albedoCol, int lightIndex, inout vec4 lightResult)
 {
@@ -153,8 +160,6 @@ void AddBPLighting(vec3 position, vec3 normal, vec4 albedoCol, int lightIndex, i
 		lightResult.rgb += colour;
 		//lightResult.a = albedoCol.a;
 	}
-
-	
 }
 
 void main(void){
@@ -163,82 +168,70 @@ void main(void){
     vec3 normal		= normalize(texture(gNormal, TexCoords).rgb);
 	vec4 albedoCol = texture(gAlbedo, TexCoords);
 
-	vec3 worldPos = (/*inverse(camMatrix) * */vec4(position, 1.0f)).xyz;
-
 	if (position.z > 0.0f) 
 	{
 		//Its the skybox, dont touch it...
-		float xCoord = TexCoords.x;
-		float yCoord = TexCoords.y;
-		float zCoord = abs(worldPos.z) / (4000.0f - 1.0f);
-
-		int xIndex = int(xCoord);
-		int yIndex = int(yCoord * tilesOnAxes.y);
-		int zIndex = int(zCoord * tilesOnAxes.z);
-
-		int tile = xIndex + (yIndex * int(tilesOnAxes.x)) + (zIndex * (int(tilesOnAxes.x * tilesOnAxes.y)));
-		float colourValue = float(lightIndexes[tile]) / 100;
-		vec3 colT = vec3(colourValue, colourValue, colourValue);
-		normalize(colT);
-		//FragColor = vec4(colT, 1.0f);
 		FragColor = albedoCol;
+		BrightnessCol = vec4(0.0, 0.0, 0.0, 1.0f);
 	}
 	else 
 	{
 		//Transform screenspace coordinates into a tile index
-		float xCoord = TexCoords.x;// / 1280;
-		float yCoord = TexCoords.y;//((gl_FragCoord.y / 360 ));
-		//float zCoord = position.z;
+		float zCoord = abs(position.z) / (nearPlane + farPlane);
 
-		float zCoord = abs(worldPos.z) / (4000.0f - 1.0f);
+		int xIndex = int(TexCoords.x * tilesOnAxes.x);
+		int yIndex = int(TexCoords.y * tilesOnAxes.y);
+		int zIndex =  int(zCoord * tilesOnAxes.z);
 
-		int xIndex = int(xCoord * tilesOnAxes.x);//int(0.0 * 10); //THE FINAL PROBLEM --------- WHY DOES ONLY INDEX 0 WORK
-		int yIndex = int(yCoord * tilesOnAxes.y);
-		int zIndex = int(zCoord * tilesOnAxes.z);
+		int tile = GetTileIndex(xIndex, yIndex, zIndex);
 
-		int tile = xIndex + int(tilesOnAxes.x) * (yIndex + int(tilesOnAxes.y) * zIndex);//xIndex + (yIndex * int(tilesOnAxes.x)) + (zIndex * (int(tilesOnAxes.x * tilesOnAxes.y)));
-
-		//Default value
-		vec4 lightResult = vec4(0.0, 0.0, 0.0, 1.0);
-
-		for (int j = 0; j < lightIndexes[tile]; j++)
+		if (renderTiles == 0)
 		{
-			int lightIndex = tileLights[tile][j];
+			//Default value
+			vec4 lightResult = vec4(0.0, 0.0, 0.0, 1.0);
 
-			AddBPLighting(position, normal, albedoCol, lightIndex, lightResult);
+			vec4 tileColour = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+			for (int j = 0; j < lightIndexes[tile]; j++)
+			{
+				int lightIndex = tileLights[tile][j];
+
+				if (lightIndex != 0)
+				{
+					tileColour.xyz += lightData[lightIndex].lightColour.rgb;
+				}
+
+				AddBPLighting(position, normal, albedoCol, lightIndex, lightResult);
+			}
+
+			tileColour /= float(lightIndexes[tile]);
+
+			//Ambient
+			float ambientFX = ambientLighting;
+
+			for (int j = 0; j < 1; j++)
+			{
+				ambientFX *= texture(ambientTextures[j], TexCoords).r;
+			}
+
+			lightResult.rgb += albedoCol.rgb * ambientFX;
+			lightResult.a = albedoCol.a;
+			FragColor = lightResult;
+
+			vec3 greyscale = vec3(0.2126, 0.7152, 0.0722);
+			float brightness = dot(FragColor.rgb, greyscale);
+			if (brightness > 0.8)
+			{
+				BrightnessCol = vec4(FragColor.rgb * vec3(1, 0.6, 0.6), 1.0f);
+			}
+			else BrightnessCol = vec4(0.0, 0.0, 0.0, 1.0f);
 		}
-
-		//Ambient
-		float ambientFX = ambientLighting;
-
-		for (int j = 0; j < 1; j++)
+		else
 		{
-			ambientFX *= texture(ambientTextures[j], TexCoords).r;
+			uint lightsOnScreen = atomicCounter(count);
+			float colourValue = 1.0f - (float(lightIndexes[tile] - 1) / float(lightsOnScreen - 1));
+			FragColor = vec4(colourValue, colourValue, colourValue, 1.0f);
+			BrightnessCol = vec4(0.0, 0.0, 0.0, 1.0f);
 		}
-
-		lightResult.rgb += albedoCol.rgb * ambientFX;
-		lightResult.a = albedoCol.a;
-
-		//if (zIndex == 3)
-		{
-			float colourValue = float(lightIndexes[tile]) / 100.0f;
-			vec3 colT = vec3(colourValue, colourValue, colourValue);
-			normalize(colT);
-			FragColor =lightResult;// vec4(colT, 1.0f);//
-			//FragColor = vec4(zIndex / 20.0f, 0, 0, 1.0f);
-		}
-		//else
-		//{
-		//	FragColor = vec4(0,0,0, 1.0f);
-		//}
 	}
-
-	vec3 greyscale = vec3(0.2126, 0.7152, 0.0722);
-	float brightness = dot(FragColor.rgb, greyscale);
-	//if (brightness > 0.8) 
-	//{
-	//	BrightnessCol = vec4(FragColor.rgb * vec3(1, 0.6, 0.6), 1.0f);
-	//}
-	//else 
-	BrightnessCol = vec4(0.0, 0.0, 0.0, 1.0f);
 }

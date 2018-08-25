@@ -9,7 +9,7 @@ class BPLighting : public GSetting
 {
 public:
 	BPLighting(Camera* cam, GBufferData* gBuffer,
-		AmbientTextures* ambientTextures, int numAmbTex);
+		AmbientTextures* ambientTextures, int numAmbTex, Window* window);
 
 	virtual ~BPLighting()
 	{
@@ -49,9 +49,11 @@ private:
 
 	Shader*		lightingPass;
 	Camera*		camera;
+	Window* window;
 	ShadowData* shadowData;
 	GBufferData*	gBuffer;
 	AmbientTextures* ambientTextures;
 	int numAmbTex;
+	bool renderTiles = false;
 };
 

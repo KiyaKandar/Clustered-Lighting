@@ -34,6 +34,8 @@ public:
 	static const Vector2 MAX_NDC_COORDS;
 	static const Vector2 RESOLUTION;
 
+	static const float NEAR_PLANE;
+	static const float FAR_PLANE;
 	static const Matrix4 SHARED_PROJ_MATRIX;
 };
 

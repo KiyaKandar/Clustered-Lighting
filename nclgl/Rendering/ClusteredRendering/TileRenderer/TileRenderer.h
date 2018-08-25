@@ -17,6 +17,7 @@
 #include <type_traits>
 #include "../Game/GraphicsConfiguration/GLConfig.h"
 
+class Camera;
 class Light;
 
 const bool THROW_ERROR = true;
@@ -38,7 +39,7 @@ class TileRenderer
 {
 public:
 	TileRenderer(Light** lights, int numLights, int numXTiles, int numYTiles, int numZTiles, 
-		Vector2 minScreenCoord, Vector2 maxScreenCoord);
+		Vector2 minScreenCoord, Vector2 maxScreenCoord, Camera* camera);
 	TileRenderer();
 
 	~TileRenderer() 
@@ -76,6 +77,7 @@ private:
 	void FillTilesGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix) const;
 
 	Light** lights;
+	Camera*	camera;
 	Vector2 minCoord;
 
 	int numLights;

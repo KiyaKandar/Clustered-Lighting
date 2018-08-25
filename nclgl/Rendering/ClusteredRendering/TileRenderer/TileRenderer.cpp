@@ -3,13 +3,15 @@
 #include "../../../Utility/Light.h"
 #include "../Game/Utility/Util.h"
 #include "../Game/GraphicsConfiguration/GLUtil.h"
+#include "../../Rendering/View/Camera.h"
 
 const int INTERSECTING = 1;
 const int EMPTY = 0;
 
 TileRenderer::TileRenderer(Light** lights, int numLights, int numXTiles, int numYTiles, int numZTiles,
-	Vector2 minScreenCoord, Vector2 maxScreenCoord)
+	Vector2 minScreenCoord, Vector2 maxScreenCoord, Camera* camera)
 {
+	this->camera = camera;
 	this->numLights = numLights;
 	this->minCoord = minScreenCoord;
 	this->lights = lights;
@@ -23,7 +25,7 @@ TileRenderer::TileRenderer(Light** lights, int numLights, int numXTiles, int num
 	gridDimensions = Vector3(
 		std::abs(minScreenCoord.x - maxScreenCoord.x) / static_cast<float>(gridSize.x),
 		std::abs(minScreenCoord.y - maxScreenCoord.y) / static_cast<float>(gridSize.y),
-		4000.0f / static_cast<float>(gridSize.z));
+		1.0f / static_cast<float>(gridSize.z));
 
 	numTiles = gridSize.x * gridSize.y * gridSize.z;
 
@@ -116,10 +118,16 @@ void TileRenderer::FillTilesGPU(const Matrix4& projectionMatrix, const Matrix4& 
 	compute->UseProgram();
 
 	glUniform1i(loc_numZTiles, gridSize.z);
+	glUniform1f(glGetUniformLocation(compute->GetProgram(), "nearPlane"), GLConfig::NEAR_PLANE);
+	glUniform1f(glGetUniformLocation(compute->GetProgram(), "farPlane"), GLConfig::FAR_PLANE);
 	glUniformMatrix4fv(glGetUniformLocation(compute->GetProgram(), "projMatrix"), 1, false, (float*)&projectionMatrix);
 	glUniformMatrix4fv(glGetUniformLocation(compute->GetProgram(), "viewMatrix"), 1, false, (float*)&viewMatrix);
 
-	compute->Compute(Vector3(2, 2, 2));
+	Vector3 camPos = camera->GetPosition();
+	float vec4[4] = { camPos.x, camPos.y, camPos.z, 0 };
+	glUniform4fv(glGetUniformLocation(compute->GetProgram(), "cameraPosition"), 1, vec4);
+
+	compute->Compute(Vector3(GLConfig::NUM_X_AXIS_TILES, GLConfig::NUM_Y_AXIS_TILES, GLConfig::NUM_Z_AXIS_TILES));
 
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT);
 
@@ -141,6 +149,8 @@ void TileRenderer::PrepareDataGPU(const Matrix4& projectionMatrix, const Matrix4
 	Matrix4 projView = projectionMatrix * viewMatrix;
 	dataPrep->UseProgram();
 
+	glUniform1f(glGetUniformLocation(dataPrep->GetProgram(), "nearPlane"), GLConfig::NEAR_PLANE);
+	glUniform1f(glGetUniformLocation(dataPrep->GetProgram(), "farPlane"), GLConfig::FAR_PLANE);
 	glUniformMatrix4fv(loc_projMatrix, 1, false, (float*)&projectionMatrix);
 	glUniformMatrix4fv(glGetUniformLocation(dataPrep->GetProgram(), "viewMatrix"), 1, false, (float*)&viewMatrix);
 	glUniformMatrix4fv(loc_projView, 1, false, (float*)&projView);
