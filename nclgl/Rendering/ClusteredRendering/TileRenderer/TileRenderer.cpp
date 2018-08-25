@@ -84,12 +84,6 @@ void TileRenderer::InitGridSSBO()
 	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint), NULL, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, countBuffer);
-
-	//TEMP
-	glGenBuffers(1, &intersectionCountBuffer);
-	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 1, intersectionCountBuffer);
-	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint), NULL, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
 }
 
 void TileRenderer::AllocateLightsGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, 
@@ -130,17 +124,6 @@ void TileRenderer::FillTilesGPU(const Matrix4& projectionMatrix, const Matrix4& 
 	compute->Compute(Vector3(GLConfig::NUM_X_AXIS_TILES, GLConfig::NUM_Y_AXIS_TILES, GLConfig::NUM_Z_AXIS_TILES));
 
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT);
-
-	//TEMP
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, intersectionCountBuffer);
-	GLuint* ptr = (GLuint*)glMapBuffer(GL_ATOMIC_COUNTER_BUFFER, GL_READ_ONLY);
-
-	if (ptr)
-	{
-		std::cout << ptr[0] << std::endl;
-	}
-
-	glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
 }
 
 void TileRenderer::PrepareDataGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, 

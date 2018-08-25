@@ -69,10 +69,6 @@ layout(std430, binding = 5) buffer ScreenSpaceDataBuffer
 
 layout(binding = 0) uniform atomic_uint count;
 
-//TEMP
-layout(binding = 1) uniform atomic_uint intersectionCount;
-//
-
 #include ../Shaders/compute/collisionFunctions.glsl
 
 void main()
@@ -92,15 +88,10 @@ void main()
 	{
 		int lightIndex = int(indexes[i]);
 
-		if (lightIndex == GLOBAL_LIGHT || SphereCubeColliding(cubePlanes[index].faces, NDCCoords[i])
-			/*|| PointInSphere(cameraPosition.xyz, NDCCoords[i], nearPlane, farPlane)*/)
+		if (lightIndex == GLOBAL_LIGHT || SphereCubeColliding(cubePlanes[index].faces, NDCCoords[i]))
 		{
 			tileLights[index][intersections] = lightIndex;
 			intersections++;
-
-			//TEMP
-			atomicCounterIncrement(intersectionCount);
-			//
 		}
 		else if (zIndex == 0)
 		{
@@ -108,9 +99,6 @@ void main()
 			{
 				tileLights[index][intersections] = lightIndex;
 				intersections++;
-
-				//TEMP
-				atomicCounterIncrement(intersectionCount);
 			}
 		}
 	}

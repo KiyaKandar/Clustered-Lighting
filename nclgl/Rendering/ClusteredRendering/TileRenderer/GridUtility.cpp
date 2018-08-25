@@ -23,8 +23,7 @@ void GridUtility::Generate3DGrid(GridData gridData, Vector3 dimensions, Vector3 
 	int yIndex = 0;
 	int zIndex = 0;
 
-	//for (int i = 0; i < numTiles; i += tilesOnAxes.z)
-	for (int i = 0; i < 400; i++)
+	for (int i = 0; i < tilesOnAxes.x * tilesOnAxes.y; i++)
 	{
 		zIndex = 0;
 		xIndex = ceilf(xOffset);
