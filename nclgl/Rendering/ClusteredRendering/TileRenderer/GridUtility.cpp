@@ -1,6 +1,7 @@
 #include "GridUtility.h"
 
 #include "../ClusterMaths/Cube.h"
+#include "../Game/GraphicsConfiguration/GLConfig.h"
 
 enum
 {
@@ -18,27 +19,38 @@ void GridUtility::Generate3DGrid(GridData gridData, Vector3 dimensions, Vector3 
 	float yOffset = 0;
 	const int numTiles = tilesOnAxes.x * tilesOnAxes.y * tilesOnAxes.z;
 
-	for (int i = 0; i < numTiles; i += tilesOnAxes.z)
+	int xIndex = 0;
+	int yIndex = 0;
+	int zIndex = 0;
+
+	for (int i = 0; i < tilesOnAxes.x * tilesOnAxes.y; i++)
 	{
+		zIndex = 0;
+		xIndex = ceilf(xOffset);
+
 		//Once reached the end of x axis, reset x offset and move up y axis.
-		if (xOffset == tilesOnAxes.x)
+		if (xIndex == tilesOnAxes.x)
 		{
 			yOffset += dimensions.y;
+			++yIndex;
 			xOffset = 0;
+			xIndex = 0;
 		}
 
 		//Create tile closest to screen.
-		const Vector3 startPosition((dimensions.x * xOffset) + gridData.minCoord.x, yOffset + gridData.minCoord.y, -1.0f);
+		const Vector3 startPosition((dimensions.x * xOffset) + gridData.minCoord.x, yOffset + gridData.minCoord.y, GLConfig::NEAR_PLANE);
+		int index = xIndex + int(tilesOnAxes.x) * (yIndex + int(tilesOnAxes.y) * zIndex);
 
-		gridData.grid[i] = Cube(startPosition, dimensions);
-		gridData.gridPlanes[i] = GenerateCubePlanes(startPosition, dimensions);
-		gridData.screenTiles[i] = GenerateTile(startPosition, dimensions);
+		gridData.grid[index] = Cube(startPosition, dimensions);
+		gridData.gridPlanes[index] = GenerateCubePlanes(startPosition, dimensions);
+		gridData.screenTiles[index] = GenerateTile(startPosition, dimensions);
 
 		//Fill along the z axis from the tile above.
 		for (int k = 1; k <= tilesOnAxes.z - 1; ++k)
 		{
+			zIndex = k;
 			const float newZCoord = (dimensions.z * k);
-			const int index = i + k;
+			index = xIndex + int(tilesOnAxes.x) * (yIndex + int(tilesOnAxes.y) * zIndex);
 
 			const Vector3 positionExtendedInZAxis(startPosition.x, startPosition.y, startPosition.z + newZCoord);
 

@@ -63,7 +63,7 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 
 	tiles = new TileRenderer(lights, GLConfig::NUM_LIGHTS,
 		GLConfig::NUM_X_AXIS_TILES, GLConfig::NUM_Y_AXIS_TILES, GLConfig::NUM_Z_AXIS_TILES,
-		GLConfig::MIN_NDC_COORDS, GLConfig::MAX_NDC_COORDS);
+		GLConfig::MIN_NDC_COORDS, GLConfig::MAX_NDC_COORDS, camera);
 
 	screenTiles = tiles->GetScreenTiles();
 	tileData = tiles->GetTileData();
@@ -403,7 +403,7 @@ void Renderer::BuildMeshLists()
 				const Vector3 position = (*models)[model]->meshes[subMesh]->GetTransform(i)->GetPositionVector();
 				const float radius = (*models)[model]->meshes[subMesh]->GetBoundingRadius();
 
-				if (frameFrustum.InsideFrustum(position, radius))
+				if (frameFrustum.InsideFrustum((*models)[model]->meshes[subMesh]->box))
 				{
 					const Vector3 dir = (*models)[model]->meshes[subMesh]->GetTransform(i)->GetPositionVector() -
 						camera->GetPosition();

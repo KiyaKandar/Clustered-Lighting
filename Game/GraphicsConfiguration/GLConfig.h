@@ -23,9 +23,9 @@ public:
 	
 	static const int BLOOM_STRENGTH = 2;
 
-	static const int NUM_X_AXIS_TILES = 10;
-	static const int NUM_Y_AXIS_TILES = 10;
-	static const int NUM_Z_AXIS_TILES = 10;
+	static const int NUM_X_AXIS_TILES = 30;
+	static const int NUM_Y_AXIS_TILES = 30;
+	static const int NUM_Z_AXIS_TILES = 30;
 	static constexpr int NUM_TILES = NUM_X_AXIS_TILES * NUM_Y_AXIS_TILES * NUM_Z_AXIS_TILES;
 
 	static const int NUM_LIGHTS = 100;
@@ -36,6 +36,8 @@ public:
 	static const Vector2 MAX_NDC_COORDS;
 	static const Vector2 RESOLUTION;
 
+	static const float NEAR_PLANE;
+	static const float FAR_PLANE;
 	static const Matrix4 SHARED_PROJ_MATRIX;
 };
 

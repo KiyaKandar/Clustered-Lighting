@@ -87,8 +87,8 @@ public:
 
 	inline void SwitchToPerspective()
 	{
-		projMatrix = Matrix4::Perspective(1.0f, 15000.0f,
-			static_cast<float>(width) / static_cast<float>(height), 60.0f);
+		projMatrix = Matrix4::Perspective(1.0f, 4000.0f,
+			static_cast<float>(width) / static_cast<float>(height), 45.0f);
 	}
 
 	inline void SwitchToOrthographic()

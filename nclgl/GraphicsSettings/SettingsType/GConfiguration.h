@@ -35,7 +35,6 @@ private:
 	Window* window;
 
 	//Settings
-	DepthPass* depthPass;
 	GBuffer* SGBuffer;
 	SSAO* ssao;
 	BPLighting* lighting;

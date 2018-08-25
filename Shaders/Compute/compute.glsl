@@ -2,12 +2,17 @@
 
 #include ../Shaders/compute/configuration.glsl
 
+uniform float nearPlane;
+uniform float farPlane;
 uniform int numZTiles;
 uniform int numLightsInFrustum;
 uniform mat4 projMatrix;
 uniform mat4 viewMatrix;
+uniform vec4 cameraPosition;
 
-layout(local_size_x = 10, local_size_y = 10, local_size_z = 10) in;
+const int GLOBAL_LIGHT = 0;
+
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
 struct Tile
 {
@@ -64,10 +69,6 @@ layout(std430, binding = 5) buffer ScreenSpaceDataBuffer
 
 layout(binding = 0) uniform atomic_uint count;
 
-//TEMP
-layout(binding = 1) uniform atomic_uint intersectionCount;
-//
-
 #include ../Shaders/compute/collisionFunctions.glsl
 
 void main()
@@ -76,7 +77,7 @@ void main()
 	int yIndex = int(gl_GlobalInvocationID.y);
 	int zIndex = int(gl_GlobalInvocationID.z);
 
-	int tile = xIndex + (yIndex * int(tilesOnAxes.x)) + (zIndex * (int(tilesOnAxes.x * tilesOnAxes.y)));
+	int tile = xIndex + int(tilesOnAxes.x) * (yIndex + int(tilesOnAxes.y) * zIndex);
 
 	uint index = uint(tile);
 
@@ -87,15 +88,18 @@ void main()
 	{
 		int lightIndex = int(indexes[i]);
 
-		//if (SphereColliding(cubePlanes[index], NDCCoords[i], projMatrix, viewMatrix))
-		if (true)
+		if (lightIndex == GLOBAL_LIGHT || SphereCubeColliding(cubePlanes[index].faces, NDCCoords[i]))
 		{
 			tileLights[index][intersections] = lightIndex;
 			intersections++;
-
-			////TEMP
-			//atomicCounterIncrement(intersectionCount);
-			////
+		}
+		else if (zIndex == 0)
+		{
+			if (PointInSphere(cameraPosition.xyz, NDCCoords[i], nearPlane, farPlane))
+			{
+				tileLights[index][intersections] = lightIndex;
+				intersections++;
+			}
 		}
 	}
 

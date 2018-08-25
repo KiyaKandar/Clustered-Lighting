@@ -20,7 +20,7 @@
 	CREDITS:
 */
 
-const bool FULLSCREEN = true;
+const bool FULLSCREEN = false;
 
 int main()
 {

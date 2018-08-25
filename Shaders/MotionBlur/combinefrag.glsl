@@ -38,7 +38,7 @@ void main(void)
 		oldSS.xyz = oldSS.xyz / oldSS.w;
 
 		vec2 velocity = ((oldSS - newSS) / (1.8f *  NUM_SAMPLES)).xy;
-		velocity = velocity * (fps / TARGET_FPS);
+		//velocity = velocity *(fps / TARGET_FPS);
 
 		float alpha = texture2D(scene, TexCoords).a;
 		vec2 velocityTexCoord = TexCoords;

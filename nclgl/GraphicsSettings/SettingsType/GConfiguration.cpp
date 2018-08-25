@@ -15,7 +15,6 @@ GConfiguration::GConfiguration(Window* window, Renderer* renderer, Camera* camer
 GConfiguration::~GConfiguration()
 {
 	delete ambTex;
-	delete depthPass;
 	delete SGBuffer;
 	delete ssao;
 	delete lighting;
@@ -27,10 +26,6 @@ GConfiguration::~GConfiguration()
 
 void GConfiguration::InitialiseSettings()
 {
-	depthPass = new DepthPass(camera, renderer->GetModelsInFrustum());
-	depthPass->LinkShaders();
-	depthPass->Initialise();
-
 	//Initialise graphics components
 	ambTex = new AmbientTextures();
 	ambTex->textures = new GLuint*[1];
@@ -44,7 +39,7 @@ void GConfiguration::InitialiseSettings()
 	ssao->LinkShaders();
 	ssao->Initialise();
 
-	lighting = new BPLighting(camera, SGBuffer->GetGBuffer(), ambTex, 1);
+	lighting = new BPLighting(camera, SGBuffer->GetGBuffer(), ambTex, 1, window);
 	lighting->LinkShaders();
 	lighting->Initialise();
 
@@ -80,7 +75,6 @@ void GConfiguration::InitialiseSettings()
 
 void GConfiguration::LinkToRenderer()
 {
-	//renderer->AddGSetting(depthPass);
 	renderer->AddGSetting(SGBuffer);
 	renderer->AddGSetting(ssao);
 	renderer->AddGSetting(lighting);
