@@ -3,11 +3,11 @@
 #include "../nclgl/Maths/Vector2.h"
 #include "../nclgl/Maths/Matrix4.h"
 
-#define DEMO_PRETTY
+//#define DEMO_PRETTY
 //#define DEMO_100_LIGHTS
 //#define DEMO_512_LIGHTS
 //#define DEMO_1024_LIGHTS
-//#define DEMO_2048_LIGHTS
+#define DEMO_2048_LIGHTS
 
 class GLConfig
 {

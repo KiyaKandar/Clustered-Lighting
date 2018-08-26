@@ -39,11 +39,11 @@ void SponzaScene::CreatePrettyScene(Renderer* renderer, Camera* camera, Window* 
 	scene->InitialiseShadows(1, renderer);
 	scene->LoadModels();
 
-	scene->AddLight(new Light(Vector3(10, 1800, 200), Vector4(0.9, 0.7, 0.4, 1), 10000.0f, 4.5f), 0);
-	scene->AddLight(new Light(Vector3(-630, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f), 1);
-	scene->AddLight(new Light(Vector3(500, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f), 2);
-	scene->AddLight(new Light(Vector3(-630, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f), 3);
-	scene->AddLight(new Light(Vector3(500, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f), 4);
+	scene->AddLight(new Light(Vector3(10, 1800, 200), Vector4(0.9, 0.7, 0.4, 1), 10000.0f, 1.0f, 4.5f), 0);
+	scene->AddLight(new Light(Vector3(-630, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.5f, 1.0f), 1);
+	scene->AddLight(new Light(Vector3(500, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.5f, 1.0f), 2);
+	scene->AddLight(new Light(Vector3(-630, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.5f, 1.0f), 3);
+	scene->AddLight(new Light(Vector3(500, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.5f, 1.0f), 4);
 
 
 	scene->AddUpdateProcess([camera = camera](float msec)
@@ -151,14 +151,19 @@ void SponzaScene::GenerateLights(Scene* scene)
 		float x = GetRandomFloat(-2000, 2000);
 		float y = GetRandomFloat(100, 1000);
 		float z = GetRandomFloat(-750, 750);
+
 		float r = GetRandomFloat(0, 1);
 		float g = GetRandomFloat(0, 1);
 		float b = GetRandomFloat(0, 1);
-		float radius = GetRandomFloat(200, 200.0f);
-		float intensity = GetRandomFloat(1.2f, 2.3f);
+
+		float bulbRadius = GetRandomFloat(30.0f, 110.0f);
+		float cutOff = GetRandomFloat(1.5f, 1.5f);
+		float intensity = GetRandomFloat(1.1f, 2.3f);
 
 		Vector3 pos(x, y, z);
-		scene->AddLight(new Light(pos, Vector4(r, g, b, 1), radius, intensity), i);
+
+		scene->AddLight(new Light(pos, Vector4(r, g, b, 1), bulbRadius, cutOff, intensity), i);
+
 		radii.push_back(Vector2(pos.x, pos.z));
 	}
 }
