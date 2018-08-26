@@ -68,7 +68,7 @@ layout (std430, binding = 1) buffer LightDataBuffer
 layout (std430, binding = 3) buffer TileLightsBuffer
 {
 	int lightIndexes[numTiles];
-	int tileLights[numTiles][numLights];
+	int tileLights[][numLights];
 };
 
 layout(std430, binding = 7) buffer SpotLightDataBuffer
@@ -135,9 +135,9 @@ void AddBPLighting(vec3 position, vec3 normal, vec4 albedoCol, int lightIndex, i
 				vec2 texelSize = 1.0f / textureSize(shadows[lightIndex], 0);
 				int sampleCount = 0;
 
-				for (int x = -4; x <= 4; ++x)
+				for (int x = -2; x <= 2; ++x)
 				{
-					for (int y = -4; y <= 4; ++y)
+					for (int y = -2; y <= 2; ++y)
 					{
 						vec2 sampleCoord = vec2(x, y) *texelSize * 100.0f;
 						shadow += textureProj(shadows[lightIndex], shadowProj + vec4(sampleCoord, 0.0f, 0.0f));
@@ -220,9 +220,9 @@ void main(void){
 
 			vec3 greyscale = vec3(0.2126, 0.7152, 0.0722);
 			float brightness = dot(FragColor.rgb, greyscale);
-			if (brightness > 0.8)
+			if (brightness > 0.999)
 			{
-				BrightnessCol = vec4(FragColor.rgb * vec3(1, 0.6, 0.6), 1.0f);
+				BrightnessCol = vec4(FragColor.rgb, 1.0f);
 			}
 			else BrightnessCol = vec4(0.0, 0.0, 0.0, 1.0f);
 		}

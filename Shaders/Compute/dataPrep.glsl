@@ -70,7 +70,13 @@ layout(binding = 0) uniform atomic_uint count;
 
 void main()
 {
-	vec4 worldLight = vec4(lightData[gl_GlobalInvocationID.x].pos4.xyz, 1.0f);
+	int xIndex = int(gl_GlobalInvocationID.x);
+	int yIndex = int(gl_GlobalInvocationID.y);
+	int zIndex = int(gl_GlobalInvocationID.z);
+
+	int id = xIndex + int(gl_NumWorkGroups.x) * (yIndex + int(gl_NumWorkGroups.y) * zIndex);
+
+	vec4 worldLight = vec4(lightData[id].pos4.xyz, 1.0f);
 	vec4 projViewPos = projView * worldLight;
 	vec4 viewPos = viewMatrix * worldLight;
 	float zCoord = abs(projViewPos.z) / farPlane + nearPlane;
@@ -79,12 +85,12 @@ void main()
 	float w = 1.0f / projViewPos.w;
 
 	//Final screenspace data.
-	float radius = lightData[gl_GlobalInvocationID.x].lightRadius * w;
+	float radius = lightData[id].lightRadius * w;
 	vec4 clipPos = vec4(projViewPos.x * w, projViewPos.y * w, zCoord, radius);
 
 	vec4 frustum[6];
 	FrustumFromMatrix(projView, frustum);
-	bool colliding = SphereCubeColliding(frustum, vec4(worldLight.xyz, lightData[gl_GlobalInvocationID.x].lightRadius));
+	bool colliding = SphereCubeColliding(frustum, vec4(worldLight.xyz, lightData[id].lightRadius));
 
 	//If light affects any clusters on screen, send to next shader for allocation, 
 	//else cull.
@@ -93,7 +99,7 @@ void main()
 		uint currentLightCount = atomicCounterIncrement(count);
 
 		NDCCoords[currentLightCount] = clipPos;
-		indexes[currentLightCount] = gl_GlobalInvocationID.x;
+		indexes[currentLightCount] = id;
 	}
 }
 

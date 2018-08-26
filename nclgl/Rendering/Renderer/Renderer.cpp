@@ -56,9 +56,6 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	textShader = new Shader(SHADERDIR"TexturedVertex.glsl", SHADERDIR"TexturedFragment.glsl");
 	SetCurrentShader(textShader);
 
-	debugSpheres = vector<Model*>(GLConfig::NUM_LIGHTS);
-	InitDebugLights();
-
 	SetAsDebugDrawingRenderer(); //For light debugging
 
 	tiles = new TileRenderer(lights, GLConfig::NUM_LIGHTS,
@@ -95,36 +92,6 @@ Renderer::~Renderer()
 
 	delete tiles;
 	delete profilerTextRenderer;
-}
-
-void Renderer::InitDebugLights()
-{
-	for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
-	{
-		//Create new sphere.
-		Model* sphere = new Model("../sphere/sphere.obj", 1);
-
-		//Set size and position to match light.
-		sphere->Translate(defaultLights[i]->GetPosition());
-
-		const float radius = defaultLights[i]->GetRadius();
-		sphere->Scale(Vector3(radius, radius, radius));
-
-		//Add it to a seperate list.
-		debugSpheres[i] = sphere;
-	}
-}
-
-void Renderer::RepositionDebugLights()
-{
-	for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
-	{
-		//Set size and position to match light.
-		debugSpheres[i]->Translate(lights[i]->GetPosition());
-
-		const float radius = lights[i]->GetRadius();
-		debugSpheres[i]->Scale(Vector3(radius, radius, radius));
-	}
 }
 
 void Renderer::InitLightSSBO()
@@ -267,10 +234,9 @@ void Renderer::ChangeScene()
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, spotlightssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-	RepositionDebugLights();
 	lighting->UpdateShadowData(scenes[sceneIndex]->GetShadowData());
 	lighting->ambientLighting = scenes[sceneIndex]->ambient;
-	particleSystem->particles = &scenes[sceneIndex]->particles;
+	//particleSystem->particles = &scenes[sceneIndex]->particles;
 }
 
 void Renderer::UpdateScene(const float& msec)
@@ -352,13 +318,6 @@ void Renderer::DrawDebugLights()
 	//Set a shader
 	SetCurrentShader(debugSphereShader);
 
-	for (int i = 0; i < numLights; ++i)
-	{
-		UpdateShaderMatrices();
-		glUniformMatrix4fv(glGetUniformLocation(debugSphereShader->GetProgram(), "modelMatrix"), 1, false, (float*)debugSpheres[i]->meshes[0]->GetTransform(0));
-		DrawDebugSphere(debugSpheres[i]);
-	}
-
 	glDisable(GL_BLEND);
 
 	for (int i = 0; i < numLights; ++i)
@@ -427,8 +386,7 @@ void Renderer::SortMeshLists()
 {
 	std::sort(modelsInFrame.begin(),modelsInFrame.end(), [](const ModelMesh* a, const ModelMesh* b)
 	{
-		return (a->GetDistanceFromCamera() > b->GetDistanceFromCamera())
-			? true : false;
+		return a->GetDistanceFromCamera() > b->GetDistanceFromCamera();
 	});
 
 	std::sort(transparentModelsInFrame.begin(),

@@ -79,6 +79,5 @@ void GConfiguration::LinkToRenderer()
 	renderer->AddGSetting(ssao);
 	renderer->AddGSetting(lighting);
 	renderer->AddGSetting(bloom);
-	renderer->AddGSetting(particles);
 	renderer->AddGSetting(motionBlur);
 }

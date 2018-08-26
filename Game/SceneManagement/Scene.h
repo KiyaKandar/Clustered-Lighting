@@ -66,6 +66,11 @@ public:
 		modifiedLights.push_back(index);
 	}
 
+	Vector3 GetLightPosition(int index)
+	{
+		return sceneLights[index].first->GetPosition();
+	}
+
 	Vector3* lightWorkGroups;
 	vector<Particle> particles;
 	vector<int> modifiedLights;
