@@ -233,6 +233,7 @@ void Renderer::ChangeScene()
 
 	lighting->UpdateShadowData(scenes[sceneIndex]->GetShadowData());
 	lighting->ambientLighting = scenes[sceneIndex]->ambient;
+	//particleSystem->particles = &scenes[sceneIndex]->particles;
 }
 
 void Renderer::UpdateScene(const float& msec)
@@ -382,8 +383,7 @@ void Renderer::SortMeshLists()
 {
 	std::sort(modelsInFrame.begin(),modelsInFrame.end(), [](const ModelMesh* a, const ModelMesh* b)
 	{
-		return (a->GetDistanceFromCamera() > b->GetDistanceFromCamera())
-			? true : false;
+		return a->GetDistanceFromCamera() > b->GetDistanceFromCamera();
 	});
 
 	std::sort(transparentModelsInFrame.begin(),

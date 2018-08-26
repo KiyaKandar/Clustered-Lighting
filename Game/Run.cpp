@@ -22,8 +22,12 @@
 
 const bool FULLSCREEN = false;
 
+void WriteConfigurationToShader();
+
 int main()
 {
+	WriteConfigurationToShader();
+
 	Window* window = new Window("CFL", GLConfig::RESOLUTION.x, GLConfig::RESOLUTION.y, FULLSCREEN);
 	window->LockMouseToWindow(true);
 	window->ShowOSPointer(false);
@@ -44,8 +48,6 @@ int main()
 
 	SimpleCameraController* camControl = new SimpleCameraController(camera, window);
 	camControl->ApplyCustomRotation(-10, 270, 0);
-	//RobotScene::CreateShowroomScene(renderer, window, &camControl, camera);
-	//HorrorScene::CreateScaryScene(renderer);
 	SponzaScene::CreateSponzaScene(renderer, camera, window);
 
 	config.LinkToRenderer();
@@ -67,4 +69,39 @@ int main()
 	delete camControl;
 
     return 0;
+}
+
+void WriteConfigurationToShader()
+{
+	std::vector<string> lines;
+	string filePath = "../Shaders/compute/configuration.glsl";
+	ifstream file;
+	string temp;
+
+	file.open(filePath.c_str());
+	if (!file.is_open()) {
+		return;
+	}
+
+	while (!file.eof()) {
+		getline(file, temp);
+		lines.push_back(temp);
+	}
+
+	file.close();
+	lines[1] = "const int numLights = " + std::to_string(GLConfig::NUM_LIGHTS) + ";";
+	lines[2] = "const vec3 tilesOnAxes = vec3(" 
+		+ std::to_string(GLConfig::NUM_X_AXIS_TILES) + ", "
+		+ std::to_string(GLConfig::NUM_Y_AXIS_TILES) + ", "
+		+ std::to_string(GLConfig::NUM_Z_AXIS_TILES)
+		+ ");";
+
+	std::ofstream ofs;
+	ofs.open("../Shaders/compute/configuration.glsl", std::ofstream::out | std::ofstream::trunc);
+
+	for (const string& line : lines)
+	{
+		ofs << line << std::endl;
+	}
+	ofs.close();
 }
