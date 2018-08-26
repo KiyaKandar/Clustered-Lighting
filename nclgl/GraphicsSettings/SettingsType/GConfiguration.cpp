@@ -57,11 +57,6 @@ void GConfiguration::InitialiseSettings()
 	skybox->Initialise();
 	skybox->GBufferFBO = &SGBuffer->gBuffer;
 
-	particles = new ParticleSystem(&camera->viewMatrix);
-	particles->LinkShaders();
-	particles->Initialise();
-	particles->motionBlurFBO = &motionBlur->screenTexFBO;
-
 	renderer->gBuffer = SGBuffer;
 	renderer->skybox = skybox;
 
@@ -79,6 +74,5 @@ void GConfiguration::LinkToRenderer()
 	renderer->AddGSetting(ssao);
 	renderer->AddGSetting(lighting);
 	renderer->AddGSetting(bloom);
-	renderer->AddGSetting(particles);
 	renderer->AddGSetting(motionBlur);
 }

@@ -34,7 +34,7 @@ public:
 
 		Scene* scene = new Scene(faces, faces, files, Vector3(1, 1, 1), 0.6f);
 		scene->InitialiseShadows(1, renderer);
-		scene->AddLight(new Light(Vector3(0, 1500, -2500), Vector4(0.9, 0.7, 0.4, 1), 70000000.0f, 7.9f), 0);
+		scene->AddLight(new Light(Vector3(0, 1500, -2500), Vector4(0.9, 0.7, 0.4, 1), 70000000.0f, 70000000.0f, 7.9f), 0);
 
 		scene->LoadModels();
 

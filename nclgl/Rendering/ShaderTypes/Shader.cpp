@@ -88,10 +88,10 @@ GLuint Shader::GenerateShader(string from, GLenum type) {
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
 
 	if (status == GL_FALSE) {
-		if (verbose) cout << "Compiling failed !" << endl;
+		if (true) cout << "Compiling failed !" << endl;
 		char error[512];
 		glGetInfoLogARB(shader, sizeof(error), NULL, error);
-		if (verbose) cout << error;
+		if (true) cout << error;
 		loadFailed = true;
 		return 0;
 	}

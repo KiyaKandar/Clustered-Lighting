@@ -37,10 +37,11 @@ struct LightData
 {
 	vec4 pos4;
 	vec4 lightColour;
-	float lightRadius;
+	float bulbRadius;
+	float lightCutoffRadius;
 	float intensity;
 
-	float fpadding[2];
+	float fpadding;
 };
 
 //Shared with lighting shader
@@ -88,18 +89,10 @@ void main()
 	{
 		int lightIndex = int(indexes[i]);
 
-		if (lightIndex == GLOBAL_LIGHT || SphereCubeColliding(cubePlanes[index].faces, NDCCoords[i]))
+		if (SphereCubeColliding(cubePlanes[index].faces, NDCCoords[i]) || PointInSphere(cameraPosition.xyz, NDCCoords[i], nearPlane, farPlane))
 		{
 			tileLights[index][intersections] = lightIndex;
 			intersections++;
-		}
-		else if (zIndex == 0)
-		{
-			if (PointInSphere(cameraPosition.xyz, NDCCoords[i], nearPlane, farPlane))
-			{
-				tileLights[index][intersections] = lightIndex;
-				intersections++;
-			}
 		}
 	}
 

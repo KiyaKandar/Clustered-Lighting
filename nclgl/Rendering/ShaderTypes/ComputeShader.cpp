@@ -118,7 +118,6 @@ bool ComputeShader::LoadShaderFile(string from, string & into) {
 	}
 
 	file.close();
-	if (verbose) cout << into << endl << endl;
 	if (verbose) cout << "Loaded shader text !" << endl << endl;
 	return true;
 }

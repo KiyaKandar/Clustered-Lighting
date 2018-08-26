@@ -144,8 +144,6 @@ protected:
 
 	bool debugMode = false;
 	bool profilerEnabled = false;
-	void InitDebugLights();
-	void RepositionDebugLights();
 
 	//Light SSBO
 	GLuint ssbo;
@@ -168,7 +166,6 @@ protected:
 	//Handy debug stuff
 	void DrawDebugLights();
 	void RelinkShaders() const;
-	std::vector<Model*> debugSpheres;
 
 	//Text Stuff - Mainly for profiler
 	void DrawProfilerText() const;

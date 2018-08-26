@@ -12,52 +12,54 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	projMatrix = GLConfig::SHARED_PROJ_MATRIX;// Matrix4::Perspective(1.0f, 15000.0f, static_cast<float>(width) / static_cast<float>(height), 45.0f);
 
 	//Shadow casting lights must be declared first
-	defaultLights[0] = new Light(Vector3(0, 1800, -2000), Vector4(0.9, 0.7, 0.4, 1), 1000000.0f, 0.5f);
-	defaultLights[1] = new Light(Vector3(0, 1800, 2000), Vector4(0.9, 0.7, 0.4, 1), 1000000.0f, 0.5f);
-	defaultLights[2] = new Light(Vector3(500, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f);
-	defaultLights[3] = new Light(Vector3(-630, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f);
-	defaultLights[4] = new Light(Vector3(500, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f);
+	defaultLights[0] = new Light(Vector3(0, 1800, -2000), Vector4(0.9, 0.7, 0.4, 1), 1000000.0f, 1.0f, 0.5f);
+	defaultLights[1] = new Light(Vector3(-630, 140, -150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f, 1.0f);
+	defaultLights[2] = new Light(Vector3(500, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f, 1.0f);
+	defaultLights[3] = new Light(Vector3(-630, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f, 1.0f);
+	defaultLights[4] = new Light(Vector3(500, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f, 1.0f);
 
 	for (int i = 5; i < 10; i++)
 	{
-		defaultLights[i] = new Light(Vector3(-3500 + (500 * i), 500, 450), Vector4(1, 0, 0, 1), 270.0f, 2.0f);
+		defaultLights[i] = new Light(Vector3(-3500 + (500 * i), 500, 450), Vector4(1, 0, 0, 1), 270.0f, 3.0f, 2.0f);
 	}
 
 	for (int i = 10; i < 15; i++)
 	{
-		defaultLights[i] = new Light(Vector3(-3500 + (500 * (i - 5)), 500, -450), Vector4(0, 1, 0, 1), 270.0f, 2.0f);
+		defaultLights[i] = new Light(Vector3(-3500 + (500 * (i - 5)), 500, -450), Vector4(0, 1, 0, 1), 270.0f, 3.0f, 2.0f);
 	}
 
 	for (int i = 15; i < 20; i++)
 	{
-		defaultLights[i] = new Light(Vector3(-3500 + (500 * (i - 10)), 100, 450), Vector4(0, 0, 1, 1), 270.0f, 2.0f);
+		defaultLights[i] = new Light(Vector3(-3500 + (500 * (i - 10)), 100, 450), Vector4(0, 0, 1, 1), 270.0f, 3.0f, 2.0f);
 	}
 
 	for (int i = 20; i < 25; i++)
 	{
-		defaultLights[i] = new Light(Vector3(-3500 + (500 * (i - 15)), 100, -450), Vector4(1, 1, 0, 1), 270.0f, 2.0f);
+		defaultLights[i] = new Light(Vector3(-3500 + (500 * (i - 15)), 100, -450), Vector4(1, 1, 0, 1), 270.0f, 3.0f, 2.0f);
 	}
 
 	for (int i = 25; i < 50; i++)
 	{
-		defaultLights[i] = new Light(Vector3(-1300 + (75 * (i - 20)), 1000, 150), Vector4(1, 0, 1, 1), 75.0f, 2.0f);
+		defaultLights[i] = new Light(Vector3(-1300 + (75 * (i - 20)), 1000, 150), Vector4(1, 0, 1, 1), 75.0f, 3.0f, 2.0f);
 	}
 
 	for (int i = 50; i < 75; i++)
 	{
-		defaultLights[i] = new Light(Vector3(-1300 + (75 * (i - 45)), 1000, -200), Vector4(0, 1, 1, 1), 75.0f, 2.0f);
+		defaultLights[i] = new Light(Vector3(-1300 + (75 * (i - 45)), 1000, -200), Vector4(0, 1, 1, 1), 75.0f, 3.0f, 2.0f);
 	}
 
 	for (int i = 75; i < 100; i++)
 	{
-		defaultLights[i] = new Light(Vector3(-1300 + (75 * (i - 70)), 50, 150), Vector4(1, 0.5, 0, 1), 100.0f, 2.0f);
+		defaultLights[i] = new Light(Vector3(-1300 + (75 * (i - 70)), 50, 150), Vector4(1, 0.5, 0, 1), 100.0f, 1.0f, 2.0f);
+	}
+
+	for (int i = 100; i < 200; i++)
+	{
+		defaultLights[i] = new Light(Vector3(-1300 + (75 * (i - 70)), 50, 150), Vector4(1, 0.5, 0, 1), 100.0f, 1.0f, 2.0f);
 	}
 
 	textShader = new Shader(SHADERDIR"TexturedVertex.glsl", SHADERDIR"TexturedFragment.glsl");
 	SetCurrentShader(textShader);
-
-	debugSpheres = vector<Model*>(GLConfig::NUM_LIGHTS);
-	InitDebugLights();
 
 	SetAsDebugDrawingRenderer(); //For light debugging
 
@@ -97,36 +99,6 @@ Renderer::~Renderer()
 	delete profilerTextRenderer;
 }
 
-void Renderer::InitDebugLights()
-{
-	for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
-	{
-		//Create new sphere.
-		Model* sphere = new Model("../sphere/sphere.obj", 1);
-
-		//Set size and position to match light.
-		sphere->Translate(defaultLights[i]->GetPosition());
-
-		const float radius = defaultLights[i]->GetRadius();
-		sphere->Scale(Vector3(radius, radius, radius));
-
-		//Add it to a seperate list.
-		debugSpheres[i] = sphere;
-	}
-}
-
-void Renderer::RepositionDebugLights()
-{
-	for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
-	{
-		//Set size and position to match light.
-		debugSpheres[i]->Translate(lights[i]->GetPosition());
-
-		const float radius = lights[i]->GetRadius();
-		debugSpheres[i]->Scale(Vector3(radius, radius, radius));
-	}
-}
-
 void Renderer::InitLightSSBO()
 {
 	GLUtil::ClearGLErrorStack();
@@ -134,14 +106,6 @@ void Renderer::InitLightSSBO()
 	ssbo = GLUtil::InitSSBO(1, 1, ssbo,
 		sizeof(LightData) * GLConfig::NUM_LIGHTS, &lightData, GL_STATIC_COPY);
 	GLUtil::CheckGLError("Light Data SSBO");
-
-	spotlightssbo = GLUtil::InitSSBO(1, 7, spotlightssbo,
-		sizeof(SpotLightData) * GLConfig::NUM_LIGHTS, &spotLightData, GL_STATIC_COPY);
-	GLUtil::CheckGLError("SpotLight Data SSBO");
-
-	spotlightssbo = GLUtil::InitSSBO(1, 8, spotlightssbo,
-		0, &spotLightData, GL_STATIC_COPY);
-	GLUtil::CheckGLError("SpotLight Data SSBO");
 
 	glGenBuffers(1, &modelMatricesSSBO);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, modelMatricesSSBO);
@@ -267,10 +231,8 @@ void Renderer::ChangeScene()
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, spotlightssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-	RepositionDebugLights();
 	lighting->UpdateShadowData(scenes[sceneIndex]->GetShadowData());
 	lighting->ambientLighting = scenes[sceneIndex]->ambient;
-	particleSystem->particles = &scenes[sceneIndex]->particles;
 }
 
 void Renderer::UpdateScene(const float& msec)
@@ -351,13 +313,6 @@ void Renderer::DrawDebugLights()
 
 	//Set a shader
 	SetCurrentShader(debugSphereShader);
-
-	for (int i = 0; i < numLights; ++i)
-	{
-		UpdateShaderMatrices();
-		glUniformMatrix4fv(glGetUniformLocation(debugSphereShader->GetProgram(), "modelMatrix"), 1, false, (float*)debugSpheres[i]->meshes[0]->GetTransform(0));
-		DrawDebugSphere(debugSpheres[i]);
-	}
 
 	glDisable(GL_BLEND);
 

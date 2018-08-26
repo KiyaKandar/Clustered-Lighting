@@ -10,7 +10,9 @@ public:
 	static int currentPositionIndex;
 	static bool manual;
 	static bool moveLight;
+	static float frameCounter;
 	static Vector3 worldLightPosition;
+	static vector<Vector2> radii;
 
 	static void CreateSponzaScene(Renderer* renderer, Camera* camera, Window* window)
 	{
@@ -27,15 +29,10 @@ public:
 			"../Skyboxes/Nice/front.jpg",
 		};
 
-		Scene* scene = new Scene(skybox, skybox, files, Vector3(100, 1, 1), 0.5f);
+		Scene* scene = new Scene(skybox, skybox, files, Vector3(10, 10, 10), 0.5f);
 		scene->InitialiseShadows(1, renderer);
 		scene->LoadModels();
-
-		scene->AddLight(new Light(worldLightPosition, Vector4(0.9, 0.7, 0.4, 1), 10000.0f, 4.5f), 0);
-		scene->AddLight(new Light(Vector3(-630, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f), 1);
-		scene->AddLight(new Light(Vector3(500, 140, -200), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f), 2);
-		scene->AddLight(new Light(Vector3(-630, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f), 3);
-		scene->AddLight(new Light(Vector3(500, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.0f), 4);
+		GenerateLights(scene);
 
 
 		scene->AddUpdateProcess([camera = camera](float msec) 
@@ -91,15 +88,61 @@ public:
 
 			if (moveLight)
 			{
-				Vector3 currentPosition = scene->GetLightPosition(0);
-				scene->SetLightPosition(0, currentPosition + Vector3(0, 0, 0.2));
+				float cosX = cosf(frameCounter);
+				float sinZ = sinf(frameCounter);
+
+				for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
+				{
+					float newXPos = radii[i].x * cosX;
+					float newZPos = radii[i].y * sinZ;
+
+					Vector3 currentPosition = scene->GetLightPosition(i);
+
+					float xIncrement = newXPos - currentPosition.x;
+					float zIncrement = newZPos - currentPosition.z;
+
+					scene->SetLightPosition(i, currentPosition + Vector3(xIncrement, 0, zIncrement));
+				}
+
+				frameCounter += msec / 10000.0f;
 			}
 
-			//worldLightPosition = worldLightPosition + Vector3(0, 0, 0.1);
-			//scene->SetLightPosition(0, worldLightPosition);
 		});
 
 		renderer->AddScene(scene);
+	}
+
+	static void GenerateLights(Scene* scene)
+	{
+		for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
+		{
+			float x = GetRandomFloat(-2000, 2000);
+			float y = GetRandomFloat(100, 1000);
+			float z = GetRandomFloat(-750, 750);
+
+			float r = GetRandomFloat(0, 1);
+			float g = GetRandomFloat(0, 1);
+			float b = GetRandomFloat(0, 1);
+
+			float bulbRadius = GetRandomFloat(30.0f, 110.0f);
+			float cutOff = GetRandomFloat(1.5f, 1.5f);
+			float intensity = GetRandomFloat(1.1f, 2.3f);
+
+			Vector3 pos(x, y, z);
+
+			scene->AddLight(new Light(pos, Vector4(r, g, b, 1), bulbRadius, cutOff, intensity), i);
+
+			radii.push_back(Vector2(pos.x, pos.z));
+		}
+	}
+
+	static float GetRandomFloat(const float min, const float max)
+	{
+		std::random_device rd{};
+		std::mt19937 engine{ rd() };
+		std::uniform_real_distribution<float> dist{ min, max };
+
+		return dist(engine);
 	}
 };
 

@@ -11,10 +11,11 @@ struct LightData
 {
 	Vector4 lightPosition;
 	Vector4 lightColour;
-	float lightRadius;
+	float bulbRadius;
+	float lightCutoffRadius;
 	float intensity;
 
-	float padding[2];
+	float padding;
 };
 
 struct SpotLightData
@@ -25,10 +26,11 @@ struct SpotLightData
 class Light
 {
 public:
-	Light(Vector3 position, Vector4 colour, float radius, float intensity, Vector4 direction = Vector4(0, 0, 0, 0)) {
+	Light(Vector3 position, Vector4 colour, float bulbRadius, float cutoffRadiusPercentageExtra, float intensity, Vector4 direction = Vector4(0, 0, 0, 0)) {
 		this->position	= position;
 		this->colour	= colour;
-		this->radius	= radius;
+		this->bulbRadius = bulbRadius;
+		this->cutoffRadius = CalculateCutoffRadiusAsPercentageOfBulbRadius(cutoffRadiusPercentageExtra);
 		this->direction = direction;
 
 		//float positionData[3] = { position.x, position.y, position.z };
@@ -38,7 +40,8 @@ public:
 
 		data.lightPosition = Vector4(position.x, position.y, position.z, 1.0f);
 		data.lightColour = colour;
-		data.lightRadius = radius;
+		data.bulbRadius = bulbRadius;
+		data.lightCutoffRadius = CalculateCutoffRadiusAsPercentageOfBulbRadius(cutoffRadiusPercentageExtra);
 		data.intensity	 = intensity;
 		spotLightData.direction = direction;
 	}
@@ -46,7 +49,8 @@ public:
 	Light() {
 		this->position	= Vector3(0, 0, 0);
 		this->colour	= Vector4(1, 1, 1, 1);
-		this->radius	= 0.0f;
+		this->bulbRadius = 0.0f;
+		this->cutoffRadius = 0.0f;
 		this->direction = Vector4(0, 0, 0, 0);
 	}
 
@@ -54,12 +58,14 @@ public:
 	{
 		position = rhs.position;
 		colour = rhs.colour;
-		radius = rhs.radius;
+		bulbRadius = rhs.bulbRadius;
+		cutoffRadius = rhs.cutoffRadius;
 		direction = rhs.direction;
 
 		data.lightPosition = Vector4(position.x, position.y, position.z, 1.0f);
 		data.lightColour = colour;
-		data.lightRadius = radius;
+		data.bulbRadius = bulbRadius;
+		data.lightCutoffRadius = cutoffRadius;
 		data.intensity = rhs.data.intensity;
 		spotLightData.direction = rhs.direction;
 	}
@@ -75,8 +81,8 @@ public:
 		data.lightPosition = Vector4(val.x, val.y, val.z, 1.0f);
 	}
 
-	float	GetRadius() const			{ return radius; }
-	void	SetRadius(float val)		{ radius = val; }
+	float	GetRadius() const			{ return bulbRadius; }
+	void	SetRadius(float val)		{ bulbRadius = val; }
 
 	Vector4 GetColour() const			{ return colour; }
 	void	SetColour(Vector4 val)
@@ -100,12 +106,18 @@ public:
 		return spotLightData;
 	}
 
+	float CalculateCutoffRadiusAsPercentageOfBulbRadius(const float percentage)
+	{
+		return bulbRadius * percentage;
+	}
+
 protected:
 	LightData data;
 	SpotLightData spotLightData;
 	Vector3 position;
 	Vector4 colour;
 	Vector4 direction;
-	float radius;
+	float bulbRadius;
+	float cutoffRadius;
 };
 

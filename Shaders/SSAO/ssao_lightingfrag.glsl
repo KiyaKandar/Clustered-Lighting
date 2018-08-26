@@ -35,17 +35,17 @@ uniform int numXTiles;
 uniform int numYTiles;
 
 in vec2 TexCoords;
-in mat4 textureMat;
 in vec2 screenPos;
 
 struct LightData
 {
 	vec4 pos4;
 	vec4 lightColour;
-	float lightRadius;
+	float bulbRadius;
+	float lightCutoffRadius;
 	float intensity;
 
-	float fpadding[2];
+	float fpadding;
 };
 
 struct SpotLightData
@@ -73,7 +73,7 @@ layout (std430, binding = 1) buffer LightDataBuffer
 layout (std430, binding = 3) buffer TileLightsBuffer
 {
 	int lightIndexes[numTiles];
-	int tileLights[numTiles][numLights];
+	int tileLights[][numLights];
 };
 
 layout(std430, binding = 7) buffer SpotLightDataBuffer
@@ -139,6 +139,31 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 	return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
+float CalculateAttenuation(const int lightIndex, vec3 distanceToLight, const vec3 normal)
+{
+	float distance = length(distanceToLight);
+	float d = max(distance - lightData[lightIndex].bulbRadius, 0.0f);
+	float attenDenom = (d / lightData[lightIndex].bulbRadius) + 1.0f;
+	float attenuation = 1.0f / (attenDenom * attenDenom);
+
+	distanceToLight /= distance;
+	float dotP = max(dot(distanceToLight, normal), 0);
+	attenuation *= dotP;
+
+	attenuation *= pow(lightData[lightIndex].intensity, 2.2f);
+
+	//If the fragment is beyond the bulb radius, fade the light out
+	//so it reaches attenuation = 0 by cutoff radius
+	if (distance >= lightData[lightIndex].bulbRadius)
+	{
+		float radiusToCutoffDistance = (lightData[lightIndex].lightCutoffRadius) - lightData[lightIndex].bulbRadius;
+		float portionCoveredByFragment = 1.0f - ((distance - lightData[lightIndex].bulbRadius) / radiusToCutoffDistance);
+		attenuation *= portionCoveredByFragment;
+	}
+
+	return attenuation;
+}
+
 void AddPBRLighting(vec3 position, vec3 albedoCol, vec3 normal, int tileIndex, inout vec4 lightResult)
 {
 	float metallic = texture2D(gMetallic, TexCoords).r;// 0.0f;
@@ -176,82 +201,73 @@ void AddPBRLighting(vec3 position, vec3 albedoCol, vec3 normal, int tileIndex, i
 
 		vec3 lengthPos = lightPosition - worldPos;
 		float distance = length(lengthPos);
-		float d = max(distance - lightData[lightIndex].lightRadius, 0.0f);
-		lengthPos /= distance;
-		float attenDenom = (d / lightData[lightIndex].lightRadius) + 1.0f;
-		float dotP = max(dot(lengthPos, N), 0);
-		float attenuation = 1.0f / (attenDenom * attenDenom);
-		attenuation *= dotP;
-		attenuation *= pow(lightData[lightIndex].intensity, 2.2f);
 
-		if (lightIndex < numShadowCastingLights)
+		if (distance <= lightData[lightIndex].lightCutoffRadius)
 		{
-			float lambert = max(0.0, dot(L, N));
+			float attenuation = CalculateAttenuation(lightIndex, lengthPos, N);
 
-			//Shadow
-			vec4 shadowProj = (texMatrices[lightIndex] * inverse(camMatrix) *
-				vec4(position + (N * 1.5), 1));
-
-			float shadow = 0.0;
-
-			if (shadowProj.w > 0.0)
+			if (lightIndex < numShadowCastingLights)
 			{
-				//shadow = textureProj(shadows[lightIndex], shadowProj);
+				float lambert = max(0.0, dot(L, N));
 
-				float texelSize = 1.0f / 4096.0f;// textureSize(shadows[lightIndex], 0);
-				int sampleCount = 0;
+				//Shadow
+				vec4 shadowProj = (texMatrices[lightIndex] * inverse(camMatrix) *
+					vec4(position + (N * 1.5), 1));
 
-				for (int x = -2; x <= 2; ++x)
+				float shadow = 0.0;
+
+				if (shadowProj.w > 0.0)
 				{
-					for (int y = -2; y <= 2; ++y)
+					float texelSize = 1.0f / 4096.0f;
+					int sampleCount = 0;
+
+					for (int x = -2; x <= 2; ++x)
 					{
-						vec2 sampleCoord = vec2(x, y);// *texelSize;// *100.0f;
-						shadow += textureProj(shadows[lightIndex], shadowProj + vec4(sampleCoord, 0.0f, 0.0f));
-						sampleCount++;
+						for (int y = -2; y <= 2; ++y)
+						{
+							vec2 sampleCoord = vec2(x, y);
+							shadow += textureProj(shadows[lightIndex], shadowProj + vec4(sampleCoord, 0.0f, 0.0f));
+							sampleCount++;
+						}
 					}
+
+					shadow /= 16;
 				}
 
-				shadow /= 16;// pow((HALF_NUM_PCF_SAMPLES) * 2, 2);
+				lambert *= shadow;
+				attenuation *= lambert;
 			}
 
-			lambert *= shadow;
-			attenuation *= lambert;
+			vec3 radiance = lightData[lightIndex].lightColour.rgb * attenuation;
+
+			// cook-torrance brdf
+			float NDF = DistributionGGX(N, H, roughness);
+			float G = GeometrySmith(N, V, L, roughness);
+			vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
+
+			vec3 kS = F;
+			vec3 kD = vec3(1.0) - kS;
+			kD *= 1.0 - metallic;
+
+			vec3 numerator = NDF * G * F;
+			float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.001;
+			vec3 specular = numerator / denominator;
+
+			// add to outgoing radiance Lo
+			float NdotL = max(dot(N, L), 0.0);
+			Lo += (kD * albedo / PI + specular) * radiance * NdotL;
 		}
 
-		//attenuation = (attenuation - )
-
-
-		////float attenuation = /*(lightData[lightIndex].lightRadius * lightData[lightIndex].lightRadius) */1.0f / (distance);
-		//float attenuation = 1.0f / (distance * distance);// clamp(pow(1.0f - (pow(distance / lightData[lightIndex].lightRadius, 4.0f)), 2.0f), 0.0f, 1.0f) / (distance * distance) + 1.0f;
-		vec3 radiance = lightData[lightIndex].lightColour.rgb * attenuation;
-
-		// cook-torrance brdf
-		float NDF = DistributionGGX(N, H, roughness);
-		float G = GeometrySmith(N, V, L, roughness);
-		vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
-
-		vec3 kS = F;
-		vec3 kD = vec3(1.0) - kS;
-		kD *= 1.0 - metallic;
-
-		vec3 numerator = NDF * G * F;
-		float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.001;
-		vec3 specular = numerator / denominator;
-
-		// add to outgoing radiance Lo
-		float NdotL = max(dot(N, L), 0.0);
-		Lo += (kD * albedo / PI + specular) * radiance * NdotL;
 	}
 
 	//Ambient lighting + SSAO
-	vec3 ambient = vec3(0.4) * albedo;
+	vec3 ambient = vec3(0.11) * albedo;
 
 	//Final colour
 	vec3 color =(ambient + Lo) * texture(ambientTextures[0], TexCoords).r;
-	//color = color / (color + vec3(1.0));
 	color = pow(color, vec3(1.0 / 1.3));
 
-	lightResult = vec4(color, 1.0);//  ;
+	lightResult = vec4(color, 1.0);
 }
 
 void main(void){
@@ -259,9 +275,6 @@ void main(void){
     vec3 position	= texture(gPosition, TexCoords).rgb;
     vec3 normal		= normalize(texture(gNormal, TexCoords).rgb);
 	vec4 albedoCol = texture(gAlbedo, TexCoords);
-
-	//vec3 worldPos = (inverse(camMatrix) * vec4(position, 1.0f)).xyz;
-	//vec3 n = (inverse(camMatrix) * vec4(normal, 1.0f)).xyz;
 
 	if (position.z > 0.0f) 
 	{
@@ -284,48 +297,24 @@ void main(void){
 		{
 			//Default value
 			vec4 lightResult = vec4(0.0, 0.0, 0.0, 1.0);
+			AddPBRLighting(position, albedoCol.rgb, normal, tile, lightResult);
 
-			vec4 tileColour = vec4(0.0f, 0.0f, 0.0f, 1.0f);
-
-			for (int j = 0; j < lightIndexes[tile]; j++)
-			{
-				int lightIndex = tileLights[tile][j];
-
-				if (lightIndex != 0)
-				{
-					tileColour.xyz += lightData[lightIndex].lightColour.rgb;
-				}
-
-				AddPBRLighting(position, normal, albedoCol, lightIndex, lightResult);
-			}
-
-			tileColour /= float(lightIndexes[tile]);
-
-			//Ambient
-			float ambientFX = ambientLighting;
-
-			for (int j = 0; j < 1; j++)
-			{
-				ambientFX *= texture(ambientTextures[j], TexCoords).r;
-			}
-
-		lightResult.a = albedoCol.a;
-		FragColor = lightResult;// 
-	}
+			lightResult.a = albedoCol.a;
+			FragColor = lightResult;
 
 			vec3 greyscale = vec3(0.2126, 0.7152, 0.0722);
 			float brightness = dot(FragColor.rgb, greyscale);
-			if (brightness > 0.8)
+			if (brightness > 0.9)
 			{
-				BrightnessCol = vec4(FragColor.rgb * vec3(1, 0.6, 0.6), 1.0f);
+				BrightnessCol = vec4(FragColor.rgb, 1.0f);
 			}
 			else BrightnessCol = vec4(0.0, 0.0, 0.0, 1.0f);
 		}
 		else
 		{
 			uint lightsOnScreen = atomicCounter(count);
-			float colourValue = 1.0f - (float(lightIndexes[tile] - 1) / float(lightsOnScreen - 1));
-			FragColor = vec4(colourValue, colourValue, colourValue, 1.0f);
+			float colourValue = (float(lightIndexes[tile] - 1) / float(lightsOnScreen - 1))/* * (1.0f - zCoord)*/;
+			FragColor = normalize(vec4(colourValue, colourValue, colourValue, 1.0f));
 			BrightnessCol = vec4(0.0, 0.0, 0.0, 1.0f);
 		}
 	}

@@ -7,14 +7,11 @@ layout(location = 2) in vec3 aNormal;
 uniform mat4 textureMatrix;
 
 out vec2 TexCoords;
-out mat4 textureMat;
 out vec2 screenPos;
 
 void main()
 {
     TexCoords = aTexCoords;
-
-	textureMat = textureMatrix;
 
 	screenPos = vec2(aPos.x, aPos.y);
 

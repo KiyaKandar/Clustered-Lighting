@@ -23,12 +23,12 @@ public:
 	
 	static const int BLOOM_STRENGTH = 2;
 
-	static const int NUM_X_AXIS_TILES = 30;
-	static const int NUM_Y_AXIS_TILES = 30;
-	static const int NUM_Z_AXIS_TILES = 30;
+	static const int NUM_X_AXIS_TILES = 16;
+	static const int NUM_Y_AXIS_TILES = 16;
+	static const int NUM_Z_AXIS_TILES = 16;
 	static constexpr int NUM_TILES = NUM_X_AXIS_TILES * NUM_Y_AXIS_TILES * NUM_Z_AXIS_TILES;
 
-	static const int NUM_LIGHTS = 100;
+	static const int NUM_LIGHTS = 1000;
 	static const int SHADOW_LIGHTS = 2;
 
 	//Declared in cpp file - volatile integral type problem.
