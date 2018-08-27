@@ -95,7 +95,7 @@ void AddBPLighting(vec3 position, vec3 normal, vec4 albedoCol, int lightIndex, i
 
 		//Specular
 		vec3 halfDir = normalize(lightDir + viewDir);
-		float specPower = pow(max(dot(normal, halfDir), 0.0), 500.0);
+		float specPower = pow(max(dot(normal, halfDir), 0.0), 50.0);
 		vec3 specular = lightData[lightIndex].lightColour.rgb * specPower;
 
 		//Attenuation
