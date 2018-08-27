@@ -359,7 +359,7 @@ void Renderer::BuildMeshLists()
 				const Vector3 position = (*models)[model]->meshes[subMesh]->GetTransform(i)->GetPositionVector();
 				const float radius = (*models)[model]->meshes[subMesh]->GetBoundingRadius();
 
-				if (frameFrustum.InsideFrustum((*models)[model]->meshes[subMesh]->box))
+				if (frameFrustum.InsideFrustum(position, radius))
 				{
 					const Vector3 dir = (*models)[model]->meshes[subMesh]->GetTransform(i)->GetPositionVector() -
 						camera->GetPosition();

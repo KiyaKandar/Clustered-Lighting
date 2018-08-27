@@ -45,7 +45,6 @@ void SponzaScene::CreatePrettyScene(Renderer* renderer, Camera* camera, Window* 
 	scene->AddLight(new Light(Vector3(-630, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.5f, 1.0f), 3);
 	scene->AddLight(new Light(Vector3(500, 140, 150), Vector4(1.0f, (140.0f / 255.0f), 0.0f, 1), 150.0f, 1.5f, 1.0f), 4);
 
-
 	scene->AddUpdateProcess([camera = camera](float msec)
 	{
 	});
@@ -98,6 +97,7 @@ void SponzaScene::CreateCLDemoScene(Renderer* renderer, Camera* camera, Window* 
 {
 	vector<pair<string, int>> files;
 	files.push_back(make_pair("../sponza/sponza.obj", 1));
+	files.push_back(make_pair("../Models/glass.obj", 1));
 
 	vector<string> skybox =
 	{
@@ -114,6 +114,11 @@ void SponzaScene::CreateCLDemoScene(Renderer* renderer, Camera* camera, Window* 
 	scene->LoadModels();
 	GenerateLights(scene);
 	scene->ambient = 0.1f;
+
+	Model* glass = scene->GetModel("../Models/glass.obj");
+	glass->Scale(Vector3(105, 105, 105));
+	glass->Translate(Vector3(-3500 + (500 * (13 - 5)), 500, -450));
+	glass->SetbackupColourAttributeForAllSubMeshes(Vector4(0.0f, 0.0f, 0.8f, 0.5f));
 
 	scene->AddUpdateProcess([scene = scene, window = window](float msec)
 	{
