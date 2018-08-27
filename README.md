@@ -1,6 +1,6 @@
-# Clustered Forward Lighting
+# Clustered Lighting
 
-![Sponza](https://github.com/KiyaKandar/Clustered-Forward-Lighting/blob/master/sponza_pretty_pbr.png)
+![Sponza](https://github.com/KiyaKandar/Clustered-Lighting/blob/master/sponza_pretty_pbr.png)
 
 https://youtu.be/5odGp2NOhzw
 
@@ -12,7 +12,7 @@ http://kiyavashkandar.com/clustered-forward-lighting
 * Suitable for large numbers of lights in a scene.
 * Crytek Sponza scene is used to demonstrate.
 
-![Sponza](https://github.com/KiyaKandar/Clustered-Forward-Lighting/blob/master/sponza_pbr_1024_lights.png)
+![Sponza](https://github.com/KiyaKandar/Clustered-Lighting/blob/master/sponza_pbr_1024_lights.png)
 
 **WARNING: ASSIMP LOAD TIMES FOR SPONZA TAKE ~35 SECONDS**
 
@@ -37,7 +37,7 @@ Uses an additional culling stage.
 * PBR (on PBR branch)
 * Transparency
 
-![Sponza](https://github.com/KiyaKandar/Clustered-Forward-Lighting/blob/master/sponza_tiled_view.png)
+![Sponza](https://github.com/KiyaKandar/Clustered-Lighting/blob/master/sponza_tiled_view.png)
 
 ## How To Use
 *See Game/run.cpp*
