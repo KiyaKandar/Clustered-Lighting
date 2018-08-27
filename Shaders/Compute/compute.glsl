@@ -90,7 +90,7 @@ void main()
 
 	for (int i = 0; i < numLights; i++)
 	{
-		if (true/*ClipSpaceCoords[i].w != 0.0f || i == GLOBAL_LIGHT*/)
+		if (ClipSpaceCoords[i].w != 0.0f || i == GLOBAL_LIGHT)
 		{
 			if (i == GLOBAL_LIGHT || SphereCubeColliding(cubePlanes[index].faces, ClipSpaceCoords[i]))
 			{
