@@ -148,7 +148,7 @@ void Renderer::Update(const float& deltatime)
 	UpdateScene(deltatime);
 	currentViewProj = camera->viewMatrix;
 
-	tiles->AllocateLightsGPU(GLConfig::SHARED_PROJ_MATRIX, viewMatrix, camera->GetPosition(), lightData);
+	tiles->AllocateLightsGPU(GLConfig::SHARED_PROJ_MATRIX, viewMatrix, camera->GetPosition(), lightData, &frameFrustum);
 
 	RenderScene();
 
@@ -248,7 +248,7 @@ void Renderer::UpdateScene(const float& msec)
 
 	if (msUntilSceneChange <= 0)
 	{
-		autoChangeScene = true;
+		//autoChangeScene = true;
 	}
 
 	if (wparent->GetKeyboard()->KeyTriggered(KEYBOARD_UP))

@@ -90,17 +90,20 @@ void main()
 
 	for (int i = 0; i < numLights; i++)
 	{
-		if (i == GLOBAL_LIGHT || SphereCubeColliding(cubePlanes[index].faces, ClipSpaceCoords[i]))
+		if (true/*ClipSpaceCoords[i].w != 0.0f || i == GLOBAL_LIGHT*/)
 		{
-			tileLights[index][intersections] = i;
-			intersections++;
-		}
-		else if (zIndex == 0)
-		{
-			if (PointInSphere(cameraPosition.xyz, ClipSpaceCoords[i], nearPlane, farPlane))
+			if (i == GLOBAL_LIGHT || SphereCubeColliding(cubePlanes[index].faces, ClipSpaceCoords[i]))
 			{
 				tileLights[index][intersections] = i;
 				intersections++;
+			}
+			else if (zIndex == 0)
+			{
+				if (PointInSphere(cameraPosition.xyz, ClipSpaceCoords[i], nearPlane, farPlane))
+				{
+					tileLights[index][intersections] = i;
+					intersections++;
+				}
 			}
 		}
 	}

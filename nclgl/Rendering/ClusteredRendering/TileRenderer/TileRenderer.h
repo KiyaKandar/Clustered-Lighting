@@ -17,6 +17,7 @@
 #include <type_traits>
 #include "../Game/GraphicsConfiguration/GLConfig.h"
 
+class Frustum;
 class Camera;
 class Light;
 
@@ -65,7 +66,7 @@ public:
 	void GenerateGrid();
 	void InitGridSSBO();
 
-	void AllocateLightsGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, const Vector3& cameraPos, LightData* lightData) const;
+	void AllocateLightsGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, const Vector3& cameraPos, LightData* lightData, Frustum* frustum) const;
 	
 	ComputeShader* dataPrep;
 	ComputeShader* compute;
@@ -96,6 +97,7 @@ private:
 	Vector4 screenLightData[GLConfig::NUM_LIGHTS];
 	ScreenSpaceData ssdata;
 	Vector4* clipSpaceLightPositions;// [GLConfig::NUM_LIGHTS];
+	Vector4* clipSpaceData;
 
 	//SSBO Stuff
 	GLuint tileDataSSBO;

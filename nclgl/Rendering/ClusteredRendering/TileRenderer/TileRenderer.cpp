@@ -6,6 +6,7 @@
 #include "../../Rendering/View/Camera.h"
 #include "../../../Maths/Vector4.h"
 #include "../../../Maths/Vector3.h"
+#include "../../../Maths/Frustum.h"
 
 const int INTERSECTING = 1;
 const int EMPTY = 0;
@@ -87,34 +88,48 @@ void TileRenderer::InitGridSSBO()
 		clipSpaceLightPositions[i] = Vector4(1, 1, 1, 1);
 	}
 
-	clipSpaceSSBO = GLUtil::InitSSBO(1, 6, clipSpaceSSBO,
-		sizeof(Vector4) * GLConfig::NUM_LIGHTS, clipSpaceLightPositions, GL_STATIC_COPY);
+	glGenBuffers(1, &clipSpaceSSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, clipSpaceSSBO);
+	glBufferStorage(GL_SHADER_STORAGE_BUFFER, sizeof(Vector4) * GLConfig::NUM_LIGHTS, clipSpaceLightPositions, GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT | GL_MAP_READ_BIT | GL_MAP_WRITE_BIT);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, clipSpaceSSBO);
+	clipSpaceData = (Vector4*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, sizeof(Vector4) * GLConfig::NUM_LIGHTS, GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT | GL_MAP_READ_BIT | GL_MAP_WRITE_BIT);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	//clipSpaceSSBO = GLUtil::InitSSBO(1, 6, clipSpaceSSBO,
+	//	sizeof(Vector4) * GLConfig::NUM_LIGHTS, clipSpaceLightPositions, GL_STATIC_COPY);
 }
 
 void TileRenderer::AllocateLightsGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, 
-	const Vector3& cameraPos, LightData* lightData) const
+	const Vector3& cameraPos, LightData* lightData, Frustum* frustum) const
 {
 	Matrix4 projView = projectionMatrix * viewMatrix;
 
 	for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
 	{
-		Vector4 worldPosition = lightData[i].lightPosition;
-		Vector4 projViewPos = projView * worldPosition;
-		Vector4 viewPosition = viewMatrix * worldPosition;
+		//if (frustum->InsideFrustum(lightData[i].lightPosition.ToVector3(), lightData[i].lightRadius))
+		//{
+			Vector4 worldPosition = Vector4(lightData[i].lightPosition.x, lightData[i].lightPosition.y, lightData[i].lightPosition.z, 1.0f);
+			Vector4 projViewPos = projView * worldPosition;
+			Vector4 viewPosition = viewMatrix * worldPosition;
 
-		float zCoord = std::fabs(projViewPos.z) / (GLConfig::FAR_PLANE + GLConfig::NEAR_PLANE);
-		float w = 1.0f / projViewPos.w;
-		
-		float radius = lightData[i].lightRadius * w;
-		Vector4 clipSpacePosition(projViewPos.x * w, projViewPos.y * w, zCoord, radius);
-		clipSpaceLightPositions[i] = clipSpacePosition;
+			float zCoord = std::fabs(projViewPos.z) / (GLConfig::FAR_PLANE + GLConfig::NEAR_PLANE);
+			float w = 1.0f / projViewPos.w;
+
+			float radius = lightData[i].lightRadius * w;
+			Vector4 clipSpacePosition(projViewPos.x * w, projViewPos.y * w, zCoord, radius);
+			clipSpaceData[i] = clipSpacePosition;
+		//}
+		//else
+		//{
+		//	clipSpaceData[i] = Vector4(0, 0, 0, 0);
+		//}
 	}
 
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, clipSpaceSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Vector4) * GLConfig::NUM_LIGHTS,
-		clipSpaceLightPositions, GL_STATIC_COPY);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, clipSpaceSSBO);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, clipSpaceSSBO);
+	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Vector4) * GLConfig::NUM_LIGHTS,
+	//	clipSpaceLightPositions, GL_STATIC_COPY);
+	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, clipSpaceSSBO);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 	FillTilesGPU(projectionMatrix, viewMatrix);
 }
