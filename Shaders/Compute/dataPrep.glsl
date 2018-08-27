@@ -64,6 +64,11 @@ layout(std430, binding = 5) buffer ScreenSpaceDataBuffer
 	vec4 NDCCoords[];
 };
 
+layout(std430, binding = 6) buffer ClipSpacePositionsBuffer
+{
+	vec4 ClipSpaceCoords[];
+};
+
 layout(binding = 0) uniform atomic_uint count;
 
 #include ../Shaders/compute/collisionFunctions.glsl
@@ -96,10 +101,15 @@ void main()
 	//else cull.
 	if (colliding)
 	{
-		uint currentLightCount = atomicCounterIncrement(count);
+		//uint currentLightCount = atomicCounterIncrement(count);
 
-		NDCCoords[currentLightCount] = clipPos;
-		indexes[currentLightCount] = id;
+		NDCCoords[id] = clipPos;
+		indexes[id] = id;
+	}
+	else
+	{
+		NDCCoords[id] = clipPos;
+		indexes[id] = -1;
 	}
 }
 

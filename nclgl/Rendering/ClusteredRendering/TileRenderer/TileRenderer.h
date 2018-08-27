@@ -65,15 +65,13 @@ public:
 	void GenerateGrid();
 	void InitGridSSBO();
 
-	void AllocateLightsGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, const Vector3& cameraPos) const;
+	void AllocateLightsGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, const Vector3& cameraPos, LightData* lightData) const;
 	
 	ComputeShader* dataPrep;
 	ComputeShader* compute;
 	Vector3** dataPrepWorkGroups;
 
 private:
-	void PrepareDataGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, const Vector3& cameraPos) const;
-
 	void FillTilesGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix) const;
 
 	Light** lights;
@@ -97,11 +95,13 @@ private:
 
 	Vector4 screenLightData[GLConfig::NUM_LIGHTS];
 	ScreenSpaceData ssdata;
+	Vector4* clipSpaceLightPositions;// [GLConfig::NUM_LIGHTS];
 
 	//SSBO Stuff
 	GLuint tileDataSSBO;
 	GLuint gridPlanesSSBO;
 	GLuint screenSpaceDataSSBO;
+	GLuint clipSpaceSSBO;
 	GLuint modelMatricesSSBO;
 
 	GLuint countBuffer;

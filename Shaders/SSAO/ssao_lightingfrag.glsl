@@ -76,8 +76,6 @@ layout(std430, binding = 7) buffer SpotLightDataBuffer
 	SpotLightData spotLightData[];
 };
 
-layout(binding = 0) uniform atomic_uint count;
-
 void AddBPLighting(vec3 position, vec3 normal, vec4 albedoCol, int lightIndex, inout vec4 lightResult)
 {
 	vec3 lightPosition = lightData[lightIndex].pos4.xyz;
@@ -228,8 +226,7 @@ void main(void){
 		}
 		else
 		{
-			uint lightsOnScreen = atomicCounter(count);
-			float colourValue = 1.0f - (float(lightIndexes[tile] - 1) / float(lightsOnScreen - 1));
+			float colourValue = 1.0f - (float(lightIndexes[tile] - 1) / float(numLights - 1));
 			FragColor = vec4(colourValue, colourValue, colourValue, 1.0f);
 			BrightnessCol = vec4(0.0, 0.0, 0.0, 1.0f);
 		}

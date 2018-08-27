@@ -4,6 +4,8 @@
 #include "../Game/Utility/Util.h"
 #include "../Game/GraphicsConfiguration/GLUtil.h"
 #include "../../Rendering/View/Camera.h"
+#include "../../../Maths/Vector4.h"
+#include "../../../Maths/Vector3.h"
 
 const int INTERSECTING = 1;
 const int EMPTY = 0;
@@ -30,6 +32,7 @@ TileRenderer::TileRenderer(Light** lights, int numLights, int numXTiles, int num
 	numTiles = gridSize.x * gridSize.y * gridSize.z;
 
 	gridPlanes = new CubePlanes[numTiles];
+	clipSpaceLightPositions = new Vector4[GLConfig::NUM_LIGHTS];
 
 	compute = new ComputeShader(SHADERDIR"/Compute/compute.glsl", true);
 	compute->LinkProgram();
@@ -79,30 +82,40 @@ void TileRenderer::InitGridSSBO()
 	screenSpaceDataSSBO = GLUtil::InitSSBO(1, 5, screenSpaceDataSSBO,
 		sizeof(ScreenSpaceData), &ssdata, GL_STATIC_COPY);
 
-	glGenBuffers(1, &countBuffer);
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, countBuffer);
-	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint), NULL, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
-	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, countBuffer);
+	for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
+	{
+		clipSpaceLightPositions[i] = Vector4(1, 1, 1, 1);
+	}
+
+	clipSpaceSSBO = GLUtil::InitSSBO(1, 6, clipSpaceSSBO,
+		sizeof(Vector4) * GLConfig::NUM_LIGHTS, clipSpaceLightPositions, GL_STATIC_COPY);
 }
 
 void TileRenderer::AllocateLightsGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, 
-	const Vector3& cameraPos) const
+	const Vector3& cameraPos, LightData* lightData) const
 {
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, countBuffer);
-	glInvalidateBufferData(countBuffer);
-	GLuint zero = 0;
-	glClearBufferData(GL_ATOMIC_COUNTER_BUFFER, GL_R32UI, GL_RED_INTEGER, GL_UNSIGNED_INT, &zero);
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+	Matrix4 projView = projectionMatrix * viewMatrix;
 
-	//TEMP
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, intersectionCountBuffer);
-	glInvalidateBufferData(intersectionCountBuffer);
-	GLuint zero1 = 0;
-	glClearBufferData(GL_ATOMIC_COUNTER_BUFFER, GL_R32UI, GL_RED_INTEGER, GL_UNSIGNED_INT, &zero1);
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+	for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
+	{
+		Vector4 worldPosition = lightData[i].lightPosition;
+		Vector4 projViewPos = projView * worldPosition;
+		Vector4 viewPosition = viewMatrix * worldPosition;
 
-	PrepareDataGPU(projectionMatrix, viewMatrix, cameraPos);
+		float zCoord = std::fabs(projViewPos.z) / (GLConfig::FAR_PLANE + GLConfig::NEAR_PLANE);
+		float w = 1.0f / projViewPos.w;
+		
+		float radius = lightData[i].lightRadius * w;
+		Vector4 clipSpacePosition(projViewPos.x * w, projViewPos.y * w, zCoord, radius);
+		clipSpaceLightPositions[i] = clipSpacePosition;
+	}
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, clipSpaceSSBO);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Vector4) * GLConfig::NUM_LIGHTS,
+		clipSpaceLightPositions, GL_STATIC_COPY);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, clipSpaceSSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
 	FillTilesGPU(projectionMatrix, viewMatrix);
 }
 
@@ -123,21 +136,5 @@ void TileRenderer::FillTilesGPU(const Matrix4& projectionMatrix, const Matrix4& 
 
 	compute->Compute(Vector3(GLConfig::NUM_X_AXIS_TILES, GLConfig::NUM_Y_AXIS_TILES, GLConfig::NUM_Z_AXIS_TILES));
 
-	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT);
-}
-
-void TileRenderer::PrepareDataGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, 
-	const Vector3& cameraPos) const 
-{
-	Matrix4 projView = projectionMatrix * viewMatrix;
-	dataPrep->UseProgram();
-
-	glUniform1f(glGetUniformLocation(dataPrep->GetProgram(), "nearPlane"), GLConfig::NEAR_PLANE);
-	glUniform1f(glGetUniformLocation(dataPrep->GetProgram(), "farPlane"), GLConfig::FAR_PLANE);
-	glUniformMatrix4fv(loc_projMatrix, 1, false, (float*)&projectionMatrix);
-	glUniformMatrix4fv(glGetUniformLocation(dataPrep->GetProgram(), "viewMatrix"), 1, false, (float*)&viewMatrix);
-	glUniformMatrix4fv(loc_projView, 1, false, (float*)&projView);
-
-	dataPrep->Compute(**dataPrepWorkGroups);
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT);
 }

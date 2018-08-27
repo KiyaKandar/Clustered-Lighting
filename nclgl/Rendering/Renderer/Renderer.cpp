@@ -148,7 +148,7 @@ void Renderer::Update(const float& deltatime)
 	UpdateScene(deltatime);
 	currentViewProj = camera->viewMatrix;
 
-	tiles->AllocateLightsGPU(GLConfig::SHARED_PROJ_MATRIX, viewMatrix, camera->GetPosition());
+	tiles->AllocateLightsGPU(GLConfig::SHARED_PROJ_MATRIX, viewMatrix, camera->GetPosition(), lightData);
 
 	RenderScene();
 

@@ -67,6 +67,11 @@ layout(std430, binding = 5) buffer ScreenSpaceDataBuffer
 	vec4 NDCCoords[];
 };
 
+layout(std430, binding = 6) buffer ClipSpacePositionsBuffer
+{
+	vec4 ClipSpaceCoords[];
+};
+
 layout(binding = 0) uniform atomic_uint count;
 
 #include ../Shaders/compute/collisionFunctions.glsl
@@ -83,21 +88,18 @@ void main()
 
 	int intersections = 0;
 
-	uint lightsOnScreen = atomicCounter(count);
-	for (int i = 0; i < lightsOnScreen; i++)
+	for (int i = 0; i < numLights; i++)
 	{
-		int lightIndex = int(indexes[i]);
-
-		if (lightIndex == GLOBAL_LIGHT || SphereCubeColliding(cubePlanes[index].faces, NDCCoords[i]))
+		if (i == GLOBAL_LIGHT || SphereCubeColliding(cubePlanes[index].faces, ClipSpaceCoords[i]))
 		{
-			tileLights[index][intersections] = lightIndex;
+			tileLights[index][intersections] = i;
 			intersections++;
 		}
 		else if (zIndex == 0)
 		{
-			if (PointInSphere(cameraPosition.xyz, NDCCoords[i], nearPlane, farPlane))
+			if (PointInSphere(cameraPosition.xyz, ClipSpaceCoords[i], nearPlane, farPlane))
 			{
-				tileLights[index][intersections] = lightIndex;
+				tileLights[index][intersections] = i;
 				intersections++;
 			}
 		}
