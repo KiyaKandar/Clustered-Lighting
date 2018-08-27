@@ -1,6 +1,8 @@
 # Clustered Forward Lighting
 
 ![Sponza](https://github.com/KiyaKandar/Clustered-Forward-Lighting/blob/master/sponza_pretty_pbr.png)
+![Sponza](https://github.com/KiyaKandar/Clustered-Forward-Lighting/blob/master/sponza_pbr_1024_lights.png)
+![Sponza](https://github.com/KiyaKandar/Clustered-Forward-Lighting/blob/master/sponza_tiled_view.png)
 
 https://youtu.be/5odGp2NOhzw
 
