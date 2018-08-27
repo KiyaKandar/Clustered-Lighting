@@ -95,13 +95,6 @@ void TileRenderer::AllocateLightsGPU(const Matrix4& projectionMatrix, const Matr
 	glClearBufferData(GL_ATOMIC_COUNTER_BUFFER, GL_R32UI, GL_RED_INTEGER, GL_UNSIGNED_INT, &zero);
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
 
-	//TEMP
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, intersectionCountBuffer);
-	glInvalidateBufferData(intersectionCountBuffer);
-	GLuint zero1 = 0;
-	glClearBufferData(GL_ATOMIC_COUNTER_BUFFER, GL_R32UI, GL_RED_INTEGER, GL_UNSIGNED_INT, &zero1);
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
-
 	PrepareDataGPU(projectionMatrix, viewMatrix, cameraPos);
 	FillTilesGPU(projectionMatrix, viewMatrix);
 }
