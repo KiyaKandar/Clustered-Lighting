@@ -77,28 +77,26 @@ void main()
 	int yIndex = int(gl_GlobalInvocationID.y);
 	int zIndex = int(gl_GlobalInvocationID.z);
 
-	int tile = xIndex + int(tilesOnAxes.x) * (yIndex + int(tilesOnAxes.y) * zIndex);
-
-	uint index = uint(tile);
+	uint index = uint(xIndex + int(tilesOnAxes.x) * (yIndex + int(tilesOnAxes.y) * zIndex));
 
 	int intersections = 0;
 
 	uint lightsOnScreen = atomicCounter(count);
-	for (int i = 0; i < lightsOnScreen; i++)
+	for (int i = 0; i < lightsOnScreen; ++i)
 	{
 		int lightIndex = int(indexes[i]);
 
 		if (lightIndex == GLOBAL_LIGHT || SphereCubeColliding(cubePlanes[index].faces, NDCCoords[i]))
 		{
 			tileLights[index][intersections] = lightIndex;
-			intersections++;
+			++intersections;
 		}
 		else if (zIndex == 0)
 		{
 			if (PointInSphere(cameraPosition.xyz, NDCCoords[i], nearPlane, farPlane))
 			{
 				tileLights[index][intersections] = lightIndex;
-				intersections++;
+				++intersections;
 			}
 		}
 	}

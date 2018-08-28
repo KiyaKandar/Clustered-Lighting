@@ -177,7 +177,7 @@ void main(void){
 	else 
 	{
 		//Transform screenspace coordinates into a tile index
-		float zCoord = abs(position.z) / (nearPlane + farPlane);
+		float zCoord = abs(position.z) / (farPlane - nearPlane);
 
 		int xIndex = int(TexCoords.x * tilesOnAxes.x);
 		int yIndex = int(TexCoords.y * tilesOnAxes.y);
@@ -189,22 +189,11 @@ void main(void){
 		{
 			//Default value
 			vec4 lightResult = vec4(0.0, 0.0, 0.0, 1.0);
-
-			vec4 tileColour = vec4(0.0f, 0.0f, 0.0f, 1.0f);
-
 			for (int j = 0; j < lightIndexes[tile]; j++)
 			{
 				int lightIndex = tileLights[tile][j];
-
-				if (lightIndex != 0)
-				{
-					tileColour.xyz += lightData[lightIndex].lightColour.rgb;
-				}
-
 				AddBPLighting(position, normal, albedoCol, lightIndex, lightResult);
 			}
-
-			tileColour /= float(lightIndexes[tile]);
 
 			//Ambient
 			float ambientFX = ambientLighting;
@@ -229,7 +218,7 @@ void main(void){
 		else
 		{
 			uint lightsOnScreen = atomicCounter(count);
-			float colourValue = 1.0f - (float(lightIndexes[tile] - 1) / float(lightsOnScreen - 1));
+			float colourValue = 1.0f - (float(lightIndexes[tile]) / float(lightsOnScreen));
 			FragColor = vec4(colourValue, colourValue, colourValue, 1.0f);
 			BrightnessCol = vec4(0.0, 0.0, 0.0, 1.0f);
 		}

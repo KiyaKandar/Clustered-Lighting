@@ -159,7 +159,7 @@ void SponzaScene::GenerateLights(Scene* scene)
 		float r = GetRandomFloat(0, 1);
 		float g = GetRandomFloat(0, 1);
 		float b = GetRandomFloat(0, 1);
-		float radius = GetRandomFloat(200, 200.0f);
+		float radius = GetRandomFloat(50, 200.0f);
 		float intensity = GetRandomFloat(1.2f, 2.3f);
 
 		Vector3 pos(x, y, z);

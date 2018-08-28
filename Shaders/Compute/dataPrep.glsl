@@ -79,7 +79,7 @@ void main()
 	vec4 worldLight = vec4(lightData[id].pos4.xyz, 1.0f);
 	vec4 projViewPos = projView * worldLight;
 	vec4 viewPos = viewMatrix * worldLight;
-	float zCoord = abs(projViewPos.z) / farPlane + nearPlane;
+	float zCoord = abs(viewPos.z) / (farPlane - nearPlane);
 
 	//Store reciprocal to avoid use of division below.
 	float w = 1.0f / projViewPos.w;
