@@ -65,12 +65,6 @@ layout (std430, binding = 3) buffer TileLightsBuffer
 	int tileLights[][numLights];
 };
 
-layout(std430, binding = 7) buffer SpotLightDataBuffer
-{
-	SpotLightData spotLightData[];
-};
-
-layout(binding = 0) uniform atomic_uint count;
 vec3 getNormalFromMap(vec3 worldPos, vec3 normal)
 {
 	vec3 tangentNormal = normal * 2.0f - 1.0f;
@@ -195,38 +189,6 @@ void AddPBRLighting(vec3 position, vec3 albedoCol, vec3 normal, int tileIndex, i
 		{
 			float attenuation = CalculateAttenuation(lightIndex, lengthPos, N);
 
-			if (lightIndex < numShadowCastingLights)
-			{
-				float lambert = max(0.0, dot(L, N));
-
-				//Shadow
-				vec4 shadowProj = (texMatrices[lightIndex] * inverse(camMatrix) *
-					vec4(position + (N * 1.5), 1));
-
-				float shadow = 0.0;
-
-				if (shadowProj.w > 0.0)
-				{
-					float texelSize = 1.0f / 4096.0f;
-					int sampleCount = 0;
-
-					for (int x = -2; x <= 2; ++x)
-					{
-						for (int y = -2; y <= 2; ++y)
-						{
-							vec2 sampleCoord = vec2(x, y);
-							shadow += textureProj(shadows[lightIndex], shadowProj + vec4(sampleCoord, 0.0f, 0.0f));
-							sampleCount++;
-						}
-					}
-
-					shadow /= 16;
-				}
-
-				lambert *= shadow;
-				attenuation *= lambert;
-			}
-
 			vec3 radiance = lightData[lightIndex].lightColour.rgb * attenuation;
 
 			// cook-torrance brdf
@@ -253,7 +215,7 @@ void AddPBRLighting(vec3 position, vec3 albedoCol, vec3 normal, int tileIndex, i
 	vec3 ambient = vec3(0.11) * albedo;
 
 	//Final colour
-	vec3 color =(ambient + Lo) * texture(ambientTextures[0], TexCoords).r;
+	vec3 color = (ambient + Lo);
 	color = pow(color, vec3(1.0 / 1.3));
 
 	lightResult = vec4(color, 1.0);
@@ -275,29 +237,18 @@ void main(void)
 
 	int tile = GetTileIndex(xIndex, yIndex, zIndex);
 
-		if (renderTiles == 0)
-		{
-			//Default value
-			vec4 lightResult = vec4(0.0, 0.0, 0.0, 1.0);
-			AddPBRLighting(position, albedoCol.rgb, normal, tile, lightResult);
+	if (renderTiles == 0)
+	{
+		//Default value
+		vec4 lightResult = vec4(0.0, 0.0, 0.0, 1.0);
+		AddPBRLighting(position, albedoCol.rgb, normal, tile, lightResult);
 
-			lightResult.a = albedoCol.a;
-			FragColor = lightResult;
-
-			vec3 greyscale = vec3(0.2126, 0.7152, 0.0722);
-			float brightness = dot(FragColor.rgb, greyscale);
-			if (brightness > 0.9)
-			{
-				BrightnessCol = vec4(FragColor.rgb, 1.0f);
-			}
-			else BrightnessCol = vec4(0.0, 0.0, 0.0, 1.0f);
-		}
-		else
-		{
-			uint lightsOnScreen = atomicCounter(count);
-			float colourValue = (float(lightIndexes[tile] - 1) / float(lightsOnScreen - 1))/* * (1.0f - zCoord)*/;
-			FragColor = normalize(vec4(colourValue, colourValue, colourValue, 1.0f));
-			BrightnessCol = vec4(0.0, 0.0, 0.0, 1.0f);
-		}
+		lightResult.a = albedoCol.a;
+		FragColor = lightResult;
+	}
+	else
+	{
+		float colourValue = (float(lightIndexes[tile]) / float(numLights))/* * (1.0f - zCoord)*/;
+		FragColor = normalize(vec4(colourValue, colourValue, colourValue, 1.0f));
 	}
 }
