@@ -104,7 +104,6 @@ private:
 	GLuint screenSpaceDataSSBO;
 	GLuint modelMatricesSSBO;
 
-	GLuint countBuffer;
 	GLuint count;
 
 	//Uniform location

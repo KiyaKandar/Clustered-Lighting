@@ -44,6 +44,9 @@ void GBuffer::Initialise()
 	InitGBuffer();
 	InitAttachments();
 	LocateUniforms();
+	glEnable(GL_DEPTH_TEST);
+	glCullFace(GL_BACK);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -56,15 +59,12 @@ void GBuffer::Apply()
 
 	RenderGeometry(modelsInFrame);
 
-	skybox->Apply();
-
-	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	RenderGeometry(transparentModelsInFrame);
 
 	glDisable(GL_BLEND);
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 }

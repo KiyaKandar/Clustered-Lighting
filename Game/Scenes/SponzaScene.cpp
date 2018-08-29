@@ -14,9 +14,9 @@ Vector3 SponzaScene::workGroups = Vector3(10, 10, 1);
 #elif defined DEMO_512_LIGHTS
 Vector3 SponzaScene::workGroups = Vector3(8, 8, 8);
 #elif defined DEMO_1024_LIGHTS
-Vector3 SponzaScene::workGroups = Vector3(16, 8, 8);
+Vector3 SponzaScene::workGroups = Vector3(2, 1, 1);
 #elif defined DEMO_2048_LIGHTS
-Vector3 SponzaScene::workGroups = Vector3(16, 16, 8);
+Vector3 SponzaScene::workGroups = Vector3(2, 2, 1);
 #endif
 
 
@@ -36,7 +36,6 @@ void SponzaScene::CreatePrettyScene(Renderer* renderer, Camera* camera, Window* 
 	};
 
 	Scene* scene = new Scene(skybox, skybox, files, workGroups, 0.5f);
-	scene->InitialiseShadows(1, renderer);
 	scene->LoadModels();
 
 	scene->AddLight(new Light(Vector3(10, 1800, 200), Vector4(0.9, 0.7, 0.4, 1), 10000.0f, 4.5f), 0);
@@ -110,7 +109,6 @@ void SponzaScene::CreateCLDemoScene(Renderer* renderer, Camera* camera, Window* 
 	};
 
 	Scene* scene = new Scene(skybox, skybox, files, workGroups, 0.5f);
-	scene->InitialiseShadows(0, renderer);
 	scene->LoadModels();
 	GenerateLights(scene);
 	scene->ambient = 0.1f;

@@ -23,7 +23,6 @@ public:
 	~Scene();
 
 	void LoadModels();
-	void InitialiseShadows(int numShadowCastingLights, Renderer* renderer);
 	void UpdateScene(int frameCount);
 
 	void AddUpdateProcess(std::function<void(float)> update);
@@ -41,11 +40,6 @@ public:
 	unsigned int GetReflectionCubeMapTextureID()
 	{
 		return reflectionTextureID;
-	}
-
-	ShadowData* GetShadowData()
-	{
-		return shadows->GetShadowData();
 	}
 
 	void SetLightColour(int index, Vector4 colour)
@@ -91,6 +85,5 @@ private:
 	int modelIDCount;
 	unsigned int skyBoxTextureID;
 	unsigned int reflectionTextureID;
-	Shadows* shadows;
 };
 

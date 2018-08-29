@@ -28,7 +28,6 @@ public:
 		};
 
 		Scene* scene = new Scene(faces, faces, files, Vector3(2, 1, 1), 0.1f);
-		scene->InitialiseShadows(2, renderer);
 
 		scene->AddLight(new Light(Vector3(0, 700, -10),
 			Vector4(1, 1, 1, 1), 2000.0f, 10.5f, Vector4(0, -1, 0, 15)), 0);
