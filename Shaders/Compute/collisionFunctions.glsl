@@ -1,6 +1,6 @@
 bool PointInSphere(vec3 cameraPos, vec4 light, const float nearPlane, const float farPlane)
 {
-	return distance(cameraPos, light.xyz) <= abs(light.w * (light.z * (nearPlane + farPlane)));
+	return distance(cameraPos, light.xyz) <= abs(light.w * (light.z * (farPlane - nearPlane)));
 }
 
 //Checks if a sphere intersects or is inside a given frustum

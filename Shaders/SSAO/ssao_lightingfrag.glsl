@@ -1,8 +1,5 @@
 #version 430
 
-layout(location = 0) out vec4 FragColor;
-layout(location = 1) out vec4 BrightnessCol;
-
 #include ../Shaders/compute/configuration.glsl
 
 uniform int renderTiles;
@@ -11,7 +8,6 @@ uniform float farPlane;
 
 const float PI = 3.14159265359;
 
-uniform int numShadowCastingLights;
 uniform float ambientLighting;
 uniform vec4  cameraPos;
 
@@ -21,21 +17,19 @@ uniform sampler2D gAlbedo;
 uniform sampler2D gMetallic;
 uniform sampler2D gRoughness;
 
-uniform sampler2D ssao;
 uniform sampler2D depth;
 
-uniform sampler2DShadow shadows[5];
 uniform mat4 texMatrices[5];
 uniform mat4 camMatrix;
 uniform mat4 viewMatrix;
-
-uniform sampler2D ambientTextures[1];
 
 uniform int numXTiles;
 uniform int numYTiles;
 
 in vec2 TexCoords;
 in vec2 screenPos;
+
+out vec4 FragColor;
 
 struct LightData
 {
@@ -46,11 +40,6 @@ struct LightData
 	float intensity;
 
 	float fpadding;
-};
-
-struct SpotLightData
-{
-	vec4 direction;
 };
 
 struct Tile
@@ -270,28 +259,21 @@ void AddPBRLighting(vec3 position, vec3 albedoCol, vec3 normal, int tileIndex, i
 	lightResult = vec4(color, 1.0);
 }
 
-void main(void){
+void main(void)
+{
     //Retrieve data from gbuffer
-    vec3 position	= texture(gPosition, TexCoords).rgb;
-    vec3 normal		= normalize(texture(gNormal, TexCoords).rgb);
+    vec3 position = texture(gPosition, TexCoords).rgb;
+    vec3 normal = normalize(texture(gNormal, TexCoords).rgb);
 	vec4 albedoCol = texture(gAlbedo, TexCoords);
 
-	if (position.z > 0.0f) 
-	{
-		//Its the skybox, dont touch it...
-		FragColor = albedoCol;
-		BrightnessCol = vec4(0.0, 0.0, 0.0, 1.0f);
-	}
-	else 
-	{
-		//Transform screenspace coordinates into a tile index
-		float zCoord = abs(position.z) / (nearPlane + farPlane);
+	//Transform screenspace coordinates into a tile index
+	float zCoord = abs(position.z) / (farPlane - nearPlane);
 
-		int xIndex = int(TexCoords.x * tilesOnAxes.x);
-		int yIndex = int(TexCoords.y * tilesOnAxes.y);
-		int zIndex =  int(zCoord * tilesOnAxes.z);
+	int xIndex = int(TexCoords.x * tilesOnAxes.x);
+	int yIndex = int(TexCoords.y * tilesOnAxes.y);
+	int zIndex =  int(zCoord * tilesOnAxes.z);
 
-		int tile = GetTileIndex(xIndex, yIndex, zIndex);
+	int tile = GetTileIndex(xIndex, yIndex, zIndex);
 
 		if (renderTiles == 0)
 		{

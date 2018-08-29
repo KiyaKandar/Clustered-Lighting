@@ -78,23 +78,11 @@ void TileRenderer::InitGridSSBO()
 
 	screenSpaceDataSSBO = GLUtil::InitSSBO(1, 5, screenSpaceDataSSBO,
 		sizeof(ScreenSpaceData), &ssdata, GL_STATIC_COPY);
-
-	glGenBuffers(1, &countBuffer);
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, countBuffer);
-	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint), NULL, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
-	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, countBuffer);
 }
 
 void TileRenderer::AllocateLightsGPU(const Matrix4& projectionMatrix, const Matrix4& viewMatrix, 
 	const Vector3& cameraPos) const
 {
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, countBuffer);
-	glInvalidateBufferData(countBuffer);
-	GLuint zero = 0;
-	glClearBufferData(GL_ATOMIC_COUNTER_BUFFER, GL_R32UI, GL_RED_INTEGER, GL_UNSIGNED_INT, &zero);
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
-
 	PrepareDataGPU(projectionMatrix, viewMatrix, cameraPos);
 	FillTilesGPU(projectionMatrix, viewMatrix);
 }
@@ -114,7 +102,7 @@ void TileRenderer::FillTilesGPU(const Matrix4& projectionMatrix, const Matrix4& 
 	float vec4[4] = { camPos.x, camPos.y, camPos.z, 0 };
 	glUniform4fv(glGetUniformLocation(compute->GetProgram(), "cameraPosition"), 1, vec4);
 
-	compute->Compute(Vector3(GLConfig::NUM_X_AXIS_TILES, GLConfig::NUM_Y_AXIS_TILES, GLConfig::NUM_Z_AXIS_TILES));
+	compute->Compute(Vector3(GLConfig::NUM_X_AXIS_TILES / 2.0f, GLConfig::NUM_Y_AXIS_TILES / 2.0f, GLConfig::NUM_Z_AXIS_TILES / 2.0f));
 
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT);
 }

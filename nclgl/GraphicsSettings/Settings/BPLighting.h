@@ -19,11 +19,6 @@ public:
 	void LinkShaders()  override;
 	void RegenerateShaders()  override;
 
-	void UpdateShadowData(ShadowData* shadowData) 
-	{
-		this->shadowData = shadowData;
-	}
-
 	void Initialise() override;
 	void Apply() override;
 
@@ -52,7 +47,6 @@ private:
 	Shader*		lightingPass;
 	Camera*		camera;
 	Window* window;
-	ShadowData* shadowData;
 	GBufferData*	gBuffer;
 	AmbientTextures* ambientTextures;
 	int numAmbTex;

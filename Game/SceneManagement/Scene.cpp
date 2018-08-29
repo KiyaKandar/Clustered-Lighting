@@ -29,12 +29,6 @@ Scene::~Scene()
 	}
 
 	delete modelsVec;
-
-	if (!shadows) 
-	{
-		delete shadows;
-	}
-
 	delete lightWorkGroups;
 
 	glDeleteTextures(1, &skyBoxTextureID);
@@ -49,17 +43,8 @@ void Scene::LoadModels()
 	}
 }
 
-void Scene::InitialiseShadows(int numShadowCastingLights, Renderer* renderer)
-{
-	shadows = new Shadows(numShadowCastingLights, renderer->GetAllLights(), &modelsVec);
-	shadows->LinkShaders();
-	shadows->Initialise();
-}
-
 void Scene::UpdateScene(int frameCount)
 {
-	shadows->Apply();
-
 	for each (function<void(float)> update in updates)
 	{
 		update(frameCount);

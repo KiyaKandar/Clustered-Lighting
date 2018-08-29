@@ -8,7 +8,7 @@ uniform mat4 projectionMatrix;
 uniform mat4 projView;
 uniform mat4 viewMatrix;
 
-layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+layout(local_size_x = 8, local_size_y = 8, local_size_z = 8) in;
 
 struct Tile
 {
@@ -65,8 +65,6 @@ layout(std430, binding = 5) buffer ScreenSpaceDataBuffer
 	vec4 NDCCoords[];
 };
 
-layout(binding = 0) uniform atomic_uint count;
-
 #include ../Shaders/compute/collisionFunctions.glsl
 
 void main()
@@ -75,12 +73,12 @@ void main()
 	int yIndex = int(gl_GlobalInvocationID.y);
 	int zIndex = int(gl_GlobalInvocationID.z);
 
-	int id = xIndex + int(gl_NumWorkGroups.x) * (yIndex + int(gl_NumWorkGroups.y) * zIndex);
+	int id = xIndex + int(gl_NumWorkGroups.x * gl_WorkGroupSize.x) * (yIndex + int(gl_NumWorkGroups.y * gl_WorkGroupSize.y) * zIndex);
 
 	vec4 worldLight = vec4(lightData[id].pos4.xyz, 1.0f);
 	vec4 projViewPos = projView * worldLight;
 	vec4 viewPos = viewMatrix * worldLight;
-	float zCoord = abs(projViewPos.z) / farPlane + nearPlane;
+	float zCoord = abs(viewPos.z) / (farPlane - nearPlane);
 
 	//Store reciprocal to avoid use of division below.
 	float w = 1.0f / projViewPos.w;
@@ -97,10 +95,12 @@ void main()
 	//else cull.
 	if (colliding)
 	{
-		uint currentLightCount = atomicCounterIncrement(count);
-
-		NDCCoords[currentLightCount] = clipPos;
-		indexes[currentLightCount] = id;
+		NDCCoords[id] = clipPos;
+		indexes[id] = id;
+	}
+	else
+	{
+		indexes[id] = -1;
 	}
 }
 

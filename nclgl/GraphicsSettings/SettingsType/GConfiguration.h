@@ -36,12 +36,7 @@ private:
 
 	//Settings
 	GBuffer* SGBuffer;
-	SSAO* ssao;
 	BPLighting* lighting;
-	Bloom* bloom;
 	AmbientTextures* ambTex;
-	MotionBlur* motionBlur;
-	Skybox* skybox;
-	ParticleSystem* particles;
 };
 

@@ -126,10 +126,8 @@ public:
 	Matrix4 currentViewProj;
 	Vector3* currentScenesDataPrepWorkGroups;
 
-	Skybox* skybox;
 	GBuffer* gBuffer;
 	BPLighting* lighting;
-	ParticleSystem* particleSystem;
 
 protected:
 	std::vector<GSetting*> GComponents;
@@ -147,7 +145,6 @@ protected:
 
 	//Light SSBO
 	GLuint ssbo;
-	GLuint spotlightssbo;
 	GLuint tilesssbo;
 	GLuint tilelightssssbo;
 	GLuint modelMatricesSSBO;
@@ -156,7 +153,6 @@ protected:
 	Light* lights[GLConfig::NUM_LIGHTS];
 	Light* defaultLights[GLConfig::NUM_LIGHTS];
 	LightData lightData[GLConfig::NUM_LIGHTS];
-	SpotLightData spotLightData[GLConfig::NUM_LIGHTS];
 
 	//Frustum culling + ordering.
 	void BuildMeshLists();

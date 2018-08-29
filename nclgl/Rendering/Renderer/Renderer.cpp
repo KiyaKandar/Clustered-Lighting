@@ -79,6 +79,7 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	GLUtil::CheckGLError("Renderer Initialisation");
 	init = true;
 	sceneIndex = -1;
+	glViewport(0, 0, GLConfig::RESOLUTION.x, GLConfig::RESOLUTION.y);
 }
 
 Renderer::~Renderer()
@@ -148,17 +149,12 @@ void Renderer::Update(const float& deltatime)
 	tiles->AllocateLightsGPU(GLConfig::SHARED_PROJ_MATRIX, viewMatrix, camera->GetPosition());
 
 	RenderScene();
-
-	updateTimer.StopTimer();
 }
 
 void Renderer::RenderScene()
 {
-	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 	BuildMeshLists();
 	SortMeshLists();
-
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	for (int i = 0; i < GComponents.size(); ++i)
 	{
@@ -179,13 +175,13 @@ void Renderer::RenderScene()
 			DrawDebugLights();
 		}
 
-		SwapBuffers();
-
 		glEnable(GL_DEPTH_TEST);
 	}
-	else SwapBuffers();
-
+	
+	SwapBuffers();
 	ClearMeshLists();
+
+	updateTimer.StopTimer();
 }
 
 void Renderer::ChangeScene()
@@ -200,7 +196,6 @@ void Renderer::ChangeScene()
 		}
 	}
 
-	skybox->SetSkyboxTexture(scenes[sceneIndex]->GetSkyboxTextureID());
 	gBuffer->SetReflectionTextureID(scenes[sceneIndex]->GetReflectionCubeMapTextureID());
 
 	for (int i = 0; i < GLConfig::NUM_LIGHTS; i++)
@@ -216,7 +211,6 @@ void Renderer::ChangeScene()
 	for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
 	{
 		lightData[i] = lights[i]->GetData();
-		spotLightData[i] = lights[i]->GetSpotData();
 	}
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
@@ -225,15 +219,7 @@ void Renderer::ChangeScene()
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, spotlightssbo);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(SpotLightData) * GLConfig::NUM_LIGHTS,
-		&spotLightData, GL_STATIC_COPY);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, spotlightssbo);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-	lighting->UpdateShadowData(scenes[sceneIndex]->GetShadowData());
 	lighting->ambientLighting = scenes[sceneIndex]->ambient;
-	//particleSystem->particles = &scenes[sceneIndex]->particles;
 }
 
 void Renderer::UpdateScene(const float& msec)
@@ -245,7 +231,7 @@ void Renderer::UpdateScene(const float& msec)
 
 	if (msUntilSceneChange <= 0)
 	{
-		autoChangeScene = true;
+		autoChangeScene = false;
 	}
 
 	if (wparent->GetKeyboard()->KeyTriggered(KEYBOARD_UP))
@@ -284,14 +270,9 @@ void Renderer::UpdateScene(const float& msec)
 	for each (int modifiedLightIndex in scenes[sceneIndex]->modifiedLights)
 	{
 		lightData[modifiedLightIndex] = lights[modifiedLightIndex]->GetData();
-		spotLightData[modifiedLightIndex] = lights[modifiedLightIndex]->GetSpotData();
 
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
 		glBufferSubData(GL_SHADER_STORAGE_BUFFER, sizeof(LightData) * modifiedLightIndex, sizeof(LightData), &lightData[modifiedLightIndex]);
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, spotlightssbo);
-		glBufferSubData(GL_SHADER_STORAGE_BUFFER, sizeof(SpotLightData) * modifiedLightIndex, sizeof(SpotLightData), &spotLightData[modifiedLightIndex]);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	}
 

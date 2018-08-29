@@ -37,8 +37,6 @@ public:
 	GLuint rboDepth;
 	GLuint gBuffer;
 
-	Skybox* skybox;
-
 private:
 	void LocateUniforms() override;
 	void InitGBuffer();

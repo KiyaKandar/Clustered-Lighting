@@ -48,9 +48,9 @@ public:
 
 	static const int NUM_LIGHTS = 512;
 #elif defined DEMO_1024_LIGHTS
-	static const int NUM_X_AXIS_TILES = 8;
-	static const int NUM_Y_AXIS_TILES = 8;
-	static const int NUM_Z_AXIS_TILES = 8;
+	static const int NUM_X_AXIS_TILES = 16;
+	static const int NUM_Y_AXIS_TILES = 16;
+	static const int NUM_Z_AXIS_TILES = 16;
 
 	static const int NUM_LIGHTS = 1024;
 #elif defined DEMO_2048_LIGHTS
