@@ -12,7 +12,7 @@ Vector3 SponzaScene::workGroups = Vector3(10, 10, 1);
 #elif   defined DEMO_100_LIGHTS
 Vector3 SponzaScene::workGroups = Vector3(10, 10, 1);
 #elif defined DEMO_512_LIGHTS
-Vector3 SponzaScene::workGroups = Vector3(8, 8, 8);
+Vector3 SponzaScene::workGroups = Vector3(1, 1, 1);
 #elif defined DEMO_1024_LIGHTS
 Vector3 SponzaScene::workGroups = Vector3(2, 1, 1);
 #elif defined DEMO_2048_LIGHTS
@@ -159,7 +159,7 @@ void SponzaScene::GenerateLights(Scene* scene)
 		float g = GetRandomFloat(0.1, 1);
 		float b = GetRandomFloat(0.1, 1);
 
-		float bulbRadius = 110.0f;
+		float bulbRadius = 100.0f;
 		float cutOff = 1.5f;
 		float intensity = GetRandomFloat(1.1f, 2.3f);
 

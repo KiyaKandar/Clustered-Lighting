@@ -76,16 +76,6 @@ void main()
 	int id = xIndex + int(gl_NumWorkGroups.x * gl_WorkGroupSize.x) * (yIndex + int(gl_NumWorkGroups.y * gl_WorkGroupSize.y) * zIndex);
 
 	vec4 worldLight = vec4(lightData[id].pos4.xyz, 1.0f);
-	vec4 projViewPos = projView * worldLight;
-	vec4 viewPos = viewMatrix * worldLight;
-	float zCoord = abs(viewPos.z) / (farPlane - nearPlane);
-
-	//Store reciprocal to avoid use of division below.
-	float w = 1.0f / projViewPos.w;
-
-	//Final screenspace data.
-	float radius = lightData[id].lightCutoffRadius * w;
-	vec4 clipPos = vec4(projViewPos.x * w, projViewPos.y * w, zCoord, radius);
 
 	vec4 frustum[6];
 	FrustumFromMatrix(projView, frustum);
@@ -95,6 +85,17 @@ void main()
 	//else cull.
 	if (colliding)
 	{
+		vec4 projViewPos = projView * worldLight;
+		vec4 viewPos = viewMatrix * worldLight;
+		float zCoord = abs(projViewPos.z) / (farPlane - nearPlane);
+
+		//Store reciprocal to avoid use of division below.
+		float w = 1.0f / projViewPos.w;
+
+		//Final screenspace data.
+		float radius = lightData[id].lightCutoffRadius * w;
+		vec4 clipPos = vec4(projViewPos.x * w, projViewPos.y * w, zCoord, radius);
+
 		NDCCoords[id] = clipPos;
 		indexes[id] = id;
 	}

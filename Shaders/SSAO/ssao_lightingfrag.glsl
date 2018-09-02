@@ -22,6 +22,7 @@ uniform sampler2D depth;
 uniform mat4 texMatrices[5];
 uniform mat4 camMatrix;
 uniform mat4 viewMatrix;
+uniform mat4 projMatrix;
 
 uniform int numXTiles;
 uniform int numYTiles;
@@ -229,11 +230,16 @@ void main(void)
 	vec4 albedoCol = texture(gAlbedo, TexCoords);
 
 	//Transform screenspace coordinates into a tile index
-	float zCoord = abs(position.z) / (farPlane - nearPlane);
+	vec4 projPosition = projMatrix * vec4(position, 1.0f);
+	projPosition.xy /= projPosition.w;
+	projPosition.x = (projPosition.x + 1.0f) / 2.0f;
+	projPosition.y = (projPosition.y + 1.0f) / 2.0f;
 
-	int xIndex = int(TexCoords.x * tilesOnAxes.x);
-	int yIndex = int(TexCoords.y * tilesOnAxes.y);
-	int zIndex =  int(zCoord * tilesOnAxes.z);
+	float zCoord = abs(projPosition.z) / (farPlane - nearPlane);
+
+	int xIndex = int(projPosition.x * (tilesOnAxes.x - 1));
+	int yIndex = int(projPosition.y * (tilesOnAxes.y - 1));
+	int zIndex = int(zCoord * (tilesOnAxes.z - 1));
 
 	int tile = GetTileIndex(xIndex, yIndex, zIndex);
 
@@ -248,7 +254,7 @@ void main(void)
 	}
 	else
 	{
-		float colourValue = (float(lightIndexes[tile]) / float(numLights))/* * (1.0f - zCoord)*/;
+		float colourValue = (float(lightIndexes[tile]) / float(numLights));/* * (1.0f - zCoord)*/;
 		FragColor = normalize(vec4(colourValue, colourValue, colourValue, 1.0f));
 	}
 }

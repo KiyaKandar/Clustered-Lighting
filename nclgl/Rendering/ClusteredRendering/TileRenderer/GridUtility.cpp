@@ -26,10 +26,10 @@ void GridUtility::Generate3DGrid(GridData gridData, Vector3 dimensions, Vector3 
 	for (int i = 0; i < tilesOnAxes.x * tilesOnAxes.y; i++)
 	{
 		zIndex = 0;
-		xIndex = ceilf(xOffset);
+		xIndex = xOffset;// ceilf(xOffset);
 
 		//Once reached the end of x axis, reset x offset and move up y axis.
-		if (xIndex == tilesOnAxes.x)
+		if (xOffset == tilesOnAxes.x)
 		{
 			yOffset += dimensions.y;
 			++yIndex;
@@ -39,7 +39,7 @@ void GridUtility::Generate3DGrid(GridData gridData, Vector3 dimensions, Vector3 
 
 		//Create tile closest to screen.
 		const Vector3 startPosition((dimensions.x * xOffset) + gridData.minCoord.x, yOffset + gridData.minCoord.y, GLConfig::NEAR_PLANE);
-		int index = xIndex + int(tilesOnAxes.x) * (yIndex + int(tilesOnAxes.y) * zIndex);
+		int index = (int(tilesOnAxes.y) * int(tilesOnAxes.x) * zIndex) + (int(tilesOnAxes.x) * yIndex) + xIndex;
 
 		gridData.grid[index] = Cube(startPosition, dimensions);
 		gridData.gridPlanes[index] = GenerateCubePlanes(startPosition, dimensions);
@@ -50,7 +50,7 @@ void GridUtility::Generate3DGrid(GridData gridData, Vector3 dimensions, Vector3 
 		{
 			zIndex = k;
 			const float newZCoord = (dimensions.z * k);
-			index = xIndex + int(tilesOnAxes.x) * (yIndex + int(tilesOnAxes.y) * zIndex);
+			index = (int(tilesOnAxes.y) * int(tilesOnAxes.x) * zIndex) + (int(tilesOnAxes.x) * yIndex) + xIndex;
 
 			const Vector3 positionExtendedInZAxis(startPosition.x, startPosition.y, startPosition.z + newZCoord);
 

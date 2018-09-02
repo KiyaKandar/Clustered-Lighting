@@ -41,7 +41,7 @@ struct LightData
 	float lightCutoffRadius;
 	float intensity;
 
-	float fpadding;
+	float padding;
 };
 
 //Shared with lighting shader
@@ -76,7 +76,7 @@ void main()
 	int yIndex = int(gl_GlobalInvocationID.y);
 	int zIndex = int(gl_GlobalInvocationID.z);
 
-	uint index = uint(xIndex + int(tilesOnAxes.x) * (yIndex + int(tilesOnAxes.y) * zIndex));
+	uint index = uint((int(tilesOnAxes.y) * int(tilesOnAxes.x) * zIndex) + (int(tilesOnAxes.x) * yIndex) + xIndex);
 
 	int intersections = 0;
 

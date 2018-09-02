@@ -82,6 +82,7 @@ void BPLighting::LightingPass()
 
 	viewMatrix = camera->BuildViewMatrix();
 	glUniformMatrix4fv(loc_camMatrix, 1, false, (float*)&viewMatrix);
+	glUniformMatrix4fv(glGetUniformLocation(lightingPass->GetProgram(), "projMatrix"), 1, false, (float*)&GLConfig::SHARED_PROJ_MATRIX);
 
 	Vector3 camPos = camera->GetPosition();
 	float vec4[4] = { camPos.x, camPos.y, camPos.z, 0 };

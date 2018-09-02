@@ -56,7 +56,7 @@ public:
 #elif defined DEMO_2048_LIGHTS
 	static const int NUM_X_AXIS_TILES = 16;
 	static const int NUM_Y_AXIS_TILES = 16;
-	static const int NUM_Z_AXIS_TILES = 4;
+	static const int NUM_Z_AXIS_TILES = 16;
 
 	static const int NUM_LIGHTS = 2048;
 #endif
