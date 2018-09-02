@@ -179,9 +179,9 @@ void main(void){
 		//Transform screenspace coordinates into a tile index
 		float zCoord = abs(position.z) / (farPlane - nearPlane);
 
-		int xIndex = int(TexCoords.x * tilesOnAxes.x);
-		int yIndex = int(TexCoords.y * tilesOnAxes.y);
-		int zIndex =  int(zCoord * tilesOnAxes.z);
+		int xIndex = int(TexCoords.x * (tilesOnAxes.x - 1));
+		int yIndex = int(TexCoords.y * (tilesOnAxes.y - 1));
+		int zIndex = int(zCoord * (tilesOnAxes.z - 1));
 
 		int tile = GetTileIndex(xIndex, yIndex, zIndex);
 
