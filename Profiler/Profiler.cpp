@@ -105,7 +105,7 @@ void Profiler::RenderToScreen()
 	{
 		renderer->AddProfilerText(Text(
 			("Recording stats for file log!"),
-			Vector3(GLConfig::RESOLUTION.x - 320.0f, 50, 0), TEXT_SIZE));
+			Vector3(GLConfig::RESOLUTION.x - 400.0f, 50, 0), TEXT_SIZE));
 	}
 }
 
