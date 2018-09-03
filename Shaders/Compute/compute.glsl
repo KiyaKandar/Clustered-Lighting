@@ -82,9 +82,7 @@ void main()
 	int yIndex = int(gl_GlobalInvocationID.y);
 	int zIndex = int(gl_GlobalInvocationID.z);
 
-	int tile = xIndex + int(tilesOnAxes.x) * (yIndex + int(tilesOnAxes.y) * zIndex);
-
-	uint index = uint(tile);
+	uint index = uint(xIndex + int(tilesOnAxes.x) * (yIndex + int(tilesOnAxes.y) * zIndex));
 
 	int intersections = 0;
 
@@ -99,7 +97,8 @@ void main()
 			}
 			else if (zIndex == 0)
 			{
-				if (PointInSphere(cameraPosition.xyz, ClipSpaceCoords[i], nearPlane, farPlane))
+				Random lights now uniformly distributed
+				if (PointInSphere(cameraPosition.xyz, light4, nearPlane, farPlane))
 				{
 					tileLights[index][intersections] = i;
 					intersections++;

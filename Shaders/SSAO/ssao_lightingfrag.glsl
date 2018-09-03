@@ -93,7 +93,7 @@ void AddBPLighting(vec3 position, vec3 normal, vec4 albedoCol, int lightIndex, i
 
 		//Specular
 		vec3 halfDir = normalize(lightDir + viewDir);
-		float specPower = pow(max(dot(normal, halfDir), 0.0), 500.0);
+		float specPower = pow(max(dot(normal, halfDir), 0.0), 50.0);
 		vec3 specular = lightData[lightIndex].lightColour.rgb * specPower;
 
 		//Attenuation
@@ -175,11 +175,11 @@ void main(void){
 	else 
 	{
 		//Transform screenspace coordinates into a tile index
-		float zCoord = abs(position.z) / (nearPlane + farPlane);
+		float zCoord = abs(position.z) / (farPlane - nearPlane);
 
-		int xIndex = int(TexCoords.x * tilesOnAxes.x);
-		int yIndex = int(TexCoords.y * tilesOnAxes.y);
-		int zIndex =  int(zCoord * tilesOnAxes.z);
+		int xIndex = int(TexCoords.x * (tilesOnAxes.x - 1));
+		int yIndex = int(TexCoords.y * (tilesOnAxes.y - 1));
+		int zIndex = int(zCoord * (tilesOnAxes.z - 1));
 
 		int tile = GetTileIndex(xIndex, yIndex, zIndex);
 
@@ -187,22 +187,11 @@ void main(void){
 		{
 			//Default value
 			vec4 lightResult = vec4(0.0, 0.0, 0.0, 1.0);
-
-			vec4 tileColour = vec4(0.0f, 0.0f, 0.0f, 1.0f);
-
 			for (int j = 0; j < lightIndexes[tile]; j++)
 			{
 				int lightIndex = tileLights[tile][j];
-
-				if (lightIndex != 0)
-				{
-					tileColour.xyz += lightData[lightIndex].lightColour.rgb;
-				}
-
 				AddBPLighting(position, normal, albedoCol, lightIndex, lightResult);
 			}
-
-			tileColour /= float(lightIndexes[tile]);
 
 			//Ambient
 			float ambientFX = ambientLighting;
