@@ -38,7 +38,7 @@ void GridUtility::Generate3DGrid(GridData gridData, Vector3 dimensions, Vector3 
 		}
 
 		//Create tile closest to screen.
-		const Vector3 startPosition((dimensions.x * xOffset) + gridData.minCoord.x, yOffset + gridData.minCoord.y, GLConfig::NEAR_PLANE);
+		const Vector3 startPosition((dimensions.x * xOffset) + gridData.minCoord.x, yOffset + gridData.minCoord.y, 1.0f);
 		int index = xIndex + int(tilesOnAxes.x) * (yIndex + int(tilesOnAxes.y) * zIndex);
 
 		gridData.grid[index] = Cube(startPosition, dimensions);
