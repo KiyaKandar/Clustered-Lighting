@@ -92,7 +92,8 @@ void main()
 			}
 			else if (zIndex == 0)
 			{
-				if (PointInSphere(cameraPosition.xyz, NDCCoords[i], nearPlane, farPlane))
+				vec4 light4 = vec4(lightData[lightIndex].pos4.xyz, lightData[lightIndex].lightRadius);
+				if (PointInSphere(cameraPosition.xyz, light4, nearPlane, farPlane))
 				{
 					tileLights[index][intersections] = lightIndex;
 					++intersections;
