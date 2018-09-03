@@ -47,6 +47,8 @@ public:
 		return &fpsCounter;
 	}
 
+	void SaveToFile();
+
 private:
 	void UpdateProfiling();
 	void RenderToScreen();
@@ -58,6 +60,13 @@ private:
 	int	numTimers;
 	int	numAdded = 0;
 	bool renderingEnabled = false;
+
+	bool loggingEnabled = false;
+	float minFPS = FLT_MAX;
+	float maxFPS = 0.0f;
+
+	int frameCount = 0;
+	float frameRateTotal = 0;
 
 	Window*			 window;
 	Renderer*		 renderer;
