@@ -12,11 +12,11 @@ Vector3 SponzaScene::workGroups = Vector3(10, 10, 1);
 #elif   defined DEMO_100_LIGHTS
 Vector3 SponzaScene::workGroups = Vector3(10, 10, 1);
 #elif defined DEMO_512_LIGHTS
-Vector3 SponzaScene::workGroups = Vector3(1, 1, 1);
+Vector3 SponzaScene::workGroups = Vector3(8, 8, 8);
 #elif defined DEMO_1024_LIGHTS
-Vector3 SponzaScene::workGroups = Vector3(2, 1, 1);
+Vector3 SponzaScene::workGroups = Vector3(16, 8, 8);
 #elif defined DEMO_2048_LIGHTS
-Vector3 SponzaScene::workGroups = Vector3(2, 2, 1);
+Vector3 SponzaScene::workGroups = Vector3(16, 16, 8);
 #endif
 
 
