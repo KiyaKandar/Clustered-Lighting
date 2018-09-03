@@ -25,7 +25,7 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 
 	for (int i = 10; i < 15; i++)
 	{
-		defaultLights[i] = new Light(Vector3(-3500 + (500 * (i - 5)), 500, -450), Vector4(0, 1, 0, 1), 270.0f, 3.0f, 2.0f);
+		defaultLights[i] = new Light(Vector3(-3500 + (500 * (i - 5)), 500, -450), Vector4(1, 1, 0, 1), 270.0f, 3.0f, 2.0f);
 	}
 
 	for (int i = 15; i < 20; i++)
