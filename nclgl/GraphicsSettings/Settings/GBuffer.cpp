@@ -44,6 +44,7 @@ void GBuffer::Initialise()
 	InitGBuffer();
 	InitAttachments();
 	LocateUniforms();
+	glCullFace(GL_BACK);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -61,10 +62,13 @@ void GBuffer::Apply()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glCullFace(GL_NONE);
 
 	RenderGeometry(transparentModelsInFrame);
 
 	glDisable(GL_BLEND);
+	glCullFace(GL_BACK);
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 }
