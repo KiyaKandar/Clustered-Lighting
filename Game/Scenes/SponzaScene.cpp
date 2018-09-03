@@ -9,16 +9,23 @@ float SponzaScene::frameCounter = 0.0f;
 
 #if   defined DEMO_PRETTY
 Vector3 SponzaScene::workGroups = Vector3(10, 10, 1);
+const Vector3 lightsPerAxis = Vector3(5, 5, 4);
 #elif   defined DEMO_100_LIGHTS
 Vector3 SponzaScene::workGroups = Vector3(10, 10, 1);
+const Vector3 lightsPerAxis = Vector3(5, 5, 4);
 #elif defined DEMO_512_LIGHTS
 Vector3 SponzaScene::workGroups = Vector3(8, 8, 8);
+const Vector3 lightsPerAxis = Vector3(8, 8, 8);
 #elif defined DEMO_1024_LIGHTS
 Vector3 SponzaScene::workGroups = Vector3(16, 8, 8);
+const Vector3 lightsPerAxis = Vector3(16, 8, 8);
 #elif defined DEMO_2048_LIGHTS
 Vector3 SponzaScene::workGroups = Vector3(16, 16, 8);
+const Vector3 lightsPerAxis = Vector3(16, 16, 8);
 #endif
 
+const Vector3 minBounds = Vector3(-2000, 100, -750);
+const Vector3 maxBounds = Vector3(2000, 1000, 750);
 
 void SponzaScene::CreatePrettyScene(Renderer* renderer, Camera* camera, Window* window)
 {
@@ -149,25 +156,37 @@ void SponzaScene::CreateCLDemoScene(Renderer* renderer, Camera* camera, Window* 
 
 void SponzaScene::GenerateLights(Scene* scene)
 {
-	for (int i = 0; i < GLConfig::NUM_LIGHTS; ++i)
+	Vector3 range = minBounds - maxBounds;
+	const float xJump = fabs(range.x / lightsPerAxis.x);
+	const float yJump = fabs(range.y / lightsPerAxis.y);
+	const float zJump = fabs(range.z / lightsPerAxis.z);
+
+	int lightCount = 0;
+
+	for (int x = 0; x < lightsPerAxis.x; ++x)
 	{
-		float x = GetRandomFloat(-2000, 2000);
-		float y = GetRandomFloat(100, 1000);
-		float z = GetRandomFloat(-750, 750);
+		for (int y = 0; y < lightsPerAxis.y; ++y)
+		{
+			for (int z = 0; z < lightsPerAxis.z; ++z)
+			{
+				float xCoord = minBounds.x + (x * xJump);
+				float yCoord = minBounds.y + (y * yJump);
+				float zCoord = minBounds.z + (z * zJump);
 
-		float r = GetRandomFloat(0.1, 1);
-		float g = GetRandomFloat(0.1, 1);
-		float b = GetRandomFloat(0.1, 1);
+				float radius = 110.0f;
+				float intensity = 1.7f;
+				float cutOff = 1.5f;
 
-		float bulbRadius = 100.0f;
-		float cutOff = 1.5f;
-		float intensity = GetRandomFloat(1.1f, 2.3f);
+				float r = GetRandomFloat(0, 1);
+				float g = GetRandomFloat(0, 1);
+				float b = GetRandomFloat(0, 1);
 
-		Vector3 pos(x, y, z);
-
-		scene->AddLight(new Light(pos, Vector4(r, g, b, 1), bulbRadius, cutOff, intensity), i);
-
-		radii.push_back(Vector2(pos.x, pos.z));
+				Vector3 pos(xCoord, yCoord, zCoord);
+				scene->AddLight(new Light(pos, Vector4(r, g, b, 1), radius, cutOff, intensity), lightCount);
+				radii.push_back(Vector2(pos.x, pos.z));
+				++lightCount;
+			}
+		}
 	}
 }
 
