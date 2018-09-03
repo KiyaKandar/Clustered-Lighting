@@ -37,6 +37,7 @@ void SponzaScene::CreatePrettyScene(Renderer* renderer, Camera* camera, Window* 
 	};
 
 	Scene* scene = new Scene(skybox, skybox, files, workGroups, 0.5f);
+	scene->ambient = 0.5f;
 	scene->InitialiseShadows(1, renderer);
 	scene->LoadModels();
 
@@ -120,7 +121,7 @@ void SponzaScene::CreateCLDemoScene(Renderer* renderer, Camera* camera, Window* 
 	scene->InitialiseShadows(0, renderer);
 	scene->LoadModels();
 	GenerateLights(scene);
-	scene->ambient = 0.1f;
+	scene->ambient = 0.11f;
 
 	Model* glass = scene->GetModel("../Models/glass.obj");
 	glass->Scale(Vector3(105, 105, 105));

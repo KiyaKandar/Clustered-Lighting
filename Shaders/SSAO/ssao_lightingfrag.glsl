@@ -261,7 +261,7 @@ void AddPBRLighting(vec3 position, vec3 albedoCol, vec3 normal, int tileIndex, i
 	}
 
 	//Ambient lighting + SSAO
-	vec3 ambient = vec3(0.11) * albedo;
+	vec3 ambient = vec3(ambientLighting) * albedo;
 
 	//Final colour
 	vec3 color =(ambient + Lo) * texture(ambientTextures[0], TexCoords).r;
@@ -303,8 +303,8 @@ void main(void){
 			FragColor = lightResult;
 
 			vec3 greyscale = vec3(0.2126, 0.7152, 0.0722);
-			float brightness = dot(FragColor.rgb, greyscale);
-			if (brightness > 0.9)
+			float brightness = dot(FragColor.rgb * 0.9f, greyscale);
+			if (brightness > 0.9999)
 			{
 				BrightnessCol = vec4(FragColor.rgb, 1.0f);
 			}
