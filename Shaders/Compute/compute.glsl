@@ -97,7 +97,7 @@ void main()
 			}
 			else if (zIndex == 0)
 			{
-				Random lights now uniformly distributed
+				vec4 light4 = vec4(lightData[i].pos4.xyz, lightData[i].lightRadius);
 				if (PointInSphere(cameraPosition.xyz, light4, nearPlane, farPlane))
 				{
 					tileLights[index][intersections] = i;
