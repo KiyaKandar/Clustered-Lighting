@@ -64,10 +64,12 @@ void GBuffer::Apply()
 	RenderGeometry(modelsInFrame);
 
 	glEnable(GL_BLEND);
+	glCullFace(GL_NONE);
 
 	RenderGeometry(transparentModelsInFrame);
 
 	glDisable(GL_BLEND);
+	glCullFace(GL_BACK);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
