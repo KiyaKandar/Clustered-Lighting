@@ -6,9 +6,9 @@
 //#define DEMO_PRETTY
 //#define DEMO_128_LIGHTS
 //#define DEMO_256_LIGHTS
-//#define DEMO_512_LIGHTS
+#define DEMO_512_LIGHTS
 //#define DEMO_1024_LIGHTS
-#define DEMO_2048_LIGHTS
+//#define DEMO_2048_LIGHTS
 
 class GLConfig
 {
