@@ -9,6 +9,7 @@ uniform int numLightsInFrustum;
 uniform mat4 projMatrix;
 uniform mat4 viewMatrix;
 uniform vec4 cameraPosition;
+uniform int forceGlobalLight;
 
 const int GLOBAL_LIGHT = 0;
 
@@ -76,7 +77,7 @@ void main()
 	int yIndex = int(gl_GlobalInvocationID.y);
 	int zIndex = int(gl_GlobalInvocationID.z);
 
-	uint index = uint((int(tilesOnAxes.y) * int(tilesOnAxes.x) * zIndex) + (int(tilesOnAxes.x) * yIndex) + xIndex);
+	uint index = uint(xIndex + int(tilesOnAxes.x) * (yIndex + int(tilesOnAxes.y) * zIndex));
 
 	int intersections = 0;
 
@@ -87,6 +88,11 @@ void main()
 		if (lightIndex >= 0)
 		{
 			if (SphereCubeColliding(cubePlanes[index].faces, NDCCoords[i]) || PointInSphere(cameraPosition.xyz, NDCCoords[i], nearPlane, farPlane))
+			{
+				tileLights[index][intersections] = lightIndex;
+				intersections++;
+			}
+			else if (forceGlobalLight == 1 && lightIndex == GLOBAL_LIGHT)
 			{
 				tileLights[index][intersections] = lightIndex;
 				intersections++;

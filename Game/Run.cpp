@@ -20,7 +20,7 @@
 	CREDITS:
 */
 
-const bool FULLSCREEN = false;
+const bool FULLSCREEN = true;
 
 void WriteConfigurationToShader();
 
@@ -62,6 +62,7 @@ int main()
 		profiler->Update(deltatime);
 		renderer->Update(deltatime);
 	}
+	profiler->SaveToFile();
 
 	delete window;
 	delete renderer;

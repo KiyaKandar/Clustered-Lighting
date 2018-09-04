@@ -213,7 +213,7 @@ void AddPBRLighting(vec3 position, vec3 albedoCol, vec3 normal, int tileIndex, i
 	}
 
 	//Ambient lighting + SSAO
-	vec3 ambient = vec3(0.11) * albedo;
+	vec3 ambient = vec3(ambientLighting) * albedo;
 
 	//Final colour
 	vec3 color = (ambient + Lo);
@@ -230,16 +230,11 @@ void main(void)
 	vec4 albedoCol = texture(gAlbedo, TexCoords);
 
 	//Transform screenspace coordinates into a tile index
-	vec4 projPosition = projMatrix * vec4(position, 1.0f);
-	projPosition.xy /= projPosition.w;
-	projPosition.x = (projPosition.x + 1.0f) / 2.0f;
-	projPosition.y = (projPosition.y + 1.0f) / 2.0f;
+	float zCoord = abs(position.z - nearPlane) / (farPlane - nearPlane);
 
-	float zCoord = abs(projPosition.z) / (farPlane - nearPlane);
-
-	int xIndex = int(projPosition.x * (tilesOnAxes.x - 1));
-	int yIndex = int(projPosition.y * (tilesOnAxes.y - 1));
-	int zIndex = int(zCoord * (tilesOnAxes.z - 1));
+		int xIndex = int(TexCoords.x * (tilesOnAxes.x - 1));
+		int yIndex = int(TexCoords.y * (tilesOnAxes.y - 1));
+		int zIndex = int(zCoord * (tilesOnAxes.z - 1));
 
 	int tile = GetTileIndex(xIndex, yIndex, zIndex);
 

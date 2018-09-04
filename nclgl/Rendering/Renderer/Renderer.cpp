@@ -25,7 +25,7 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 
 	for (int i = 10; i < 15; i++)
 	{
-		defaultLights[i] = new Light(Vector3(-3500 + (500 * (i - 5)), 500, -450), Vector4(0, 1, 0, 1), 270.0f, 3.0f, 2.0f);
+		defaultLights[i] = new Light(Vector3(-3500 + (500 * (i - 5)), 500, -450), Vector4(1, 1, 0, 1), 270.0f, 3.0f, 2.0f);
 	}
 
 	for (int i = 15; i < 20; i++)
@@ -50,12 +50,12 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 
 	for (int i = 75; i < 100; i++)
 	{
-		defaultLights[i] = new Light(Vector3(-1300 + (75 * (i - 70)), 50, 150), Vector4(1, 0.5, 0, 1), 100.0f, 1.0f, 2.0f);
+		defaultLights[i] = new Light(Vector3(-1300 + (75 * (i - 70)), 50, 150), Vector4(1, 0.5, 0, 1), 100.0f, 2.0f, 2.0f);
 	}
 
 	for (int i = 100; i < 200; i++)
 	{
-		defaultLights[i] = new Light(Vector3(-1300 + (75 * (i - 70)), 50, 150), Vector4(1, 0.5, 0, 1), 100.0f, 1.0f, 2.0f);
+		defaultLights[i] = new Light(Vector3(-1300 + (75 * (i - 70)), 50, 150), Vector4(1, 0.5, 0, 1), 100.0f, 2.0f, 2.0f);
 	}
 
 	textShader = new Shader(SHADERDIR"TexturedVertex.glsl", SHADERDIR"TexturedFragment.glsl");
