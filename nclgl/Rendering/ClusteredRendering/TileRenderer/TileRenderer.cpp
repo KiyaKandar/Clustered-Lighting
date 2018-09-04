@@ -93,6 +93,7 @@ void TileRenderer::FillTilesGPU(const Matrix4& projectionMatrix, const Matrix4& 
 	compute->UseProgram();
 
 	glUniform1i(loc_numZTiles, gridSize.z);
+	glUniform1i(glGetUniformLocation(compute->GetProgram(), "forceGlobalLight"), GLConfig::FORCE_GLOBAL_LIGHT_ZERO ? 1 : 0);
 	glUniform1f(glGetUniformLocation(compute->GetProgram(), "nearPlane"), GLConfig::NEAR_PLANE);
 	glUniform1f(glGetUniformLocation(compute->GetProgram(), "farPlane"), GLConfig::FAR_PLANE);
 	glUniformMatrix4fv(glGetUniformLocation(compute->GetProgram(), "projMatrix"), 1, false, (float*)&projectionMatrix);
