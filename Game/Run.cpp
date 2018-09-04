@@ -20,7 +20,7 @@
 	CREDITS:
 */
 
-const bool FULLSCREEN = false;
+const bool FULLSCREEN = true;
 
 void WriteConfigurationToShader();
 
