@@ -285,11 +285,12 @@ void main(void){
 	else 
 	{
 		//Transform screenspace coordinates into a tile index
-		float zCoord = abs(position.z) / (nearPlane + farPlane);
+		//float zCoord = abs(position.z) / (nearPlane + farPlane);
+		float zCoord = abs(position.z - nearPlane) / (farPlane - nearPlane);
 
 		int xIndex = int(TexCoords.x * (tilesOnAxes.x - 1));
 		int yIndex = int(TexCoords.y * (tilesOnAxes.y - 1));
-		int zIndex =  int(zCoord * (tilesOnAxes.z - 1));
+		int zIndex = int(zCoord * (tilesOnAxes.z - 1));
 
 		int tile = GetTileIndex(xIndex, yIndex, zIndex);
 

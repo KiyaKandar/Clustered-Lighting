@@ -10,9 +10,12 @@ float SponzaScene::frameCounter = 0.0f;
 #if   defined DEMO_PRETTY
 Vector3 SponzaScene::workGroups = Vector3(10, 10, 1);
 const Vector3 lightsPerAxis = Vector3(5, 5, 4);
-#elif   defined DEMO_100_LIGHTS
-Vector3 SponzaScene::workGroups = Vector3(10, 10, 1);
-const Vector3 lightsPerAxis = Vector3(5, 5, 4);
+#elif   defined DEMO_128_LIGHTS
+Vector3 SponzaScene::workGroups = Vector3(8, 8, 2);
+const Vector3 lightsPerAxis = Vector3(8, 8, 2);
+#elif   defined DEMO_256_LIGHTS
+Vector3 SponzaScene::workGroups = Vector3(8, 8, 4);
+const Vector3 lightsPerAxis = Vector3(8, 8, 4);
 #elif defined DEMO_512_LIGHTS
 Vector3 SponzaScene::workGroups = Vector3(8, 8, 8);
 const Vector3 lightsPerAxis = Vector3(8, 8, 8);
@@ -183,7 +186,7 @@ void SponzaScene::GenerateLights(Scene* scene)
 				float yCoord = minBounds.y + (y * yJump);
 				float zCoord = minBounds.z + (z * zJump);
 
-				float radius = 110.0f;
+				float radius = 120.0f;
 				float intensity = 1.7f;
 				float cutOff = 1.5f;
 

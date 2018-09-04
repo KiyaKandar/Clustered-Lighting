@@ -62,6 +62,7 @@ int main()
 		profiler->Update(deltatime);
 		renderer->Update(deltatime);
 	}
+	profiler->SaveToFile();
 
 	delete window;
 	delete renderer;

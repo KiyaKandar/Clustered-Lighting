@@ -245,7 +245,7 @@ void Renderer::UpdateScene(const float& msec)
 
 	if (msUntilSceneChange <= 0)
 	{
-		autoChangeScene = true;
+		autoChangeScene = false;
 	}
 
 	if (wparent->GetKeyboard()->KeyTriggered(KEYBOARD_UP))
