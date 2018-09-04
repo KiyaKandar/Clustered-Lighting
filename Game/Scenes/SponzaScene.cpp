@@ -10,17 +10,20 @@ float SponzaScene::frameCounter = 0.0f;
 #if   defined DEMO_PRETTY
 Vector3 SponzaScene::workGroups = Vector3(10, 10, 1);
 const Vector3 lightsPerAxis = Vector3(5, 5, 4);
-#elif   defined DEMO_100_LIGHTS
-Vector3 SponzaScene::workGroups = Vector3(10, 10, 1);
-const Vector3 lightsPerAxis = Vector3(5, 5, 4);
+#elif   defined DEMO_128_LIGHTS
+Vector3 SponzaScene::workGroups = Vector3(8, 8, 2);
+const Vector3 lightsPerAxis = Vector3(8, 8, 2);
+#elif   defined DEMO_256_LIGHTS
+Vector3 SponzaScene::workGroups = Vector3(8, 8, 4);
+const Vector3 lightsPerAxis = Vector3(8, 8, 4);
 #elif defined DEMO_512_LIGHTS
 Vector3 SponzaScene::workGroups = Vector3(8, 8, 8);
 const Vector3 lightsPerAxis = Vector3(8, 8, 8);
 #elif defined DEMO_1024_LIGHTS
-Vector3 SponzaScene::workGroups = Vector3(2, 1, 1);
+Vector3 SponzaScene::workGroups = Vector3(16, 8, 8);
 const Vector3 lightsPerAxis = Vector3(16, 8, 8);
 #elif defined DEMO_2048_LIGHTS
-Vector3 SponzaScene::workGroups = Vector3(2, 2, 1);
+Vector3 SponzaScene::workGroups = Vector3(16, 16, 8);
 const Vector3 lightsPerAxis = Vector3(16, 16, 8);
 #endif
 

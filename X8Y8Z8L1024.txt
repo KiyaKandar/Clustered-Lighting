@@ -1,0 +1,15 @@
+--------------Configuration--------------
+Resolution: 1920.000000x1080.000000
+X Clusters: 8
+Y Clusters: 8
+Z Clusters: 8
+
+Num lights: 1024
+Data Prep Work Group X: 16.000000
+Data Prep Work Group Y: 8.000000
+Data Prep Work Group Z: 8.000000
+
+--------------Performance--------------
+Min FPS: 340282346638528859811704183484516925440.000000
+Max FPS: 0.000000
+Avg FPS: -nan(ind)
