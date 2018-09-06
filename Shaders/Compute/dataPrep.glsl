@@ -64,11 +64,6 @@ layout(std430, binding = 5) buffer ScreenSpaceDataBuffer
 	vec4 NDCCoords[];
 };
 
-layout(std430, binding = 6) buffer ClipSpacePositionsBuffer
-{
-	vec4 ClipSpaceCoords[];
-};
-
 layout(binding = 0) uniform atomic_uint count;
 
 #include ../Shaders/compute/collisionFunctions.glsl
@@ -82,16 +77,6 @@ void main()
 	int id = xIndex + int(gl_NumWorkGroups.x) * (yIndex + int(gl_NumWorkGroups.y) * zIndex);
 
 	vec4 worldLight = vec4(lightData[id].pos4.xyz, 1.0f);
-	vec4 projViewPos = projView * worldLight;
-	vec4 viewPos = viewMatrix * worldLight;
-	float zCoord = abs(projViewPos.z) / farPlane + nearPlane;
-
-	//Store reciprocal to avoid use of division below.
-	float w = 1.0f / projViewPos.w;
-
-	//Final screenspace data.
-	float radius = lightData[id].lightRadius * w;
-	vec4 clipPos = vec4(projViewPos.x * w, projViewPos.y * w, zCoord, radius);
 
 	vec4 frustum[6];
 	FrustumFromMatrix(projView, frustum);
@@ -101,15 +86,21 @@ void main()
 	//else cull.
 	if (colliding)
 	{
-		//uint currentLightCount = atomicCounterIncrement(count);
+		vec4 projViewPos = projView * worldLight;
+		vec4 viewPos = viewMatrix * worldLight;
+		float zCoord = abs(viewPos.z - nearPlane) / (farPlane - nearPlane);
 
-		NDCCoords[id] = clipPos;
-		indexes[id] = id;
-	}
-	else
-	{
-		NDCCoords[id] = clipPos;
-		indexes[id] = -1;
+		//Store reciprocal to avoid use of division below.
+		float w = 1.0f / projViewPos.w;
+
+		//Final screenspace data.
+		float radius = lightData[id].lightRadius * w;
+		vec4 clipPos = vec4(projViewPos.x * w, projViewPos.y * w, zCoord, radius);
+
+		uint currentLightCount = atomicCounterIncrement(count);
+
+		NDCCoords[currentLightCount] = clipPos;
+		indexes[currentLightCount] = id;
 	}
 }
 

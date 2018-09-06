@@ -175,7 +175,7 @@ void main(void){
 	else 
 	{
 		//Transform screenspace coordinates into a tile index
-		float zCoord = abs(position.z) / (farPlane - nearPlane);
+		float zCoord = abs(position.z - nearPlane) / (farPlane - nearPlane);
 
 		int xIndex = int(TexCoords.x * (tilesOnAxes.x - 1));
 		int yIndex = int(TexCoords.y * (tilesOnAxes.y - 1));

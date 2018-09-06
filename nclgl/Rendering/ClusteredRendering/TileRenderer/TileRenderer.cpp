@@ -131,6 +131,7 @@ void TileRenderer::FillTilesGPU(const Matrix4& projectionMatrix, const Matrix4& 
 	compute->UseProgram();
 
 	glUniform1i(loc_numZTiles, gridSize.z);
+	glUniform1i(glGetUniformLocation(compute->GetProgram(), "forceGlobalLight"), GLConfig::FORCE_GLOBAL_LIGHT_ZERO ? 1 : 0);
 	glUniform1f(glGetUniformLocation(compute->GetProgram(), "nearPlane"), GLConfig::NEAR_PLANE);
 	glUniform1f(glGetUniformLocation(compute->GetProgram(), "farPlane"), GLConfig::FAR_PLANE);
 	glUniformMatrix4fv(glGetUniformLocation(compute->GetProgram(), "projMatrix"), 1, false, (float*)&projectionMatrix);
@@ -140,7 +141,7 @@ void TileRenderer::FillTilesGPU(const Matrix4& projectionMatrix, const Matrix4& 
 	float vec4[4] = { camPos.x, camPos.y, camPos.z, 0 };
 	glUniform4fv(glGetUniformLocation(compute->GetProgram(), "cameraPosition"), 1, vec4);
 
-	compute->Compute(Vector3(GLConfig::NUM_X_AXIS_TILES, GLConfig::NUM_Y_AXIS_TILES, GLConfig::NUM_Z_AXIS_TILES));
+	compute->Compute(Vector3(GLConfig::NUM_X_AXIS_CLUSTERS, GLConfig::NUM_Y_AXIS_CLUSTERS, GLConfig::NUM_Z_AXIS_CLUSTERS));
 
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT);
 }

@@ -9,6 +9,7 @@ uniform int numLightsInFrustum;
 uniform mat4 projMatrix;
 uniform mat4 viewMatrix;
 uniform vec4 cameraPosition;
+uniform int forceGlobalLight;
 
 const int GLOBAL_LIGHT = 0;
 
@@ -90,7 +91,9 @@ void main()
 	{
 		if (ClipSpaceCoords[i].w != 0.0f || i == GLOBAL_LIGHT)
 		{
-			if (i == GLOBAL_LIGHT || SphereCubeColliding(cubePlanes[index].faces, ClipSpaceCoords[i]))
+			bool force = forceGlobalLight == 1 && i == GLOBAL_LIGHT;
+
+			if (force || SphereCubeColliding(cubePlanes[index].faces, ClipSpaceCoords[i]))
 			{
 				tileLights[index][intersections] = i;
 				intersections++;
