@@ -59,7 +59,7 @@ Renderer::Renderer(Window &parent, Camera* cam) : OGLRenderer(parent)
 	SetAsDebugDrawingRenderer(); //For light debugging
 
 	tiles = new TileRenderer(lights, GLConfig::NUM_LIGHTS,
-		GLConfig::NUM_X_AXIS_TILES, GLConfig::NUM_Y_AXIS_TILES, GLConfig::NUM_Z_AXIS_TILES,
+		GLConfig::NUM_X_AXIS_CLUSTERS, GLConfig::NUM_Y_AXIS_CLUSTERS, GLConfig::NUM_Z_AXIS_CLUSTERS,
 		GLConfig::MIN_NDC_COORDS, GLConfig::MAX_NDC_COORDS, camera);
 
 	screenTiles = tiles->GetScreenTiles();

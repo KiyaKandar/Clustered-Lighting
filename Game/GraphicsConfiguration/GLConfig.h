@@ -29,44 +29,44 @@ public:
 	static const int BLOOM_STRENGTH = 2;
 
 #if defined DEMO_PRETTY
-	static const int NUM_X_AXIS_TILES = 8;
-	static const int NUM_Y_AXIS_TILES = 8;
-	static const int NUM_Z_AXIS_TILES = 8;
+	static const int NUM_X_AXIS_CLUSTERS = 8;
+	static const int NUM_Y_AXIS_CLUSTERS = 8;
+	static const int NUM_Z_AXIS_CLUSTERS = 8;
 	static const bool FORCE_GLOBAL_LIGHT_ZERO = true;
 	static const int NUM_LIGHTS = 100;
 #elif defined DEMO_128_LIGHTS
-	static const int NUM_X_AXIS_TILES = 4;
-	static const int NUM_Y_AXIS_TILES = 4;
-	static const int NUM_Z_AXIS_TILES = 4;
+	static const int NUM_X_AXIS_CLUSTERS = 4;
+	static const int NUM_Y_AXIS_CLUSTERS = 4;
+	static const int NUM_Z_AXIS_CLUSTERS = 4;
 	static const bool FORCE_GLOBAL_LIGHT_ZERO = false;
 	static const int NUM_LIGHTS = 128;
 #elif defined DEMO_256_LIGHTS
-	static const int NUM_X_AXIS_TILES = 8;
-	static const int NUM_Y_AXIS_TILES = 8;
-	static const int NUM_Z_AXIS_TILES = 8;
+	static const int NUM_X_AXIS_CLUSTERS = 8;
+	static const int NUM_Y_AXIS_CLUSTERS = 8;
+	static const int NUM_Z_AXIS_CLUSTERS = 8;
 	static const bool FORCE_GLOBAL_LIGHT_ZERO = false;
 	static const int NUM_LIGHTS = 256;
 #elif defined DEMO_512_LIGHTS
-	static const int NUM_X_AXIS_TILES = 8;
-	static const int NUM_Y_AXIS_TILES = 8;
-	static const int NUM_Z_AXIS_TILES = 8;
+	static const int NUM_X_AXIS_CLUSTERS = 8;
+	static const int NUM_Y_AXIS_CLUSTERS = 8;
+	static const int NUM_Z_AXIS_CLUSTERS = 8;
 	static const bool FORCE_GLOBAL_LIGHT_ZERO = false;
 	static const int NUM_LIGHTS = 512;
 #elif defined DEMO_1024_LIGHTS
-	static const int NUM_X_AXIS_TILES = 16;
-	static const int NUM_Y_AXIS_TILES = 16;
-	static const int NUM_Z_AXIS_TILES = 16;
+	static const int NUM_X_AXIS_CLUSTERS = 16;
+	static const int NUM_Y_AXIS_CLUSTERS = 16;
+	static const int NUM_Z_AXIS_CLUSTERS = 16;
 	static const bool FORCE_GLOBAL_LIGHT_ZERO = false;
 	static const int NUM_LIGHTS = 1024;
 #elif defined DEMO_2048_LIGHTS
-	static const int NUM_X_AXIS_TILES = 8;
-	static const int NUM_Y_AXIS_TILES = 8;
-	static const int NUM_Z_AXIS_TILES = 8;
+	static const int NUM_X_AXIS_CLUSTERS = 8;
+	static const int NUM_Y_AXIS_CLUSTERS = 8;
+	static const int NUM_Z_AXIS_CLUSTERS = 8;
 	static const bool FORCE_GLOBAL_LIGHT_ZERO = false;
 	static const int NUM_LIGHTS = 2048;
 #endif
 
-	static const int NUM_TILES = NUM_X_AXIS_TILES * NUM_Y_AXIS_TILES * NUM_Z_AXIS_TILES;
+	static const int NUM_TILES = NUM_X_AXIS_CLUSTERS * NUM_Y_AXIS_CLUSTERS * NUM_Z_AXIS_CLUSTERS;
 
 	//Declared in cpp file - volatile integral type problem.
 	static const Vector2 MIN_NDC_COORDS;
