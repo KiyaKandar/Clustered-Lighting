@@ -52,18 +52,18 @@ void Profiler::Update(const float& deltatime)
 
 void Profiler::SaveToFile()
 {
-	std::string fileName("../X" + std::to_string(GLConfig::NUM_X_AXIS_TILES)
-		+ "Y" + std::to_string(GLConfig::NUM_Y_AXIS_TILES)
-		+ "Z" + std::to_string(GLConfig::NUM_Z_AXIS_TILES)
+	std::string fileName("../X" + std::to_string(GLConfig::NUM_X_AXIS_CLUSTERS)
+		+ "Y" + std::to_string(GLConfig::NUM_Y_AXIS_CLUSTERS)
+		+ "Z" + std::to_string(GLConfig::NUM_Z_AXIS_CLUSTERS)
 		+ "L" + std::to_string(GLConfig::NUM_LIGHTS) + ".txt");
 
 	std::ofstream outfile(fileName.c_str());
 
 	outfile << "--------------Configuration--------------" << std::endl;
 	outfile << "Resolution: " + std::to_string(GLConfig::RESOLUTION.x) + "x" + std::to_string(GLConfig::RESOLUTION.y) << std::endl;
-	outfile << "X Clusters: " + std::to_string(GLConfig::NUM_X_AXIS_TILES) << std::endl;
-	outfile << "Y Clusters: " + std::to_string(GLConfig::NUM_Y_AXIS_TILES) << std::endl;
-	outfile << "Z Clusters: " + std::to_string(GLConfig::NUM_Z_AXIS_TILES) << std::endl;
+	outfile << "X Clusters: " + std::to_string(GLConfig::NUM_X_AXIS_CLUSTERS) << std::endl;
+	outfile << "Y Clusters: " + std::to_string(GLConfig::NUM_Y_AXIS_CLUSTERS) << std::endl;
+	outfile << "Z Clusters: " + std::to_string(GLConfig::NUM_Z_AXIS_CLUSTERS) << std::endl;
 	outfile << std::endl;
 
 	outfile << "Num lights: " + std::to_string(GLConfig::NUM_LIGHTS) << std::endl;
