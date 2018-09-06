@@ -103,7 +103,7 @@ void TileRenderer::FillTilesGPU(const Matrix4& projectionMatrix, const Matrix4& 
 	float vec4[4] = { camPos.x, camPos.y, camPos.z, 0 };
 	glUniform4fv(glGetUniformLocation(compute->GetProgram(), "cameraPosition"), 1, vec4);
 
-	compute->Compute(Vector3(GLConfig::NUM_X_AXIS_TILES / 2.0f, GLConfig::NUM_Y_AXIS_TILES / 2.0f, GLConfig::NUM_Z_AXIS_TILES / 2.0f));
+	compute->Compute(Vector3(GLConfig::NUM_X_AXIS_CLUSTERS / 2.0f, GLConfig::NUM_Y_AXIS_CLUSTERS / 2.0f, GLConfig::NUM_Z_AXIS_CLUSTERS / 2.0f));
 
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT);
 }

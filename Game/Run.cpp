@@ -92,9 +92,9 @@ void WriteConfigurationToShader()
 	file.close();
 	lines[1] = "const int numLights = " + std::to_string(GLConfig::NUM_LIGHTS) + ";";
 	lines[2] = "const vec3 tilesOnAxes = vec3(" 
-		+ std::to_string(GLConfig::NUM_X_AXIS_TILES) + ", "
-		+ std::to_string(GLConfig::NUM_Y_AXIS_TILES) + ", "
-		+ std::to_string(GLConfig::NUM_Z_AXIS_TILES)
+		+ std::to_string(GLConfig::NUM_X_AXIS_CLUSTERS) + ", "
+		+ std::to_string(GLConfig::NUM_Y_AXIS_CLUSTERS) + ", "
+		+ std::to_string(GLConfig::NUM_Z_AXIS_CLUSTERS)
 		+ ");";
 
 	std::ofstream ofs;
