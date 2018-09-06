@@ -76,8 +76,8 @@ void BPLighting::LightingPass()
 	glUniform1i(loc_gRoughness, GLConfig::GROUGHNESS);
 	glUniform1f(glGetUniformLocation(lightingPass->GetProgram(), "ambientLighting"), ambientLighting);
 
-	glUniform1i(loc_numXTiles, GLConfig::NUM_X_AXIS_TILES);
-	glUniform1i(loc_numYTiles, GLConfig::NUM_Y_AXIS_TILES);
+	glUniform1i(loc_numXTiles, GLConfig::NUM_X_AXIS_CLUSTERS);
+	glUniform1i(loc_numYTiles, GLConfig::NUM_Y_AXIS_CLUSTERS);
 	glUniform1i(loc_numShadowCastingLights, shadowData->NUM_LIGHTS);
 
 	glUniform1iv(loc_shadows, shadowData->NUM_LIGHTS, shadowData->shadowIndexes);

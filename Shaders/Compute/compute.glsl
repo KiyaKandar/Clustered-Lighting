@@ -91,7 +91,7 @@ void main()
 		if (SphereCubeColliding(cubePlanes[index].faces, NDCCoords[i]) || PointInSphere(cameraPosition.xyz, NDCCoords[i], nearPlane, farPlane))
 		{
 			tileLights[index][intersections] = lightIndex;
-			intersections++;
+			++intersections;
 		}
 		else if (forceGlobalLight == 1 && lightIndex == GLOBAL_LIGHT)
 		{
