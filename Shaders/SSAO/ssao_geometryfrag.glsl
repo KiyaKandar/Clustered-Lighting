@@ -39,6 +39,10 @@ void main(void) {
 	if (hasTexture == 1) 
 	{
 		col = texture2D(texture_diffuse, TexCoords);
+		if (col.a < 0.1f)
+		{
+			discard;
+		}
 	}
 
 	float metallicness = texture2D(metallic, TexCoords).r;
