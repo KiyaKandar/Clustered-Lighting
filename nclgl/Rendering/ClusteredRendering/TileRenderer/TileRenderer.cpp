@@ -3,7 +3,7 @@
 #include "../../../Utility/Light.h"
 #include "../Game/Utility/Util.h"
 #include "../Game/GraphicsConfiguration/GLUtil.h"
-#include "../../Rendering/View/Camera.h"
+#include "../../View/Camera.h"
 
 const int INTERSECTING = 1;
 const int EMPTY = 0;

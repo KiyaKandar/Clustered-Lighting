@@ -31,6 +31,10 @@ void main(void) {
 	if (hasTexture == 1) 
 	{
 		col = texture2D(texture_diffuse, TexCoords);
+		if (col.a < 0.1f)
+		{
+			discard;
+		}
 	}
 	
 	if (isReflective == 1) 
